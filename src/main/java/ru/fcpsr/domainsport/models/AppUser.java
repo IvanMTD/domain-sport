@@ -37,6 +37,11 @@ public class AppUser implements UserDetails {
     private LocalDate birthday;
     private LocalDate placedAt;
     private String avatarId;
+    private String oauthId;
+
+    public String getFullName(){
+        return lastname + " " + firstname;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

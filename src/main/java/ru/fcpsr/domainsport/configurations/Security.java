@@ -7,9 +7,16 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.WebFilterExchange;
+import org.springframework.security.web.server.authentication.logout.RedirectServerLogoutSuccessHandler;
+import org.springframework.security.web.server.authentication.logout.ServerLogoutSuccessHandler;
+import reactor.core.publisher.Mono;
+
+import java.net.URI;
 
 @Configuration
 @EnableWebFluxSecurity
@@ -18,10 +25,18 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 public class Security {
     @Bean
     public SecurityWebFilterChain filterChain(ServerHttpSecurity http){
+
+        RedirectServerLogoutSuccessHandler handler = new RedirectServerLogoutSuccessHandler();
+        handler.setLogoutSuccessUrl(URI.create("/"));
+
         return http
                 .authorizeExchange(exchange -> exchange.anyExchange().permitAll())
                 .formLogin(loginSpec -> loginSpec.loginPage("/"))
                 .oauth2Login(Customizer.withDefaults())
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessHandler(handler)
+                )
                 .build();
     }
 

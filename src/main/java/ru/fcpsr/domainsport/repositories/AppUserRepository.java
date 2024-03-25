@@ -7,4 +7,8 @@ import ru.fcpsr.domainsport.models.AppUser;
 
 public interface AppUserRepository extends ReactiveCrudRepository<AppUser,Long> {
     Mono<UserDetails> findByUsername(String username);
+    Mono<AppUser> findAppUserByUsername(String username);
+    Mono<UserDetails> findByEmail(String email);
+
+    Mono<UserDetails> findByOauthId(String oauthId);
 }
