@@ -1,0 +1,111 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">Мероприятия</h6>
+                    <div class="row">
+                        <div class="col-1">
+                            <small>№</small>
+                        </div>
+                        <div class="col-1">
+                            <small>№ ЕКП</small>
+                        </div>
+                        <div class="col-1">
+                            <small>Даты проведения</small>
+                        </div>
+                        <div class="col-2">
+                            <small>Название соревнования</small>
+                        </div>
+                        <div class="col-2">
+                            <small>Категории соревнования</small>
+                        </div>
+                        <div class="col-3">
+                            <small>Место проведения</small>
+                        </div>
+                        <div class="col-2">
+                            <small>Детали</small>
+                        </div>
+                    </div>
+                    <div class="row" th:each="event, stat : ${events}" style="height: 75px">
+                        <div class="row bg-light" th:if="${stat.index % 2 == 0}">
+                            <div class="col-1">
+                                <span th:text="${event.getNum()}"></span>
+                            </div>
+                            <div class="col-1">
+                                <span th:text="${event.getEkp()}"></span>
+                            </div>
+                            <div class="col-1">
+                                <span th:text="${event.getBeginningDate() + ' -'}"></span>
+                                <br>
+                                <span th:text="${event.getEndingDate()}"></span>
+                            </div>
+                            <div class="col-2">
+                                <span th:text="${event.getTitle()}"></span>
+                            </div>
+                            <div class="col-2">
+                                <span th:text="${event.getCategory()}"></span>
+                            </div>
+                            <div class="col-3">
+                                <span th:text="${event.getLocation()}"></span>
+                            </div>
+                            <div class="col-2 d-flex align-items-center" style="height: 100%">
+                                <button type="button" class="btn btn-outline-secondary">Подробнее</button>
+                            </div>
+                        </div>
+                        <div class="row" th:if="${stat.index % 2 != 0}" style="height: 75px">
+                            <div class="col-1">
+                                <span th:text="${event.getNum()}"></span>
+                            </div>
+                            <div class="col-1">
+                                <span th:text="${event.getEkp()}"></span>
+                            </div>
+                            <div class="col-1">
+                                <span th:text="${event.getBeginningDate() + ' -'}"></span>
+                                <br>
+                                <span th:text="${event.getEndingDate()}"></span>
+                            </div>
+                            <div class="col-2">
+                                <span th:text="${event.getTitle()}"></span>
+                            </div>
+                            <div class="col-2">
+                                <span th:text="${event.getCategory()}"></span>
+                            </div>
+                            <div class="col-3">
+                                <span th:text="${event.getLocation()}"></span>
+                            </div>
+                            <div class="col-2 d-flex align-items-center" style="height: 100%">
+                                <button type="button" class="btn btn-outline-secondary">Подробнее</button>
+                            </div>
+                        </div>
+                    </div>
+                    <nav>
+                        <ul class="pagination pagination-separated">
+                            <li class="page-item">
+                                <a class="page-link" th:href="@{/event/all(page=${page - 1},size=${size})}"><i class="icon feather icon-chevron-left"></i></a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" th:href="@{/event/all(page=${page - 2},size=${size})}" th:if="${page - 2 >= 0}" th:text="${page - 1}"></a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" th:href="@{/event/all(page=${page - 1},size=${size})}" th:if="${page - 1 >= 0}" th:text="${page}"></a>
+                            </li>
+                            <li class="page-item active">
+                                <a class="page-link" href="#" th:text="${page + 1}"></a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" th:href="@{/event/all(page=${page + 1},size=${size})}" th:if="${page + 1} <= ${lastPage}" th:text="${page + 2}"></a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" th:href="@{/event/all(page=${page + 2},size=${size})}" th:if="${page + 2} <= ${lastPage}" th:text="${page + 3}"></a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" th:href="@{/event/all(page=${page + 1}, size=${size})}"><i class="icon feather icon-chevron-right"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
