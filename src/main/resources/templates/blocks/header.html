@@ -44,12 +44,12 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form class="container">
+                                <form class="container" th:method="POST" th:action="@{/}">
                                     <div class="row">
                                         <div class="col">
                                             <div class="input-group mb-3">
                                                 <span class="input-group-text" style="width: 100px">Логин</span>
-                                                <input type="text" class="form-control" placeholder="Имя пользователя">
+                                                <input type="text" class="form-control" placeholder="Имя пользователя" name="username">
                                             </div>
                                         </div>
                                     </div>
@@ -57,7 +57,7 @@
                                         <div class="col">
                                             <div class="input-group mb-3">
                                                 <span class="input-group-text" style="width: 100px">Пароль</span>
-                                                <input type="password" class="form-control" placeholder="Ваш пароль">
+                                                <input type="password" class="form-control" placeholder="Ваш пароль" name="password">
                                             </div>
                                         </div>
                                     </div>
