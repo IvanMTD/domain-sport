@@ -1,5 +1,5 @@
 <div class="container">
-    <form class="row" th:object="${event}">
+    <form class="row" th:method="POST" th:action="@{/event/add}" th:object="${event}">
         <div class="col">
             <div class="row">
                 <div class="col">
@@ -30,35 +30,89 @@
                 </div>
                 <div class="col">
                     <div class="input-group input-group-lg">
-                        <span class="input-group-text" id="Вид спорта">Вид спорта</span>
-                        <input type="search" class="form-control" id="search-form" list="datalist-form" placeholder="Начните вводить ... ">
+                        <span class="input-group-text" id="sport">Вид спорта</span>
+                        <input type="search" class="form-control" id="search-form" list="datalist-form" placeholder="Начните вводить ... " onchange="setupDiscipline()">
+                        <input type="number" id="input-sport-id" th:field="*{sportId}" hidden>
                         <datalist id="datalist-form"></datalist>
-                        <script th:inline="javascript">
-                            $('#search-form').on('input', function() {
-                                let searchQuery = this.value;
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div id="discipline-message" class="input-group input-group-lg">
+                        <span class="input-group-text" id="discipline1">Дисциплины</span>
+                        <input class="form-control" type="text" value="Укажите вид спорта" disabled>
+                    </div>
+                    <div id="discipline-div" class="container-fluid" hidden>
+                        <div class="row">
+                            <p class="fs-5 pt-2">Выберите дисциплины</p>
+                        </div>
+                        <div class="row">
+                            <select id="discipline-select" class="form-select js-example-basic-multiple" multiple="multiple" th:field="*{disciplineIds}">
 
-                                $.ajax({
-                                    url: '/api/get/sports',
-                                    type: 'get',
-                                    data: {
-                                        query: searchQuery
-                                    },
-                                    success: function(response) {
-                                        let dataList = $('#datalist-form');
-                                        dataList.empty();
-
-                                        response.forEach(function(item) {
-                                            dataList.append(
-                                                '<option value="' + item.title + '">' + item.title + '</option>'
-                                            );
-                                        });
-                                    }
-                                });
-                            });
-                        </script>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="d-grid py-2">
+                        <button class="btn btn-outline-secondary" type="submit">Сохранить</button>
                     </div>
                 </div>
             </div>
         </div>
     </form>
 </div>
+
+<script th:inline="javascript">
+    $('#search-form').on('input', function() {
+        let searchQuery = this.value;
+
+        $.ajax({
+            url: '/api/get/sports',
+            type: 'get',
+            data: {
+                query: searchQuery
+            },
+            success: function(response) {
+                let dataList = $('#datalist-form');
+                dataList.empty();
+
+                response.forEach(function(item) {
+                    dataList.append(
+                        '<option data-item="' + JSON.stringify(item).replace(/"/g, '&quot;') + '" value="' + item.title + '">' + item.title + '</option>'
+                    );
+                });
+            }
+        });
+    });
+
+    function setupDiscipline() {
+        let inputVal = document.getElementById('search-form').value;
+        let dataList = document.getElementById('datalist-form');
+        let options = dataList.options;
+        let dataItem = null;
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].value === inputVal) {
+                dataItem = JSON.parse(options[i].getAttribute('data-item').replace(/"/g, '"'));
+                break;
+            }
+        }
+        document.getElementById('discipline-message').hidden = true;
+        document.getElementById('discipline-div').hidden = false;
+        document.getElementById('input-sport-id').value = dataItem.id;
+        $('#discipline-select').empty();
+        dataItem.disciplines.forEach(function (discipline){
+            console.log(discipline);
+            $('#discipline-select').append(
+                '<option value="' + discipline.id + '">' + discipline.title + '</option>'
+            );
+        });
+        $('#discipline-select').ready(function() {
+            $('.js-example-basic-multiple').select2();
+        });
+    }
+
+</script>

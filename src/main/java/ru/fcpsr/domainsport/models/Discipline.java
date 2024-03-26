@@ -8,7 +8,7 @@ import org.springframework.data.annotation.Id;
 @NoArgsConstructor
 public class Discipline {
     @Id
-    private int id;
+    private long id;
     private String title;
     private String description;
     private long sportId;

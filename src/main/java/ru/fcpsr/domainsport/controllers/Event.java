@@ -3,9 +3,7 @@ package ru.fcpsr.domainsport.controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.result.view.Rendering;
 import reactor.core.publisher.Mono;
 import ru.fcpsr.domainsport.dto.EkpDTO;
@@ -53,5 +51,11 @@ public class Event {
                         .modelAttribute("statusList", Status.values())
                         .build()
         );
+    }
+
+    @PostMapping("/add")
+    public Mono<Rendering> eventAdd(@ModelAttribute(name = "event") EkpDTO ekpDTO){
+        System.out.println(ekpDTO);
+        return Mono.just(Rendering.redirectTo("/event/add").build());
     }
 }

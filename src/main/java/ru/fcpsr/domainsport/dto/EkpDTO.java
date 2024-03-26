@@ -9,7 +9,9 @@ import ru.fcpsr.domainsport.models.Ekp;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -29,7 +31,7 @@ public class EkpDTO {
     private String category;
     private String location;
     private long sportId;
-    private Set<Long> disciplineIds = new HashSet<>();
+    private List<Long> disciplineIds = new ArrayList<>();
     private FilePart logo;
     private FilePart image;
     private float s;
