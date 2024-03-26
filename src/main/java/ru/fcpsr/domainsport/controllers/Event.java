@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.reactive.result.view.Rendering;
 import reactor.core.publisher.Mono;
+import ru.fcpsr.domainsport.dto.EkpDTO;
+import ru.fcpsr.domainsport.enums.Status;
 import ru.fcpsr.domainsport.services.EkpService;
 
 @Controller
@@ -39,5 +41,17 @@ public class Event {
                             .build()
             );
         });
+    }
+
+    @GetMapping("/add")
+    public Mono<Rendering> eventAddPage(){
+        return Mono.just(
+                Rendering.view("template")
+                        .modelAttribute("title","Event add")
+                        .modelAttribute("index","event-add-page")
+                        .modelAttribute("event",new EkpDTO())
+                        .modelAttribute("statusList", Status.values())
+                        .build()
+        );
     }
 }

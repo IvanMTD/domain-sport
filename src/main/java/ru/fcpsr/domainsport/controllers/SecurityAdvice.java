@@ -30,7 +30,7 @@ public class SecurityAdvice {
                 return userService.getUserByUsername(appUser.getUsername());
             }else{
                 OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-                return userService.getUserByUsername(oAuth2User.getAttribute("psuid"));
+                return userService.getUserByOauthId(oAuth2User.getAttribute("psuid"));
             }
         }
         return Mono.empty();

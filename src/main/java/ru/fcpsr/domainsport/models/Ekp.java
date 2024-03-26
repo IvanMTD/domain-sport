@@ -4,8 +4,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.format.annotation.DateTimeFormat;
+import ru.fcpsr.domainsport.enums.Status;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -13,16 +16,21 @@ public class Ekp {
     @Id
     private long id;
 
-    private int num;
+    private String ekp;
+    private String num;
     private String title;
+    private String description;
+    private Status status;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate beginning;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate ending;
-    private String access;
     private String category;
     private String location;
-    private String ekp;
+    private long sportId;
+    private Set<Long> disciplineIds = new HashSet<>();
+    private long logo;
+    private long image;
     private float s;
     private float d;
 }

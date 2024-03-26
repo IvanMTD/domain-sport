@@ -1,5 +1,15 @@
 <div class="container">
     <div class="row">
+        <div class="col-2">
+            <div class="d-grid p-2">
+                <a class="btn btn-outline-secondary" th:href="@{/event/add}">Добавить событие</a>
+            </div>
+        </div>
+        <div class="col">
+
+        </div>
+    </div>
+    <div class="row">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
@@ -80,7 +90,7 @@
                         </div>
                     </div>
                     <nav>
-                        <ul class="pagination pagination-separated">
+                        <ul class="pagination">
                             <li class="page-item">
                                 <a class="page-link" th:href="@{/event/all(page=${page - 1},size=${size})}"><i class="icon feather icon-chevron-left"></i></a>
                             </li>

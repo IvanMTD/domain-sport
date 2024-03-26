@@ -11,4 +11,6 @@ public interface AppUserRepository extends ReactiveCrudRepository<AppUser,Long> 
     Mono<UserDetails> findByEmail(String email);
 
     Mono<UserDetails> findByOauthId(String oauthId);
+
+    Mono<AppUser> findByOauthId(Object psuid);
 }

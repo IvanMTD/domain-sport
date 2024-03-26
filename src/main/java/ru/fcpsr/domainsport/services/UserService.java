@@ -14,17 +14,21 @@ import ru.fcpsr.domainsport.repositories.AppUserRepository;
 @RequiredArgsConstructor
 public class UserService implements ReactiveUserDetailsService{
 
-    private final AppUserRepository userRepository;
+    private final AppUserRepository repository;
 
     public Mono<AppUser> getUserByUsername(String username){
-        return userRepository.findAppUserByUsername(username);
+        return repository.findAppUserByUsername(username);
     }
 
     @Override
     public Mono<UserDetails> findByUsername(String username) {
-        return userRepository.findByUsername(username).flatMap(user -> {
+        return repository.findByUsername(username).flatMap(user -> {
             log.info("found user in data base: " + user.toString());
             return Mono.just(user);
         });
+    }
+
+    public Mono<AppUser> getUserByOauthId(Object psuid) {
+        return repository.findByOauthId(psuid);
     }
 }

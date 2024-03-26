@@ -43,7 +43,7 @@
 }
 
 .otstup_top{
-    margin-top: 1rem;
+    padding-top: 1rem;
 }
 
 .card-adres{
@@ -89,21 +89,134 @@
     color: #335e94;
     font-family: 'Roboto';
     font-weight: 400;
-    font-size: 1.4rem;
-    padding: 0.4rem 0 0.4rem 0;
+    font-size: 1.6rem;
+    padding: 0.4rem 0 1rem 0;
 }
-
+.main-title-niz{
+    color: #335e94;
+    font-family: 'Roboto';
+    font-weight: 400;
+    font-size: 1.6rem;
+    padding: 0.4rem 0 0rem 0;
+}
 .minbloc{
-    min-height: 25rem;
+    min-height: 18rem;
 }
 
 .v-otstup-big{
     padding-top: 2rem;
+}
+.v-otstup-veri-big{
+    padding-top: 9rem;
 }
 .v-otstup-min{
     padding-top: 1rem;
 }
 .table-width{
     max-width: 100px !important;
-    border: 1px solid red;
+
+}
+
+
+.truncate-text-4 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 7;
+  -webkit-box-orient: vertical;
+  line-height: 1.3em;
+  height: 9em;
+}
+
+
+.active > .page-link, .page-link.active {
+    background-color: #6f7071 !important;
+    border-color: #6f7071;
+}
+
+.page-link {
+  color: #6f7071;
+}
+
+.text-opisanie{
+    padding: 0;
+    margin: 0;
+    color: #2b2c2c;
+    font-family: 'Roboto';
+    font-weight: 300;
+    font-size: 1.1rem;
+    text-align: justify;
+}
+.text-zag{
+    color: #335e94;
+    font-family: 'Roboto';
+    font-weight: 400;
+    font-size: 1.4rem;
+    padding: 0.4rem 0 0.4rem 0;
+}
+.text-podzag{
+    color: #335e94;
+    font-family: 'Roboto';
+    font-weight: 400;
+    font-size: 1.1rem;
+    padding: 0;
+}
+.osn_spisok {
+    padding-left: 1rem;
+    list-style-type: none;
+    font-family: 'Roboto';
+    font-weight: 300;
+    font-size: 1.1rem;
+}
+.meropriyatie-zag{
+    color: #335e94;
+    font-family: 'Roboto';
+    font-weight: 500;
+    font-size: 1.7rem;
+    padding: 0.7rem 0 0 0;
+    margin: 0;
+}
+
+ .icon-circle {
+    border-radius: 10% !important;
+     box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+}
+.truncate-text-3 {
+  width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.left-text{
+    font-family: 'Roboto';
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0;
+    margin: 0;
+}
+.left-text-zag{
+    font-family: 'Roboto';
+    font-weight: 500;
+    font-size: 1.1rem;
+    padding: 0;
+    margin: 0;
+}
+.card-subtitle{
+    text-transform: uppercase;
+}
+.nav-link{
+    color: #222;
+}
+.nav-link:hover {
+  color: red;
+}
+.drop-login {
+color: #222;
+}
+.btn-link{
+    color: #222;
+}
+.btn-link:hover {
+  color: red;
 }

@@ -14,27 +14,27 @@ import java.time.format.DateTimeFormatter;
 @Service
 @RequiredArgsConstructor
 public class EkpService {
-    private final EkpRepository ekpRepository;
+    private final EkpRepository repository;
 
     public Flux<EkpDTO> getAll(){
-        return ekpRepository.findAll().flatMap(ekp -> Mono.just(new EkpDTO(ekp)));
+        return repository.findAll().flatMap(ekp -> Mono.just(new EkpDTO(ekp)));
     }
 
     public Flux<EkpDTO> getAll(Pageable pageable){
-        return ekpRepository.findAllBy(pageable).flatMap(ekp -> Mono.just(new EkpDTO(ekp)));
+        return repository.findAllBy(pageable).flatMap(ekp -> Mono.just(new EkpDTO(ekp)));
     }
 
     public Flux<EkpDTO> getByDate(String query) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate localDate = LocalDate.parse(query,formatter);
-        return ekpRepository.findAllWitchDate(localDate).flatMap(ekp -> Mono.just(new EkpDTO(ekp)));
+        return repository.findAllWitchDate(localDate).flatMap(ekp -> Mono.just(new EkpDTO(ekp)));
     }
 
     public Flux<EkpDTO> getByDate(LocalDate localDate) {
-        return ekpRepository.findAllWitchDate(localDate).flatMap(ekp -> Mono.just(new EkpDTO(ekp)));
+        return repository.findAllWitchDate(localDate).flatMap(ekp -> Mono.just(new EkpDTO(ekp)));
     }
 
     public Mono<Long> getCount(){
-        return ekpRepository.count();
+        return repository.count();
     }
 }
