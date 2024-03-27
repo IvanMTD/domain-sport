@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.format.annotation.DateTimeFormat;
+import ru.fcpsr.domainsport.dto.EkpDTO;
 import ru.fcpsr.domainsport.enums.Status;
 
 import java.time.LocalDate;
@@ -33,4 +34,20 @@ public class Ekp {
     private long image;
     private float s;
     private float d;
+
+    public Ekp(EkpDTO ekpDTO) {
+        setEkp(ekpDTO.getEkp());
+        setNum(ekpDTO.getNum());
+        setTitle(ekpDTO.getTitle());
+        setDescription(ekpDTO.getDescription());
+        setStatus(ekpDTO.getStatus());
+        setBeginning(ekpDTO.getBeginning());
+        setEnding(ekpDTO.getEnding());
+        setCategory(ekpDTO.getCategory());
+        setLocation(ekpDTO.getLocation());
+        setSportId(ekpDTO.getSportId());
+        setS(ekpDTO.getS());
+        setD(ekpDTO.getD());
+        this.disciplineIds.addAll(ekpDTO.getDisciplineIds());
+    }
 }

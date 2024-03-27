@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.logout.RedirectServerLogoutSuccessHandler;
+import org.springframework.security.web.server.csrf.ServerCsrfTokenRequestAttributeHandler;
 
 import java.net.URI;
 
@@ -21,11 +22,14 @@ import java.net.URI;
 public class Security {
     @Bean
     public SecurityWebFilterChain filterChain(ServerHttpSecurity http){
+        ServerCsrfTokenRequestAttributeHandler requestHandler = new ServerCsrfTokenRequestAttributeHandler();
+        requestHandler.setTokenFromMultipartDataEnabled(true);
 
         RedirectServerLogoutSuccessHandler handler = new RedirectServerLogoutSuccessHandler();
         handler.setLogoutSuccessUrl(URI.create("/"));
 
         return http
+                .csrf((csrf -> csrf.csrfTokenRequestHandler(requestHandler)))
                 .authorizeExchange(exchange -> exchange.anyExchange().permitAll())
                 .formLogin(loginSpec -> loginSpec.loginPage("/"))
                 .oauth2Login(Customizer.withDefaults())

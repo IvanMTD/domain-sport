@@ -24,6 +24,7 @@ public class Home {
                         .modelAttribute("title","Home page")
                         .modelAttribute("index","home-page")
                         .modelAttribute("ekpList", ekpService.getByDate(LocalDate.now()))
+                        .modelAttribute("eventList", ekpService.getAll().take(4))
                         .modelAttribute("currentDate", LocalDate.now().format(formatter))
                         .build()
         );

@@ -226,11 +226,11 @@ color: #222;
 }
 
 .select2-search__field {
-    height: 30px !important;
+    height: 40px !important;
 }
 
 .select2-selection__choice {
-    height: 30px !important; /* Измените это значение на высоту вашего поля поиска */
-    line-height: 30px !important; /* Это значение должно быть таким же, как высота, чтобы текст был вертикально выровнен */
+    height: 40px !important; /* Измените это значение на высоту вашего поля поиска */
+    line-height: 40px !important; /* Это значение должно быть таким же, как высота, чтобы текст был вертикально выровнен */
 }
 

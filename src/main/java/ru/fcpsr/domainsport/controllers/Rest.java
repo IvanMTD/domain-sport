@@ -49,6 +49,6 @@ public class Rest {
         }).collectList().flatMapMany(l -> {
             l = l.stream().sorted(Comparator.comparing(SportDTO::getTitle)).collect(Collectors.toList());
             return Flux.fromIterable(l);
-        }).flatMapSequential(Mono::just);
+        }).flatMapSequential(Mono::just).take(10);
     }
 }

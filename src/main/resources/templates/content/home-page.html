@@ -40,75 +40,17 @@
         <main class="pt-3">
             <h1 class="main-title">Главные спортивные события</h1>
             <div class="row row-cols-1 row-cols-lg-4 row-cols-md-2 g-4 mb-2 pt-2">
-                <div class="col">
+                <div class="col" th:each="event, e_stat : ${eventList}">
                     <div class="card">
                         <img alt="..." class="card-img-top" src="./img/anons-1.png">
                         <div class="card-body minbloc">
-                            <h6 class="card-subtitle mb-2 text-muted"> Парусный спорт</h6>
+                            <h6 class="card-subtitle mb-2 text-muted" th:text="${event.getTitle()}"></h6>
                             <ul class="list-inline date-card">
                                 <li class="list-inline-item"><i class="icon feather icon-calendar"></i></li>
-                                <li class="list-inline-item">4.02.2022 - 10.02.2022</li>
+                                <li class="list-inline-item"><span th:text="${event.getBeginningDate()} + ' - ' + ${event.getEndingDate()}"></span></li>
                             </ul>
-                            <h5 class="card-title">ФПС Армении приглашает россиян на регату на озере Севан</h5>
-                            <p class="card-text truncate-text-4">4-10 августа 2024 года на базе Армянской федерации
-                                парусного спорта в
-                                городе Севан на живописной акватории озера Севан пройдут традиционные соревнования
-                                «Мемориал И.С. Исакова» с участием классов Оптимист и Луч-мини.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card">
-                        <img alt="..." class="card-img-top" src="./img/anons-3.png">
-                        <div class="card-body minbloc">
-                            <h6 class="card-subtitle mb-2 text-muted">Радиоспорт</h6>
-
-                            <ul class="list-inline date-card">
-                                <li class="list-inline-item"><i class="icon feather icon-calendar"></i></li>
-                                <li class="list-inline-item">25.02.2022</li>
-                            </ul>
-
-                            <h5 class="card-title">Чемпионат Москвы по радиосвязи на КВ-телеграф</h5>
-                            <p class="card-text truncate-text-4">Дворовая территория (г. Москва, улица Тёплый Стан, дом
-                                15, корпус 6),
-                                по месту нахождения участников (г. Москва)</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card">
-                        <img alt="..." class="card-img-top" src="./img/anons-4.png">
-                        <div class="card-body minbloc">
-                            <h6 class="card-subtitle mb-2 text-muted">Парусный спорт</h6>
-                            <ul class="list-inline date-card">
-                                <li class="list-inline-item"><i class="icon feather icon-calendar"></i></li>
-                                <li class="list-inline-item">
-                                <li class="list-inline-item">2.02.2022 - 10.02.2022</li>
-                                </li>
-                            </ul>
-                            <h5 class="card-title">Имеретинский командный кубок</h5>
-                            <p class="card-text truncate-text-4">
-                                2-8 марта в яхтенном порту «Имеретинский» на базе парусного клуба Sail in Sochi пройдут
-                                межрегиональные соревнования по командным гонкам в классе Оптимист.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card">
-                        <img alt="..." class="card-img-top" src="./img/anons-2.png">
-                        <div class="card-body minbloc">
-                            <h6 class="card-subtitle mb-2 text-muted">Радиоспорт</h6>
-
-                            <ul class="list-inline date-card">
-                                <li class="list-inline-item"><i class="icon feather icon-calendar"></i></li>
-                                <li class="list-inline-item">25.02.2022</li>
-                            </ul>
-                            <h5 class="card-title">Крымская Весна-2024</h5>
-                            <p class="card-text truncate-text-4">В честь 10-ой годовщины референдума и принятия
-                                Республики Крым и города
-                                Севастополя в Российскую Федерацию РО СРР по Республике Крым и городу Севастополю
-                                организовало и проводит в период с 00:00 UTC 16 марта до 23:59 UTC 31 марта 2024 года
-                                Дни активности радиолюбителей Республики Крым (R6K) и города Севастополя (R6R).</p>
+                            <h5 class="card-title" th:text="${event.getCategory()}"></h5>
+                            <p th:utext="${event.getDescription()}"></p>
                         </div>
                     </div>
                 </div>
