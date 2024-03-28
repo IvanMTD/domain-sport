@@ -1,5 +1,6 @@
 <div class="container">
-    <form id="ekp-add-form" class="row" th:method="POST" th:action="@{/event/add}" th:object="${event}" enctype="multipart/form-data">
+    <form id="ekp-add-form" class="row" th:method="POST" th:action="@{/event/update}" th:object="${event}" enctype="multipart/form-data">
+        <input type="number" th:field="*{id}" hidden>
         <div class="col">
             <div class="row py-1">
                 <div class="col">
@@ -103,7 +104,7 @@
             <div class="row py-1">
                 <div class="col">
                     <div class="form-floating mb-1">
-                        <input type="text" class="form-control" id="search-form" list="datalist-form" placeholder="Поиск вида спорта ..." onchange="setupDiscipline()">
+                        <input type="text" class="form-control" id="search-form" list="datalist-form" placeholder="Поиск вида спорта ..." onchange="setupDiscipline()" th:field="*{sport.title}">
                         <label for="search-form">Вид спорта</label>
                         <input type="number" id="input-sport-id" th:field="*{sportId}" hidden>
                         <datalist id="datalist-form"></datalist>
@@ -115,20 +116,34 @@
                     <p th:errors="*{sportId}"></p>
                 </div>
             </div>
-            <div class="row py-1" id="discipline-message">
+            <div class="row py-1" id="discipline-message" hidden>
                 <div class="col">
                     <div class="form-floating mb-1">
-                        <input type="text" class="form-control" id="disciplines-terminator" placeholder="Сначала выберите вид спорта" disabled>
+                        <input type="text" class="form-control" id="disciplines-terminator" placeholder="Сменить дисциплину можно при повторном выборе вида спорта" disabled>
                         <label for="disciplines-terminator">Дисциплины</label>
                     </div>
                 </div>
             </div>
-            <div class="row py-1" id="discipline-div" hidden>
+            <div class="row py-1" id="discipline-div">
                 <div class="col">
                     <div class="form-floating mb-1">
                         <select type="text" class="form-control js-example-basic-multiple" multiple="multiple" id="discipline-select" th:field="*{disciplineIds}">
+                            <option th:each="discipline : ${event.getDisciplines()}" th:value="${discipline.getId()}" th:text="${discipline.getTitle()}"></option>
                         </select>
                         <label for="discipline-select"></label>
+                        <script th:inline="javascript">
+                            let options = []; // Массив для хранения элементов
+                            let select2JQobject = $('#discipline-select'); // JQuery объект вашего select2 элемента
+                            let disciplines = [[${event}]].sport.disciplines;
+
+                            disciplines.forEach(function (d){
+                                options.push(new Option(d.title, d.id, true, true));
+                            })
+
+                            // Добавляем элементы из массива options в select2
+                            select2JQobject.append(options).trigger('change');
+                            select2JQobject.select2();
+                        </script>
                     </div>
                 </div>
             </div>
@@ -154,7 +169,11 @@
                                     </div>
                                     <input type="file" id="file-logo" accept="image/*" class="d-none" th:field="*{logo}"/>
                                 </div>
-                                <div class="row text-center" id="logo-gallery"></div>
+                                <div class="row text-center" id="logo-gallery">
+                                    <div class="col pt-2" th:if="${event.getLogoId() != 0}">
+                                       <img th:src="@{/api/download(image=${event.getLogoId()})}" style="height: 100px">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <script>
@@ -235,7 +254,11 @@
                                 </div>
                                 <input type="file" id="file-image" accept="image/*" class="d-none" th:field="*{image}"/>
                             </div>
-                            <div class="row text-center" id="image-gallery"></div>
+                            <div class="row text-center" id="image-gallery">
+                                <div class="col pt-2" th:if="${event.getImageId() != 0}">
+                                    <img th:src="@{/api/download(image=${event.getImageId()})}" style="height: 100px">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <script>
@@ -312,7 +335,7 @@
             <div class="row py-1">
                 <div class="col">
                     <div class="d-grid py-2">
-                        <button class="btn btn-outline-secondary" type="submit">Сохранить</button>
+                        <button class="btn btn-outline-secondary" type="submit">Обновить</button>
                     </div>
                 </div>
             </div>
@@ -348,17 +371,6 @@
                         '<option data-item="' + JSON.stringify(item).replace(/"/g, '&quot;') + '" value="' + item.title + '">' + item.title + '</option>'
                     );
                 });
-
-                console.log(response)
-                console.log(searchQuery)
-
-                $('#discipline-select').select2();
-
-                /*if(searchQuery == ''){
-                    document.getElementById('discipline-message').hidden = false;
-                    document.getElementById('discipline-div').hidden = true;
-                    dataList.empty();
-                }*/
             }
         });
     });
@@ -387,5 +399,10 @@
         $('#discipline-select').ready(function() {
             $('.js-example-basic-multiple').select2();
         });
+
+        if(searchQuery == ''){
+            document.getElementById('discipline-message').hidden = false;
+            document.getElementById('discipline-div').hidden = true;
+        }
     }
 </script>

@@ -5,7 +5,9 @@ import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import ru.fcpsr.domainsport.dto.EkpDTO;
 import ru.fcpsr.domainsport.models.Discipline;
+import ru.fcpsr.domainsport.models.Ekp;
 import ru.fcpsr.domainsport.models.Sport;
 import ru.fcpsr.domainsport.repositories.SportRepository;
 
@@ -33,5 +35,9 @@ public class SportService {
             sport.addDiscipline(discipline);
             return repository.save(sport);
         });
+    }
+
+    public Mono<Sport> getByTitle(String title) {
+        return repository.findByTitle(title).defaultIfEmpty(new Sport());
     }
 }

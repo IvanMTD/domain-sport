@@ -2,6 +2,8 @@ package ru.fcpsr.domainsport.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultReactiveOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -9,6 +11,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import ru.fcpsr.domainsport.enums.Role;
 import ru.fcpsr.domainsport.models.AppUser;
 import ru.fcpsr.domainsport.repositories.AppUserRepository;
 
@@ -19,7 +22,7 @@ import java.time.format.DateTimeFormatter;
 @Service
 @RequiredArgsConstructor
 public class OAuth2UserService extends DefaultReactiveOAuth2UserService {
-    private final AppUserRepository repository;
+    private final AppUserRepository userRepository;
     private final PasswordEncoder encoder;
 
     @Override
@@ -33,7 +36,7 @@ public class OAuth2UserService extends DefaultReactiveOAuth2UserService {
             String avatarId = user.getAttribute("default_avatar_id");
             String oauthId = user.getAttribute("psuid");
 
-            return repository.findByOauthId(oauthId).flatMap(appUser -> {
+            return userRepository.findByOauthId(oauthId).flatMap(appUser -> {
                 log.info("user found in database: " + appUser.toString());
                 log.info("return current user " + user);
                 return Mono.just(user);
@@ -48,7 +51,8 @@ public class OAuth2UserService extends DefaultReactiveOAuth2UserService {
                 appUser.setPlacedAt(LocalDate.now());
                 appUser.setAvatarId(avatarId);
                 appUser.setOauthId(oauthId);
-                return repository.save(appUser).flatMap(savedUser -> {
+                appUser.setRole(Role.USER);
+                return userRepository.save(appUser).flatMap(savedUser -> {
                     log.info("new user saved in data base: " + savedUser.toString());
                     return Mono.just(user);
                 });

@@ -1,5 +1,5 @@
 <div class="container">
-    <div class="row">
+    <div class="row" th:if="${manager} or ${admin}">
         <div class="col-2">
             <div class="d-grid p-2">
                 <a class="btn btn-outline-secondary" th:href="@{/event/add}">Добавить событие</a>
@@ -30,14 +30,14 @@
                         <div class="col-2">
                             <small>Категории соревнования</small>
                         </div>
-                        <div class="col-3">
+                        <div class="col-2">
                             <small>Место проведения</small>
                         </div>
-                        <div class="col-2">
+                        <div class="col-3">
                             <small>Детали</small>
                         </div>
                     </div>
-                    <div class="row" th:each="event, stat : ${events}" style="height: 75px">
+                    <div class="row" th:each="event, stat : ${events}" style="min-height: 100px; max-height: 100%">
                         <div class="row bg-light" th:if="${stat.index % 2 == 0}">
                             <div class="col-1">
                                 <span th:text="${event.getNum()}"></span>
@@ -56,14 +56,39 @@
                             <div class="col-2">
                                 <span th:text="${event.getCategory()}"></span>
                             </div>
-                            <div class="col-3">
+                            <div class="col-2">
                                 <span th:text="${event.getLocation()}"></span>
                             </div>
-                            <div class="col-2 d-flex align-items-center" style="height: 100%">
-                                <button type="button" class="btn btn-outline-secondary">Подробнее</button>
+                            <div class="col-3 d-flex align-items-center" style="height: 100%">
+                                <div class="btn-group" role="group" aria-label="Basic outlined example">
+                                    <a th:href="@{/event/show(eventId=${event.getId()})}" class="btn btn-outline-secondary">Подробнее</a>
+                                    <a th:href="@{/event/edit(eventId=${event.getId()})}" class="btn btn-outline-secondary" th:if="${manager} or ${admin}">Редактор</a>
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#delete-modal" th:if="${manager} or ${admin}">
+                                        Удалить
+                                    </button>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="delete-modal" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Внимание!</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Вы собираетесь удалить мероприятие! Вы уверены?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                                    <a th:href="@{/event/delete(eventId=${event.getId()})}" class="btn btn-primary">Подтвердить</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="row" th:if="${stat.index % 2 != 0}" style="height: 75px">
+                        <div class="row" th:if="${stat.index % 2 != 0}" style="min-height: 100px; max-height: 100%">
                             <div class="col-1">
                                 <span th:text="${event.getNum()}"></span>
                             </div>
@@ -81,11 +106,36 @@
                             <div class="col-2">
                                 <span th:text="${event.getCategory()}"></span>
                             </div>
-                            <div class="col-3">
+                            <div class="col-2">
                                 <span th:text="${event.getLocation()}"></span>
                             </div>
-                            <div class="col-2 d-flex align-items-center" style="height: 100%">
-                                <button type="button" class="btn btn-outline-secondary">Подробнее</button>
+                            <div class="col-3 d-flex align-items-center" style="height: 100%">
+                                <div class="btn-group" role="group" aria-label="Basic outlined example">
+                                    <a th:href="@{/event/show(eventId=${event.getId()})}" class="btn btn-outline-secondary">Подробнее</a>
+                                    <a th:href="@{/event/edit(eventId=${event.getId()})}" class="btn btn-outline-secondary" th:if="${manager} or ${admin}">Редактор</a>
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#delete-modal" th:if="${manager} or ${admin}">
+                                        Удалить
+                                    </button>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="delete-modal" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Внимание!</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Вы собираетесь удалить мероприятие! Вы уверены?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                                    <a th:href="@{/event/delete(eventId=${event.getId()})}" class="btn btn-primary">Подтвердить</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

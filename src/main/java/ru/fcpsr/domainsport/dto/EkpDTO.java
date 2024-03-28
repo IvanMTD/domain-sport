@@ -36,10 +36,16 @@ public class EkpDTO {
     private String category;
     @NotBlank(message = "Если не знаете полного адреса, укажите город проведения мероприятия")
     private String location;
+    @NotBlank(message = "Укажите проводящую организацию")
+    private String organization;
+    private SportDTO sport;
     @Min(value = 1, message = "Укажите вид спорта")
     private long sportId;
     private List<Long> disciplineIds = new ArrayList<>();
+    private List<DisciplineDTO> disciplines = new ArrayList<>();
+    private long logoId;
     private FilePart logo;
+    private long imageId;
     private FilePart image;
     private float s;
     private float d;
@@ -54,6 +60,12 @@ public class EkpDTO {
         setStatus(ekp.getStatus());
         setBeginning(ekp.getBeginning());
         setEnding(ekp.getEnding());
+        setCategory(ekp.getCategory());
+        setLocation(ekp.getLocation());
+        setOrganization(ekp.getOrganization());
+        setSportId(ekp.getSportId());
+        setLogoId(ekp.getLogo());
+        setImageId(ekp.getImage());
         setS(ekp.getS());
         setD(ekp.getD());
         setPresent("islands#blueGovernmentIcon");

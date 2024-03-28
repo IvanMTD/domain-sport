@@ -28,6 +28,7 @@ public class Ekp {
     private LocalDate ending;
     private String category;
     private String location;
+    private String organization;
     private long sportId;
     private Set<Long> disciplineIds = new HashSet<>();
     private long logo;
@@ -45,6 +46,24 @@ public class Ekp {
         setEnding(ekpDTO.getEnding());
         setCategory(ekpDTO.getCategory());
         setLocation(ekpDTO.getLocation());
+        setOrganization(ekpDTO.getOrganization());
+        setSportId(ekpDTO.getSportId());
+        setS(ekpDTO.getS());
+        setD(ekpDTO.getD());
+        this.disciplineIds.addAll(ekpDTO.getDisciplineIds());
+    }
+
+    public void update(EkpDTO ekpDTO) {
+        setEkp(ekpDTO.getEkp());
+        setNum(ekpDTO.getNum());
+        setTitle(ekpDTO.getTitle());
+        setDescription(ekpDTO.getDescription());
+        setStatus(ekpDTO.getStatus());
+        setBeginning(ekpDTO.getBeginning());
+        setEnding(ekpDTO.getEnding());
+        setCategory(ekpDTO.getCategory());
+        setLocation(ekpDTO.getLocation());
+        setOrganization(ekpDTO.getOrganization());
         setSportId(ekpDTO.getSportId());
         setS(ekpDTO.getS());
         setD(ekpDTO.getD());

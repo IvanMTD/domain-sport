@@ -1,31 +1,93 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-3 col-sm-12">
-            <label class="form-label" for="date-picker">Дата</label>
-            <input type="date" class="form-control" id="date-picker" onchange="updateByDate()">
-            <script th:inline="javascript">
-                document.getElementById('date-picker').value = [[${currentDate}]];
-            </script>
-            <label class="form-label" for="exampleDataList1">Вид спорта</label>
-            <input class="form-control" id="exampleDataList1" list="datalistOptions1" placeholder="Type to search...">
-            <datalist id="datalistOptions1">
-                <option value="Фристайл">
-                <option value="Футбол">
-                <option value="Хоккей">
-                <option value="Радиоспорт">
-            </datalist>
-            <label class="form-label" for="exampleDataList2">Город</label>
-            <input class="form-control" id="exampleDataList2" list="datalistOptions2" placeholder="Type to search...">
-            <datalist id="datalistOptions2">
-                <option value="Фристайл">
-                <option value="Футбол">
-                <option value="Хоккей">
-                <option value="Радиоспорт">
+            <div class="row py-2">
+                <div class="col">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="switch-period" onchange="periodControl()">
+                        <label class="form-check-label" for="switch-period">Период</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="only-date">
+                <div class="col">
+                    <label class="form-label" for="date-picker">Дата</label>
+                    <input type="date" class="form-control" id="date-picker">
+                    <script th:inline="javascript">
+                        document.getElementById('date-picker').value = [[${currentDate}]];
+                    </script>
+                </div>
+            </div>
+            <div class="row" id="period-date" hidden>
+                <div class="col">
+                    <div class="row">
+                        <div class="col py-1">
+                            <p>Укажите период</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <input type="date" class="form-control" id="date-picker-beginning">
+                        </div>
+                        <div class="col-6">
+                            <input type="date" class="form-control" id="date-picker-ending">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <label class="form-label" for="input-sport">Вид спорта</label>
+            <input type="text" class="form-control" id="input-sport" list="sport-datalist" placeholder="Введите название ...">
+            <datalist id="sport-datalist">
+
             </datalist>
             <div class="btn-group pt-3" role="group">
-                <button class="btn btn-secondary" type="button">Показать</button>
-                <button class="btn btn-outline-secondary" type="button">Сбросить</button>
+                <button class="btn btn-secondary" type="button" onclick="showEkp()">Показать</button>
+                <button class="btn btn-outline-secondary" type="button" onclick="clearFields()">Сбросить</button>
             </div>
+            <script th:inline="javascript">
+                $('#input-sport').on('input', function() {
+                    let searchQuery = this.value;
+
+                    $.ajax({
+                        url: '/api/get/sports',
+                        type: 'get',
+                        data: {
+                            query: searchQuery
+                        },
+                        success: function(response) {
+                            let dataList = $('#sport-datalist');
+                            dataList.empty();
+
+                            response.forEach(function(item) {
+                                dataList.append(
+                                    '<option data-item="' + JSON.stringify(item).replace(/"/g, '&quot;') + '" value="' + item.title + '">' + item.title + '</option>'
+                                );
+                            });
+                        }
+                    });
+                });
+
+                function periodControl(){
+                    let sw = document.getElementById('switch-period');
+                    if(sw.checked){
+                        document.getElementById('only-date').hidden = true;
+                        document.getElementById('period-date').hidden = false;
+                        document.getElementById('date-picker').value = null;
+                    }else{
+                        document.getElementById('only-date').hidden = false;
+                        document.getElementById('period-date').hidden = true;
+                        document.getElementById('date-picker-beginning').value = null;
+                        document.getElementById('date-picker-ending').value = null;
+                    }
+                }
+
+                function clearFields(){
+                    $('#date-picker').val(null);
+                    $('#date-picker-beginning').val(null);
+                    $('#date-picker-ending').val(null);
+                    $('#input-sport').val(null);
+                }
+            </script>
         </div>
         <div class="col-lg-9 col-sm-12">
             <div class="row">
@@ -41,18 +103,45 @@
             <h1 class="main-title">Главные спортивные события</h1>
             <div class="row row-cols-1 row-cols-lg-4 row-cols-md-2 g-4 mb-2 pt-2">
                 <div class="col" th:each="event, e_stat : ${eventList}">
-                    <div class="card">
-                        <img alt="..." class="card-img-top" src="./img/anons-1.png">
-                        <div class="card-body minbloc">
-                            <h6 class="card-subtitle mb-2 text-muted" th:text="${event.getTitle()}"></h6>
-                            <ul class="list-inline date-card">
-                                <li class="list-inline-item"><i class="icon feather icon-calendar"></i></li>
-                                <li class="list-inline-item"><span th:text="${event.getBeginningDate()} + ' - ' + ${event.getEndingDate()}"></span></li>
-                            </ul>
-                            <h5 class="card-title" th:text="${event.getCategory()}"></h5>
-                            <p th:utext="${event.getDescription()}"></p>
+                    <a th:href="@{/event/show(eventId=${event.getId()})}">
+                        <div class="card">
+                            <img alt="header" class="card-img-top" th:src="@{/api/download(image=${event.getImageId()})}" style="object-fit: cover; height: 150px" onerror="this.onerror=null; this.src='/img/default-image.webp'">
+                            <div class="card-body minbloc">
+                                <div class="row" style="height: 40px">
+                                    <div class="cik">
+                                        <h6 class="card-subtitle mb-2 text-muted" th:text="${event.getTitle()}"></h6>
+                                    </div>
+                                </div>
+                                <div class="row" style="height: 40px">
+                                    <div class="col">
+                                        <ul class="list-inline date-card">
+                                            <li class="list-inline-item"><i class="icon feather icon-calendar"></i></li>
+                                            <li class="list-inline-item"><span th:text="${event.getBeginningDate()} + ' - ' + ${event.getEndingDate()}"></span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="row" style="height: 40px">
+                                    <div class="col">
+                                        <h5 class="card-title" th:text="${event.getCategory()}"></h5>
+                                    </div>
+                                </div>
+                                <!--<div class="row" style="max-height: 150px; overflow: hidden">
+                                    <div class="col">
+                                        <p th:utext="${event.getDescription()}"></p>
+                                    </div>
+                                </div>-->
+                                <hr>
+                                <div class="row" style="height: 100px">
+                                    <div class="col">
+                                        <small th:text="'#' + ${event.getSport().getTitle()}"></small>
+                                        <p th:each="d : ${event.getSport().getDisciplines()}">
+                                            <small th:text="${d.getTitle()}"></small>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
         </main>
@@ -127,69 +216,119 @@
         map.setBounds(bounds, {checkZoomRange: true});
     }
 
+    function showEkp(){
+        let sportName = $('#input-sport').val();
+        let onlyDate = $('#date-picker').val();
+        let beginningDate = $('#date-picker-beginning').val();
+        let endingDate = $('#date-picker-ending').val();
+
+        if(sportName !== ''){
+            if(onlyDate !== ''){
+                $.ajax({
+                    url: '/api/get/ekp/by/sport/date',
+                    type: 'get',
+                    data: {
+                        sport: sportName,
+                        date: onlyDate
+                    },
+                    success: function (ekpList) {
+                        updateByEkpData(ekpList);
+                    }
+                });
+            }else{
+                $.ajax({
+                    url: '/api/get/ekp/by/sport/period',
+                    type: 'get',
+                    data: {
+                        sport: sportName,
+                        begin: beginningDate,
+                        end: endingDate
+                    },
+                    success: function (ekpList) {
+                        updateByEkpData(ekpList);
+                    }
+                });
+            }
+        }else{
+            objectManager.removeAll();
+            map.setCenter([coords_s,coords_d]);
+            map.setZoom(5);
+        }
+    }
+
     function updateByDate() {
         let date = document.getElementById('date-picker').value;
         $.ajax({
-            url: '/api/get/date',
+            url: '/api/get/ekp/by/date',
             type: 'get',
             data: {
                 query: date
             },
             success: function (ekpList) {
-                objectManager.removeAll();
-                let features = [];
-                for (let i = 0; i < ekpList.length; i++) {
-
-                    let detail = '' +
-                        '<div class="card" style="width: 18rem;">\n' +
-                        '  <img alt="..." class="card-img-top" src="/img/anons-1.png">\n' +
-                        '  <div class="card-body">\n' +
-                        '    <h5 class="card-title">' + ekpList[i].title + '</h5>\n' +
-                        '    <p>ЕКП № ' + ekpList[i].ekp + '</p>' +
-                        '    <small class="card-text"><i class="bi bi-calendar3"></i>' + ekpList[i].beginningDate + ' - ' + ekpList[i].endingDate + '</p>\n' +
-                        '    <a href="#" class="btn btn-link">Карточка соревнования</a>\n' +
-                        '  </div>\n' +
-                        '</div>'
-
-                    features[i] = {
-                        type: "Feature",
-                        id: i,
-                        geometry: {
-                            type: "Point",
-                            coordinates: [ekpList[i].s, ekpList[i].d]
-                        },
-                        properties: {
-                            balloonContent: detail
-                        },
-                        options: {
-                            preset: ekpList[i].present
-                        }
-                    }
-                }
-
-                let collection = {
-                    type: "FeatureCollection",
-                    features: features
-                };
-                // Object Manager
-                objectManager = new ymaps.ObjectManager({
-                    clusterize: true,
-                    /*clusterIconColor: 'red'*/
-                });
-                objectManager.add(collection);
-                map.geoObjects.add(objectManager);
-
-                let bounds = objectManager.getBounds();
-                map.setBounds(bounds, {checkZoomRange: true, duration: 2000});
+                updateByEkpData(ekpList);
             }
         });
     }
 
-    function getZoomFromBounds(bounds) {
-        var worldWidth = 40075017; // Длина экватора в метрах
-        var mapWidth = map.container.getSize()[0];
-        var distance = ymaps.coordSystem.geo.getDistance(bounds[0], bounds[1]);
-        var zoom = Math.log2(worldWidth * mapWidth / distance / 256);
-        return Math.round(zoom);
+    function showEkpOnMapBySport(){
+        let request = $('#input-sport').val();
+        $.ajax({
+            url: '/api/get/ekp/by/sport',
+            type: 'get',
+            data: {
+                query: request
+            },
+            success: function (ekpList) {
+                updateByEkpData(ekpList);
+            }
+        });
+    }
+
+    function updateByEkpData(ekpList){
+        objectManager.removeAll();
+        let features = [];
+        for (let i = 0; i < ekpList.length; i++) {
+
+            let detail = '' +
+                '<div class="card" style="width: 18rem;">\n' +
+                '  <img alt="..." class="card-img-top" src="/img/anons-1.png">\n' +
+                '  <div class="card-body">\n' +
+                '    <h5 class="card-title">' + ekpList[i].title + '</h5>\n' +
+                '    <p>ЕКП № ' + ekpList[i].ekp + '</p>' +
+                '    <small class="card-text"><i class="bi bi-calendar3"></i>' + ekpList[i].beginningDate + ' - ' + ekpList[i].endingDate + '</p>\n' +
+                '    <a href="#" class="btn btn-link">Карточка соревнования</a>\n' +
+                '  </div>\n' +
+                '</div>'
+
+            features[i] = {
+                type: "Feature",
+                id: i,
+                geometry: {
+                    type: "Point",
+                    coordinates: [ekpList[i].s, ekpList[i].d]
+                },
+                properties: {
+                    balloonContent: detail
+                },
+                options: {
+                    preset: ekpList[i].present
+                }
+            }
+        }
+
+        let collection = {
+            type: "FeatureCollection",
+            features: features
+        };
+        // Object Manager
+        objectManager = new ymaps.ObjectManager({
+            clusterize: true,
+            /*clusterIconColor: 'red'*/
+        });
+        objectManager.add(collection);
+        map.geoObjects.add(objectManager);
+
+        let bounds = objectManager.getBounds();
+        map.setBounds(bounds, {checkZoomRange: true, duration: 2000});
     }
 </script>

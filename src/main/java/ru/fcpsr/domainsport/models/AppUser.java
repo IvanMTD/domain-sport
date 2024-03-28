@@ -3,12 +3,17 @@ package ru.fcpsr.domainsport.models;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import ru.fcpsr.domainsport.enums.Role;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -38,6 +43,7 @@ public class AppUser implements UserDetails {
     private LocalDate placedAt;
     private String avatarId;
     private String oauthId;
+    private Role role;
 
     public String getFullName(){
         return lastname + " " + firstname;
@@ -45,7 +51,7 @@ public class AppUser implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return new HashSet<>();
+        return List.of(new SimpleGrantedAuthority(getRole().toString()));
     }
 
     @Override

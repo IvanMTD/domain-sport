@@ -13,7 +13,7 @@ import ru.fcpsr.domainsport.repositories.MinioFileRepository;
 @Service
 @RequiredArgsConstructor
 public class MinioFileService {
-    private final MinioFileRepository fileRepository;
+    private final MinioFileRepository repository;
 
     public Mono<MinioFile> save(MinioResponse response, long mid){
         if(response.getResponse() != null) {
@@ -27,25 +27,22 @@ public class MinioFileService {
             minioFile.setMinioUrl(response.getResponse().region() != null ? response.getResponse().region() : "no url");
             minioFile.setFileSize(response.getFileSize());
             minioFile.setMid(mid);
-            return fileRepository.save(minioFile);
+            return repository.save(minioFile);
         }else{
             return Mono.just(new MinioFile());
         }
     }
 
-    public Mono<MinioFile> findById(int id){
-        return fileRepository.findById(id);
+    public Mono<MinioFile> findById(long id){
+        return repository.findById(id);
     }
 
     public Flux<MinioFile> findAll(){
-        return fileRepository.findAll();
+        return repository.findAll();
     }
 
-    public Mono<MinioFile> deleteById(int id){
-        return fileRepository.findById(id).flatMap(minioFile -> fileRepository.deleteById(id).then(Mono.just(minioFile)));
-    }
-
-    public Mono<MinioFile> deletePostData(int dataId) {
-        return deleteById(dataId);
+    public Mono<MinioFile> deleteById(long id){
+        return repository.findById(id)
+                .flatMap(minioFile -> repository.delete(minioFile).then(Mono.just(minioFile)));
     }
 }
