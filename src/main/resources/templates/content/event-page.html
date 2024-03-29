@@ -13,7 +13,7 @@
                                     <img alt="logo" class="wd-140 icon-circle" th:src="@{/api/download(image=${event.getLogoId()})}" style="object-fit: cover; width: 140px; height: 140px" onerror="this.onerror=null; this.src='/img/default-logo.webp'">
                                     <h1 class="v-otstup-niz  meropriyatie-zag" th:text="${event.getTitle()}"></h1>
                                 </div>
-                                <div class="d-none d-md-block" th:if="${manager} or ${admin}" style="width: 50%">
+                                <div class="d-none d-md-block" th:if="${manager} or ${admin}">
                                     <a th:href="@{/event/edit(eventId=${event.getId()})}" class="btn btn-secondary btn-icon-text">
                                         <i class="icon feather icon-edit"></i> Редактировать информацию
                                     </a>
