@@ -31,15 +31,15 @@ import java.util.Objects;
 
 @Slf4j
 @Service
-//@PropertySource("classpath:application.properties")
+@PropertySource("classpath:application.properties")
 public class MinioService {
     private final String bucket;
     private final MinioClient minioClient;
 
     @SneakyThrows
-    public MinioService(MinioClient minioClient) { // @Value("${minio.bucket}") String bucket
+    public MinioService(MinioClient minioClient, @Value("${minio.bucket}") String bucket) {
         this.minioClient = minioClient;
-        this.bucket = "domain-sport-upload";
+        this.bucket = bucket;
         if (!this.minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket).build())) {
             this.minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
         }

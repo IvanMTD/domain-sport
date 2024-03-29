@@ -107,12 +107,12 @@
                         <div class="card">
                             <img alt="header" class="card-img-top" th:src="@{/api/download(image=${event.getImageId()})}" style="object-fit: cover; height: 150px" onerror="this.onerror=null; this.src='/img/default-image.webp'">
                             <div class="card-body minbloc">
-                                <div class="row" style="height: 40px">
+                                <div class="row">
                                     <div class="cik">
                                         <h6 class="card-subtitle mb-2 text-muted" th:text="${event.getTitle()}"></h6>
                                     </div>
                                 </div>
-                                <div class="row" style="height: 40px">
+                                <div class="row">
                                     <div class="col">
                                         <ul class="list-inline date-card">
                                             <li class="list-inline-item"><i class="icon feather icon-calendar"></i></li>
@@ -120,7 +120,7 @@
                                         </ul>
                                     </div>
                                 </div>
-                                <div class="row" style="height: 40px">
+                                <div class="row">
                                     <div class="col">
                                         <h5 class="card-title" th:text="${event.getCategory()}"></h5>
                                     </div>
@@ -131,12 +131,9 @@
                                     </div>
                                 </div>-->
                                 <hr>
-                                <div class="row" style="height: 100px">
+                                <div class="row">
                                     <div class="col">
                                         <small th:text="'#' + ${event.getSport().getTitle()}"></small>
-                                        <p th:each="d : ${event.getSport().getDisciplines()}">
-                                            <small th:text="${d.getTitle()}"></small>
-                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -176,13 +173,54 @@
         for (let i = 0; i < ekpList.length; i++) {
             let detail = '' +
                 '<div class="card" style="width: 18rem;">\n' +
-                '  <img alt="..." class="card-img-top" src="/img/anons-1.png">\n' +
-                '  <div class="card-body">\n' +
-                '    <h5 class="card-title">' + ekpList[i].title + '</h5>\n' +
-                '    <p>ЕКП № ' + ekpList[i].ekp + '</p>' +
-                '    <small class="card-text"><i class="bi bi-calendar3"></i>' + ekpList[i].beginningDate + ' - ' + ekpList[i].endingDate + '</p>\n' +
-                '    <a href="#" class="btn btn-link">Карточка соревнования</a>\n' +
-                '  </div>\n' +
+                '   <img alt="header" class="card-img-top" src="/api/download?image=' + ekpList[i].imageId + '" style="object-fit: cover; height: 150px" onerror="this.onerror=null; this.src=\'/img/default-image.webp\'">\n' +
+                '   <div class="card-body">\n' +
+                '       <div class="row">' +
+                '           <div class="col">' +
+                '               <div class="row">' +
+                '                   <div class="col">' +
+                '                       <h5 class="card-title">' + ekpList[i].title + '</h5>' +
+                '                   </div>' +
+                '               </div>' +
+                '           </div>' +
+                '       </div>' +
+                '       <div class="row">' +
+                '           <div class="col">' +
+                '               <div class="row">' +
+                '                   <div class="col">' +
+                '                       <p>№ В ЕКП ' + ekpList[i].ekp + '</p>' +
+                '                   </div>' +
+                '               </div>' +
+                '           </div>' +
+                '       </div>' +
+                '       <div class="row">' +
+                '           <div class="col">' +
+                '               <div class="row">' +
+                '                   <div class="col">' +
+                '                       <small class="card-text"><i class="bi bi-calendar3"></i>' + ekpList[i].beginningDate + ' - ' + ekpList[i].endingDate + '</p>\n' +
+                '                   </div>' +
+                '               </div>' +
+                '           </div>' +
+                '       </div>' +
+                '       <div class="row">' +
+                '           <div class="col">' +
+                '               <div class="row">' +
+                '                   <div class="col">' +
+                '                       <p>' + ekpList[i].category + '</p>' +
+                '                   </div>' +
+                '               </div>' +
+                '           </div>' +
+                '       </div>' +
+                '       <div class="row">' +
+                '           <div class="col">' +
+                '               <div class="row">' +
+                '                   <div class="col">' +
+                '       <a href="/event/show?eventId=' + ekpList[i].id + '" class="btn btn-link">Карточка соревнования</a>\n' +
+                '                   </div>' +
+                '               </div>' +
+                '           </div>' +
+                '       </div>' +
+                '   </div>\n' +
                 '</div>'
             features[i] = {
                 type: "Feature",

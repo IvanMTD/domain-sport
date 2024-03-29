@@ -33,7 +33,7 @@ public class Security {
 
         return http
                 .csrf((csrf -> csrf.csrfTokenRequestHandler(requestHandler)))
-                .exceptionHandling((exception) -> exception
+                /*.exceptionHandling((exception) -> exception
                         .authenticationEntryPoint((swe, e) -> Mono.fromRunnable(() -> {
                             ServerHttpResponse response = swe.getResponse();
                             response.setStatusCode(HttpStatus.SEE_OTHER);
@@ -44,7 +44,7 @@ public class Security {
                             response.setStatusCode(HttpStatus.SEE_OTHER);
                             response.getHeaders().setLocation(URI.create("/error"));
                         }))
-                )
+                )*/
                 .authorizeExchange(exchange -> exchange.anyExchange().permitAll())
                 .formLogin(loginSpec -> loginSpec.loginPage("/"))
                 .oauth2Login(Customizer.withDefaults())
