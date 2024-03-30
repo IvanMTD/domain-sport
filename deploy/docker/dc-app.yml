@@ -1,0 +1,30 @@
+services:
+  app:
+    build:
+      context: ../../
+      dockerfile: ./deploy/docker/Dockerfile
+    restart: unless-stopped
+    ports:
+      - '8085:8080'
+    volumes:
+      - image_decoder:/src/main/resources/static/img
+ #     - shared_data:/src/main/resources/saved
+  #    - shared_result:/src/main/resources/result
+    environment:
+      - APP_NAME=${APP_NAME}
+      - APP_ENV=${APP_ENV}
+      - APP_TIMEZONE=${TIMEZONE}
+      - DB_CONNECTION=${DB_CONNECTION}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+
+networks:
+  default:
+    name: ${DEPLOY_NETWORK_NAME}
+    external: true
+
+volumes:
+  image_decoder:

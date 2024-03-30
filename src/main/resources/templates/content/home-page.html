@@ -5,13 +5,13 @@
                 <div class="col">
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" role="switch" id="switch-period" onchange="periodControl()">
-                        <label class="form-check-label" for="switch-period">Период</label>
+                        <label class="form-check-label" for="switch-period">Искать периодом</label>
                     </div>
                 </div>
             </div>
             <div class="row" id="only-date">
                 <div class="col">
-                    <label class="form-label" for="date-picker">Дата</label>
+                    <label class="form-label" for="date-picker">Искать в пределах даты</label>
                     <input type="date" class="form-control" id="date-picker">
                     <script th:inline="javascript">
                         document.getElementById('date-picker').value = [[${currentDate}]];
@@ -105,7 +105,13 @@
                 <div class="col" th:each="event, e_stat : ${eventList}">
                     <a th:href="@{/event/show(eventId=${event.getId()})}">
                         <div class="card">
-                            <img alt="header" class="card-img-top" th:src="@{/api/download(image=${event.getImageId()})}" style="object-fit: cover; height: 150px" onerror="this.onerror=null; this.src='/img/default-image.webp'">
+                            <img alt="header" class="card-img-top" th:src="@{/api/download(image=${event.getImageId()})}" style="object-fit: cover; height: 150px" onerror="setHomeDefault(this,'image')">
+                            <script th:inline="javascript">
+                                function setHomeDefault(tag, param){
+                                    tag.onerror=null;
+                                    tag.src='/img/default-' + param + '-' + [[${event}]].sportId + '.webp'
+                                }
+                            </script>
                             <div class="card-body minbloc">
                                 <div class="row">
                                     <div class="cik">

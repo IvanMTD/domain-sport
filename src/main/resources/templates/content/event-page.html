@@ -6,11 +6,11 @@
                     <div class="card">
                         <div class="position-relative">
                             <figure class="overflow-hidden mb-0 d-flex justify-content-center">
-                                <img alt="header" th:src="@{/api/download(image=${event.getImageId()})}" class="rounded-top img-fluid" style="object-fit: cover; width: 100%; height: 272px" onerror="this.onerror=null; this.src='/img/default-image.webp'">
+                                <img alt="header" th:src="@{/api/download(image=${event.getImageId()})}" class="rounded-top img-fluid" style="object-fit: cover; width: 100%; height: 272px" onerror="setEventDefault(this,'image')">
                             </figure>
                             <div class="d-flex justify-content-between align-items-center position-absolute top-90 w-100 px-2 px-md-4 mt-n4">
                                 <div>
-                                    <img alt="logo" class="wd-140 icon-circle" th:src="@{/api/download(image=${event.getLogoId()})}" style="object-fit: cover; width: 140px; height: 140px" onerror="this.onerror=null; this.src='/img/default-logo.webp'">
+                                    <img alt="logo" class="wd-140 icon-circle" th:src="@{/api/download(image=${event.getLogoId()})}" style="object-fit: cover; width: 140px; height: 140px" onerror="setEventDefault(this,'logo')">
                                     <h1 class="v-otstup-niz  meropriyatie-zag" th:text="${event.getTitle()}"></h1>
                                 </div>
                                 <div class="d-none d-md-block" th:if="${manager} or ${admin}">
@@ -106,3 +106,9 @@
         </div>
     </div>
 </main>
+<script th:inline="javascript">
+    function setEventDefault(tag, param){
+        tag.onerror=null;
+        tag.src='/img/default-' + param + '-' + [[${event}]].sportId + '.webp'
+    }
+</script>
