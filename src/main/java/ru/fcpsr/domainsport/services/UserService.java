@@ -28,4 +28,8 @@ public class UserService implements ReactiveUserDetailsService{
     public Mono<AppUser> getUserByOauthId(Object psuid) {
         return userRepository.findByOauthId(psuid);
     }
+
+    public Mono<AppUser> getUserById(long id) {
+        return userRepository.findById(id);
+    }
 }

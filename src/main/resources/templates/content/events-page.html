@@ -1,12 +1,22 @@
 <div class="container">
-    <div class="row" th:if="${manager} or ${admin}">
-        <div class="col-2">
-            <div class="d-grid p-2">
+    <div class="row">
+        <div class="col-2" th:if="${manager} or ${admin}">
+            <div class="d-grid py-2">
                 <a class="btn btn-outline-secondary" th:href="@{/event/add}">Добавить событие</a>
             </div>
         </div>
         <div class="col">
-
+            <div class="row">
+                <div class="col py-2">
+                    <input type="text" class="form-control" id="sport-search" list="sport-data-list" placeholder="Поиск вида спорта">
+                    <datalist id="sport-data-list"></datalist>
+                </div>
+                <div class="col-2 float-end">
+                    <div class="d-grid py-2">
+                        <button class="btn btn-outline-secondary" type="button" onclick="showEkpBySport()">Показать</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row">
@@ -28,7 +38,7 @@
                             <small>Название соревнования</small>
                         </div>
                         <div class="col-2">
-                            <small>Категории соревнования</small>
+                            <small>Вид спорта и категории</small>
                         </div>
                         <div class="col-2">
                             <small>Место проведения</small>
@@ -54,7 +64,8 @@
                                 <span th:text="${event.getTitle()}"></span>
                             </div>
                             <div class="col-2">
-                                <span th:text="${event.getCategory()}"></span>
+                                <b><p th:text="${event.getSport().getTitle()}"></p></b>
+                                <p th:text="${event.getCategory()}"></p>
                             </div>
                             <div class="col-2">
                                 <span th:text="${event.getLocation()}"></span>
@@ -64,15 +75,15 @@
                                     <a th:href="@{/event/show(eventId=${event.getId()})}" class="btn btn-outline-secondary">Подробнее</a>
                                     <a th:href="@{/event/edit(eventId=${event.getId()})}" class="btn btn-outline-secondary" th:if="${manager} or ${admin}">Редактор</a>
                                     <!-- Button trigger modal -->
-                                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#delete-modal" th:if="${manager} or ${admin}">
+                                    <button th:id="'btn-delete-' + ${stat.index}" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#delete-modal" th:if="${manager} or ${admin}">
                                         Удалить
                                     </button>
                                     <!-- Modal -->
-                                    <div class="modal fade" id="delete-modal" tabindex="-1">
+                                    <div class="modal fade" th:id="'delete-modal-' + ${stat.index}" tabindex="-1">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Внимание!</h1>
+                                                    <h1 class="modal-title fs-5">Внимание!</h1>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
@@ -85,6 +96,9 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <script th:inline="javascript">
+                                        document.getElementById('btn-delete-' + [[${stat.index}]]).setAttribute('data-bs-target','#delete-modal-' + [[${stat.index}]]);
+                                    </script>
                                 </div>
                             </div>
                         </div>
@@ -104,7 +118,8 @@
                                 <span th:text="${event.getTitle()}"></span>
                             </div>
                             <div class="col-2">
-                                <span th:text="${event.getCategory()}"></span>
+                                <b><p th:text="${event.getSport().getTitle()}"></p></b>
+                                <p th:text="${event.getCategory()}"></p>
                             </div>
                             <div class="col-2">
                                 <span th:text="${event.getLocation()}"></span>
@@ -114,15 +129,15 @@
                                     <a th:href="@{/event/show(eventId=${event.getId()})}" class="btn btn-outline-secondary">Подробнее</a>
                                     <a th:href="@{/event/edit(eventId=${event.getId()})}" class="btn btn-outline-secondary" th:if="${manager} or ${admin}">Редактор</a>
                                     <!-- Button trigger modal -->
-                                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#delete-modal" th:if="${manager} or ${admin}">
+                                    <button th:id="'btn-delete-' + ${stat.index}" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#delete-modal" th:if="${manager} or ${admin}">
                                         Удалить
                                     </button>
                                     <!-- Modal -->
-                                    <div class="modal fade" id="delete-modal" tabindex="-1">
+                                    <div class="modal fade" th:id="'delete-modal-' + ${stat.index}" tabindex="-1">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Внимание!</h1>
+                                                    <h1 class="modal-title fs-5">Внимание!</h1>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
@@ -135,6 +150,9 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <script th:inline="javascript">
+                                        document.getElementById('btn-delete-' + [[${stat.index}]]).setAttribute('data-bs-target','#delete-modal-' + [[${stat.index}]]);
+                                    </script>
                                 </div>
                             </div>
                         </div>
@@ -148,28 +166,73 @@
             <nav>
                 <ul class="pagination">
                     <li class="page-item">
-                        <a class="page-link" th:href="@{/event/all(page=${page - 1},size=${size})}"><i class="icon feather icon-chevron-left"></i></a>
+                        <a class="page-link" th:href="@{/event/all(page=0,size=${size}, search=${search})}">Первая</a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link" th:href="@{/event/all(page=${page - 2},size=${size})}" th:if="${page - 2 >= 0}" th:text="${page - 1}"></a>
+                        <a class="page-link" th:href="@{/event/all(page=${page - 1},size=${size}, search=${search})}"><i class="icon feather icon-chevron-left"></i></a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link" th:href="@{/event/all(page=${page - 1},size=${size})}" th:if="${page - 1 >= 0}" th:text="${page}"></a>
+                        <a class="page-link" th:href="@{/event/all(page=${page - 2},size=${size}, search=${search})}" th:if="${page - 2 >= 0}" th:text="${page - 1}"></a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" th:href="@{/event/all(page=${page - 1},size=${size}, search=${search})}" th:if="${page - 1 >= 0}" th:text="${page}"></a>
                     </li>
                     <li class="page-item active">
                         <a class="page-link" href="#" th:text="${page + 1}"></a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link" th:href="@{/event/all(page=${page + 1},size=${size})}" th:if="${page + 1} <= ${lastPage}" th:text="${page + 2}"></a>
+                        <a class="page-link" th:href="@{/event/all(page=${page + 1},size=${size}, search=${search})}" th:if="${page + 1} <= ${lastPage}" th:text="${page + 2}"></a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link" th:href="@{/event/all(page=${page + 2},size=${size})}" th:if="${page + 2} <= ${lastPage}" th:text="${page + 3}"></a>
+                        <a class="page-link" th:href="@{/event/all(page=${page + 2},size=${size}, search=${search})}" th:if="${page + 2} <= ${lastPage}" th:text="${page + 3}"></a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link" th:href="@{/event/all(page=${page + 1}, size=${size})}"><i class="icon feather icon-chevron-right"></i></a>
+                        <a class="page-link" th:href="@{/event/all(page=${page + 1}, size=${size}, search=${search})}"><i class="icon feather icon-chevron-right"></i></a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" th:href="@{/event/all(page=${lastPage},size=${size}, search=${search})}">Последняя</a>
                     </li>
                 </ul>
             </nav>
         </div>
     </div>
 </div>
+
+<script th:inline="javascript">
+    $('#sport-search').on('input', function() {
+        let searchQuery = this.value;
+        $.ajax({
+            url: '/api/get/sports',
+            type: 'get',
+            data: {
+                query: searchQuery
+            },
+            success: function(response) {
+                let select = $('#sport-data-list');
+                select.empty();
+
+                response.forEach(function(item) {
+                    select.append(
+                        '<option data-item="' + JSON.stringify(item).replace(/"/g, '&quot;') + '" value="' + item.title + '">' + item.title + '</option>'
+                    );
+                });
+            }
+        });
+    });
+
+    function showEkpBySport(){
+        let inputVal = document.getElementById('sport-search').value;
+        let dataList = document.getElementById('sport-data-list');
+        let options = dataList.options;
+        let dataItem = null;
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].value === inputVal) {
+                dataItem = JSON.parse(options[i].getAttribute('data-item').replace(/"/g, '"'));
+                break;
+            }
+        }
+        if(dataItem != null){
+            window.location.href = '/event/all?page=' + [[${page}]] + '&size=' + [[${size}]] + '&search=' + dataItem.id;
+        }
+    }
+</script>

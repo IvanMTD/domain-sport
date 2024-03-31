@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import ru.fcpsr.domainsport.dto.EkpDTO;
-import ru.fcpsr.domainsport.dto.GeocodeResponse;
+import ru.fcpsr.domainsport.dto.geocode.GeocodeResponse;
 
 @Service
 @PropertySource("classpath:application.properties")

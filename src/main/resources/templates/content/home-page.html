@@ -40,9 +40,13 @@
             <datalist id="sport-datalist">
 
             </datalist>
-            <div class="btn-group pt-3" role="group">
-                <button class="btn btn-secondary" type="button" onclick="showEkp()">Показать</button>
-                <button class="btn btn-outline-secondary" type="button" onclick="clearFields()">Сбросить</button>
+            <div class="row pt-3">
+                <div class="col">
+                    <button class="btn btn-secondary" type="button" onclick="showEkp()" style="width: 100%">Показать</button>
+                </div>
+                <div class="col">
+                    <button class="btn btn-outline-secondary" type="button" onclick="clearFields()" style="width: 100%">Сбросить</button>
+                </div>
             </div>
             <script th:inline="javascript">
                 $('#input-sport').on('input', function() {
@@ -105,14 +109,18 @@
                 <div class="col" th:each="event, e_stat : ${eventList}">
                     <a th:href="@{/event/show(eventId=${event.getId()})}">
                         <div class="card">
-                            <img alt="header" class="card-img-top" th:src="@{/api/download(image=${event.getImageId()})}" style="object-fit: cover; height: 150px" onerror="setHomeDefault(this,'image')">
+                            <img th:id="'img-header-' + ${e_stat.index} + '-' + ${event.getSportId()}" alt="header" class="card-img-top" th:src="@{/api/download(image=${event.getImageId()})}" style="object-fit: cover; height: 150px" onerror="setHomeDefault(this.id,'image')">
                             <script th:inline="javascript">
-                                function setHomeDefault(tag, param){
-                                    tag.onerror=null;
-                                    tag.src='/img/default-' + param + '-' + [[${event}]].sportId + '.webp'
+                                function setHomeDefault(id, param){
+                                    console.log(id);
+                                    let parts = id.split('-'); // Разделяем строку по символу '-'
+                                    let sportId = parts[parts.length - 1]; // Получаем последний элемент массива
+                                    console.log(sportId);
+                                    document.getElementById(id).onerror=null;
+                                    document.getElementById(id).src='/img/default-' + param + '-' + sportId + '.webp'
                                 }
                             </script>
-                            <div class="card-body minbloc">
+                            <div class="card-body d-flex flex-column minbloc">
                                 <div class="row">
                                     <div class="cik">
                                         <h6 class="card-subtitle mb-2 text-muted" th:text="${event.getTitle()}"></h6>
@@ -128,19 +136,18 @@
                                 </div>
                                 <div class="row">
                                     <div class="col">
-                                        <h5 class="card-title" th:text="${event.getCategory()}"></h5>
+                                        <p class="fs-5 text-dark" th:text="${event.getCategory()}"></p>
                                     </div>
                                 </div>
-                                <!--<div class="row" style="max-height: 150px; overflow: hidden">
-                                    <div class="col">
-                                        <p th:utext="${event.getDescription()}"></p>
-                                    </div>
-                                </div>-->
-                                <hr>
+                                <br>
                                 <div class="row">
                                     <div class="col">
-                                        <small th:text="'#' + ${event.getSport().getTitle()}"></small>
+                                        <p th:text="${event.getLocation()}"></p>
                                     </div>
+                                </div>
+                                <div class="mt-auto">
+                                    <hr>
+                                    <small th:text="'#' + ${event.getSport().getTitle()}"></small>
                                 </div>
                             </div>
                         </div>
@@ -172,14 +179,16 @@
         map = new ymaps.Map('map', {
             center: [coords_s, coords_d],
             zoom: zoom,
-            controls: ['zoomControl', 'fullscreenControl']
+            controls: ['zoomControl']
+        }, {
+            suppressMapOpenBlock: true // Убираем надпись "открыть в Яндекс.Картах"
         });
 
         let features = [];
         for (let i = 0; i < ekpList.length; i++) {
             let detail = '' +
                 '<div class="card" style="width: 18rem;">\n' +
-                '   <img alt="header" class="card-img-top" src="/api/download?image=' + ekpList[i].imageId + '" style="object-fit: cover; height: 150px" onerror="this.onerror=null; this.src=\'/img/default-image.webp\'">\n' +
+                '   <img alt="header" class="card-img-top" src="/api/download?image=' + ekpList[i].imageId + '" style="object-fit: cover; height: 150px" onerror="this.onerror=null; this.src=\'/img/default-image-' + ekpList[i].sportId + '.webp\'">\n' +
                 '   <div class="card-body">\n' +
                 '       <div class="row">' +
                 '           <div class="col">' +
@@ -336,7 +345,7 @@
 
             let detail = '' +
                 '<div class="card" style="width: 18rem;">\n' +
-                '   <img alt="header" class="card-img-top" src="/api/download?image=' + ekpList[i].imageId + '" style="object-fit: cover; height: 150px" onerror="this.onerror=null; this.src=\'/img/default-image.webp\'">\n' +
+                '   <img alt="header" class="card-img-top" src="/api/download?image=' + ekpList[i].imageId + '" style="object-fit: cover; height: 150px" onerror="this.onerror=null; this.src=\'/img/default-image-' + ekpList[i].sportId + '.webp\'">\n' +
                 '   <div class="card-body">\n' +
                 '       <div class="row">' +
                 '           <div class="col">' +

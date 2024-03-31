@@ -23,8 +23,22 @@ public class EkpService {
         return repository.findAll().flatMap(ekp -> Mono.just(new EkpDTO(ekp)));
     }
 
-    public Flux<EkpDTO> getAllDTO(Pageable pageable){
-        return repository.findAllBy(pageable).flatMap(ekp -> Mono.just(new EkpDTO(ekp)));
+    public Flux<EkpDTO> getAllDTO(Pageable pageable, String search){
+        if(search.equals("all")) {
+            return repository.findAllBy(pageable).flatMap(ekp -> Mono.just(new EkpDTO(ekp)));
+        }else{
+            long sportId = Long.parseLong(search);
+            return repository.findAllBySportId(pageable, sportId).flatMap(ekp -> Mono.just(new EkpDTO(ekp)));
+        }
+    }
+
+    public Flux<Ekp> getAllByParam(Pageable pageable, String search){
+        if(search.equals("all")) {
+            return repository.findAllBy(pageable);
+        }else{
+            long sportId = Long.parseLong(search);
+            return repository.findAllBySportId(pageable, sportId);
+        }
     }
 
     public Flux<Ekp> getAll(){
@@ -39,8 +53,17 @@ public class EkpService {
         return repository.findAllWitchDate(localDate).flatMap(ekp -> Mono.just(new EkpDTO(ekp)));
     }
 
-    public Mono<Long> getCount(){
-        return repository.count();
+    public Flux<Ekp> getEkpByDate(LocalDate localDate) {
+        return repository.findAllWitchDate(localDate);
+    }
+
+    public Mono<Long> getCount(String search){
+        if(search.equals("all")) {
+            return repository.count();
+        }else{
+            long sportId = Long.parseLong(search);
+            return repository.countBySportId(sportId);
+        }
     }
 
     public Mono<Ekp> save(EkpDTO ekpDTO) {

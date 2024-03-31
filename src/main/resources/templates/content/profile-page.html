@@ -1,0 +1,21 @@
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col text-center">
+                    <h2><small class="text-secondary">Профиль пользователя<span th:text="' ' + ${appUser.getFullName()}"></span></small></h2>
+                </div>
+            </div>
+            <form class="row py-2" th:method="POST" th:action="@{/principal/mail/send}" th:object="${message}" th:if="${admin}">
+                <div class="col-8">
+                    <input type="email" placeholder="user@email.ru" class="form-control" th:field="*{mail}">
+                </div>
+                <div class="col">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-secondary" type="submit">Отправить приглашение</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

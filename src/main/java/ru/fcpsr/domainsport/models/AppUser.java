@@ -44,6 +44,7 @@ public class AppUser implements UserDetails {
     private String avatarId;
     private String oauthId;
     private Role role;
+    private long roleAccessId;
 
     public String getFullName(){
         return lastname + " " + firstname;

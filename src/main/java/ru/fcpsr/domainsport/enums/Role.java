@@ -2,8 +2,9 @@ package ru.fcpsr.domainsport.enums;
 
 public enum Role {
     ADMIN("Админ"),
-    USER("Пользователь"),
-    MANAGER("Менеджер");
+    MANAGER("Менеджер"),
+    WORKER("Сотрудник"),
+    USER("Пользователь");
 
     private String title;
     Role(String title){
