@@ -4,9 +4,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import ru.fcpsr.domainsport.dto.AppUserDTO;
 import ru.fcpsr.domainsport.enums.Role;
 
 import java.time.LocalDate;
@@ -39,12 +41,23 @@ public class AppUser implements UserDetails {
     private String firstname;
     private String lastname;
     private String email;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate placedAt;
     private String avatarId;
     private String oauthId;
     private Role role;
     private long roleAccessId;
+
+    public AppUser(AppUserDTO appUserDTO){
+        setUsername(appUserDTO.getUsername());
+        setFirstname(appUserDTO.getFirstname());
+        setLastname(appUserDTO.getLastname());
+        setEmail(appUserDTO.getEmail());
+        setBirthday(appUserDTO.getBirthday());
+        setPlacedAt(LocalDate.now());
+    }
 
     public String getFullName(){
         return lastname + " " + firstname;

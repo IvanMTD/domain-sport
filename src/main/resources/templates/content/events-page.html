@@ -1,17 +1,17 @@
 <div class="container">
     <div class="row">
-        <div class="col-2" th:if="${manager} or ${admin}">
+        <div class="col-2 px-2" th:if="${manager} or ${admin}">
             <div class="d-grid py-2">
                 <a class="btn btn-outline-secondary" th:href="@{/event/add}">Добавить событие</a>
             </div>
         </div>
         <div class="col">
             <div class="row">
-                <div class="col py-2">
+                <div class="col py-2 px-2">
                     <input type="text" class="form-control" id="sport-search" list="sport-data-list" placeholder="Поиск вида спорта">
                     <datalist id="sport-data-list"></datalist>
                 </div>
-                <div class="col-2 float-end">
+                <div class="col-2 float-end px-2">
                     <div class="d-grid py-2">
                         <button class="btn btn-outline-secondary" type="button" onclick="showEkpBySport()">Показать</button>
                     </div>
@@ -25,52 +25,52 @@
                 <div class="card-body">
                     <h6 class="card-title">Мероприятия</h6>
                     <div class="row">
-                        <div class="col-1">
+                        <div class="col-1 p-1 text-center">
                             <small>№</small>
                         </div>
-                        <div class="col-1">
+                        <div class="col-1 p-1 text-center">
                             <small>№ ЕКП</small>
                         </div>
-                        <div class="col-1">
+                        <div class="col-1 p-1 text-center">
                             <small>Даты проведения</small>
                         </div>
-                        <div class="col-2">
+                        <div class="col-2 p-1 text-center">
                             <small>Название соревнования</small>
                         </div>
-                        <div class="col-2">
+                        <div class="col-2 p-1 text-center">
                             <small>Вид спорта и категории</small>
                         </div>
-                        <div class="col-2">
+                        <div class="col-2 p-1 text-center">
                             <small>Место проведения</small>
                         </div>
-                        <div class="col-3">
+                        <div class="col-3 p-1 text-center">
                             <small>Детали</small>
                         </div>
                     </div>
                     <div class="row" th:each="event, stat : ${events}" style="min-height: 100px; max-height: 100%">
                         <div class="row bg-light" th:if="${stat.index % 2 == 0}">
-                            <div class="col-1">
+                            <div class="col-1 p-1">
                                 <span th:text="${event.getNum()}"></span>
                             </div>
-                            <div class="col-1">
+                            <div class="col-1 p-1">
                                 <span th:text="${event.getEkp()}"></span>
                             </div>
-                            <div class="col-1">
+                            <div class="col-1 p-1">
                                 <span th:text="${event.getBeginningDate() + ' -'}"></span>
                                 <br>
                                 <span th:text="${event.getEndingDate()}"></span>
                             </div>
-                            <div class="col-2">
+                            <div class="col-2 p-1">
                                 <span th:text="${event.getTitle()}"></span>
                             </div>
-                            <div class="col-2">
+                            <div class="col-2 p-1">
                                 <b><p th:text="${event.getSport().getTitle()}"></p></b>
                                 <p th:text="${event.getCategory()}"></p>
                             </div>
-                            <div class="col-2">
+                            <div class="col-2 p-1">
                                 <span th:text="${event.getLocation()}"></span>
                             </div>
-                            <div class="col-3 d-flex align-items-center" style="height: 100%">
+                            <div class="col-3 p-1 d-flex align-items-center" style="height: 100%">
                                 <div class="btn-group" role="group" aria-label="Basic outlined example">
                                     <a th:href="@{/event/show(eventId=${event.getId()})}" class="btn btn-outline-secondary">Подробнее</a>
                                     <a th:href="@{/event/edit(eventId=${event.getId()})}" class="btn btn-outline-secondary" th:if="${manager} or ${admin}">Редактор</a>
@@ -103,28 +103,28 @@
                             </div>
                         </div>
                         <div class="row" th:if="${stat.index % 2 != 0}" style="min-height: 100px; max-height: 100%">
-                            <div class="col-1">
+                            <div class="col-1 p-1">
                                 <span th:text="${event.getNum()}"></span>
                             </div>
-                            <div class="col-1">
+                            <div class="col-1 p-1">
                                 <span th:text="${event.getEkp()}"></span>
                             </div>
-                            <div class="col-1">
+                            <div class="col-1 p-1">
                                 <span th:text="${event.getBeginningDate() + ' -'}"></span>
                                 <br>
                                 <span th:text="${event.getEndingDate()}"></span>
                             </div>
-                            <div class="col-2">
+                            <div class="col-2 p-1">
                                 <span th:text="${event.getTitle()}"></span>
                             </div>
-                            <div class="col-2">
+                            <div class="col-2 p-1">
                                 <b><p th:text="${event.getSport().getTitle()}"></p></b>
                                 <p th:text="${event.getCategory()}"></p>
                             </div>
-                            <div class="col-2">
+                            <div class="col-2 p-1">
                                 <span th:text="${event.getLocation()}"></span>
                             </div>
-                            <div class="col-3 d-flex align-items-center" style="height: 100%">
+                            <div class="col-3 p-1 d-flex align-items-center" style="height: 100%">
                                 <div class="btn-group" role="group" aria-label="Basic outlined example">
                                     <a th:href="@{/event/show(eventId=${event.getId()})}" class="btn btn-outline-secondary">Подробнее</a>
                                     <a th:href="@{/event/edit(eventId=${event.getId()})}" class="btn btn-outline-secondary" th:if="${manager} or ${admin}">Редактор</a>

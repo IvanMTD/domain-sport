@@ -8,11 +8,16 @@ import reactor.core.publisher.Mono;
 import ru.fcpsr.domainsport.dto.AppUserDTO;
 import ru.fcpsr.domainsport.dto.ObjectAccessDTO;
 import ru.fcpsr.domainsport.dto.RoleAccessDTO;
+import ru.fcpsr.domainsport.enums.Permission;
 import ru.fcpsr.domainsport.enums.Role;
 import ru.fcpsr.domainsport.models.AppUser;
+import ru.fcpsr.domainsport.models.AuthToken;
+import ru.fcpsr.domainsport.models.RoleAccess;
 import ru.fcpsr.domainsport.repositories.ObjectAccessRepository;
 import ru.fcpsr.domainsport.repositories.RoleAccessRepository;
 import ru.fcpsr.domainsport.repositories.SportRepository;
+
+import java.util.List;
 
 @Slf4j
 @Service("AccessService")
@@ -56,5 +61,14 @@ public class AccessService {
                 return Mono.just(userDTO);
             });
         }).switchIfEmpty(Mono.just(userDTO)));
+    }
+
+    public Mono<RoleAccess> createAccess(AuthToken token, long userId, List<Permission> permissions) {
+        return Mono.just(new RoleAccess()).flatMap(roleAccess -> {
+            roleAccess.setUserId(userId);
+            roleAccess.setGroupId(token.getSportId());
+            roleAccess.setPermissions(permissions);
+            return roleAccessRepository.save(roleAccess);
+        });
     }
 }

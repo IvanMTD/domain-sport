@@ -1,0 +1,140 @@
+<div class="container">
+    <form class="row" th:method="POST" th:action="@{/principal/registration/{uuid}(uuid=${uuid})}" th:object="${principalDTO}">
+        <div class="col"></div>
+        <div class="col-6">
+            <div class="row">
+                <div class="col">
+                    <h2 class="text-secondary text-center">Регистрация пользователя</h2>
+                </div>
+            </div>
+            <hr>
+            <div class="row" th:if="${#fields.hasErrors('username')} != true">
+                <div class="col">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="username" placeholder="Желаемый псевдоним пользователя (логин)" th:field="*{username}">
+                        <label for="username">Псевдоним пользователя (Логин)</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row" th:if="${#fields.hasErrors('username')}">
+                <div class="col">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control is-invalid" id="username-error" placeholder="Желаемый псевдоним пользователя (логин)" th:field="*{username}">
+                        <label for="username-error">Псевдоним пользователя (Логин)</label>
+                        <span class="text-danger" th:errors="*{username}"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row" th:if="${#fields.hasErrors('firstname')} != true">
+                <div class="col">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="name" placeholder="Укажите ваше имя" th:field="*{firstname}">
+                        <label for="name">Имя</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row" th:if="${#fields.hasErrors('firstname')}">
+                <div class="col">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control is-invalid" id="firstname-error" placeholder="Укажите ваше имя" th:field="*{firstname}">
+                        <label for="firstname-error">Имя</label>
+                        <span class="text-danger" th:errors="*{firstname}"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row" th:if="${#fields.hasErrors('lastname')} != true">
+                <div class="col">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="lastname" placeholder="Укажите вашу фамилию" th:field="*{lastname}">
+                        <label for="lastname">Фамилия</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row" th:if="${#fields.hasErrors('lastname')}">
+                <div class="col">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control is-invalid" id="lastname-error" placeholder="Укажите вашу фамилию" th:field="*{lastname}">
+                        <label for="lastname-error">Фамилия</label>
+                        <span class="text-danger" th:errors="*{lastname}"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row" th:if="${#fields.hasErrors('birthday')} != true">
+                <div class="col">
+                    <div class="form-floating mb-3">
+                        <input type="date" class="form-control" id="birthday" placeholder="Дата рождения" th:field="*{birthday}">
+                        <label for="birthday">Дата рождения</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row" th:if="${#fields.hasErrors('birthday')}">
+                <div class="col">
+                    <div class="form-floating mb-3">
+                        <input type="date" class="form-control is-invalid" id="birthday-error" placeholder="Дата рождения" th:field="*{birthday}">
+                        <label for="birthday-error">Дата рождения</label>
+                        <span class="text-danger" th:errors="*{birthday}"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row" th:if="${#fields.hasErrors('email')} != true">
+                <div class="col">
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control" id="email" placeholder="Подтвердите ваш email" th:field="*{email}">
+                        <label for="email">Подтвердите ваш email</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row" th:if="${#fields.hasErrors('email')}">
+                <div class="col">
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control is-invalid" id="email-error" placeholder="Подтвердите ваш email" th:field="*{email}">
+                        <label for="email-error">Подтвердите ваш email</label>
+                        <span class="text-danger" th:errors="*{email}"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row pt-5">
+                <div class="col">
+                    <p class="text-center text-secondary">Назначенные полномочия</p>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="group" placeholder="Ваша группа" th:value="${principalDTO.getRoleAccess().getSport().getTitle()}" disabled>
+                        <label for="group">Административная группа</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="role" placeholder="Ваша роль" th:value="${principalDTO.getRole().getTitle()}" disabled>
+                        <label for="role">Ваша роль</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col" th:each="permmision, p_stat : ${principalDTO.getRoleAccess().getPermissionList()}">
+                    <div class="form-floating mb-3 pe-2" th:if="${p_stat.index} != ${principalDTO.getRoleAccess().getPermissionList().size() - 1}">
+                        <input type="text" class="form-control" th:id="'permmision-' + ${p_stat.index}" placeholder="Ваше разрешение" th:value="${permmision.getTitle()}" disabled>
+                        <label th:for="'permmision-' + ${p_stat.index}">Разрешение на</label>
+                    </div>
+                    <div class="form-floating mb-3" th:if="${p_stat.index} == ${principalDTO.getRoleAccess().getPermissionList().size() - 1}">
+                        <input type="text" class="form-control" th:id="'permmision-' + ${p_stat.index}" placeholder="Ваше разрешение" th:value="${permmision.getTitle()}" disabled>
+                        <label th:for="'permmision-' + ${p_stat.index}">Разрешение на</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-secondary btn-lg" type="submit">Зарегистрироваться</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col"></div>
+    </form>
+</div>

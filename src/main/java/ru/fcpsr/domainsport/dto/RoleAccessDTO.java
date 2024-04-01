@@ -17,14 +17,15 @@ public class RoleAccessDTO {
 
     private long userId;
     private long groupId; // напрямую связан со sport_id
-    private Set<Permission> permissionList = new HashSet<>();
+    private SportDTO sport;
+    private List<Permission> permissionList = new ArrayList<>();
     private Set<Long> objectAccessIds = new HashSet<>();
     private List<ObjectAccessDTO> objectAccess = new ArrayList<>();
 
     public RoleAccessDTO(RoleAccess roleAccess) {
         setId(roleAccess.getId());
         setGroupId(roleAccess.getGroupId());
-        setPermissionList(roleAccess.getPermissionList());
         setObjectAccessIds(roleAccess.getObjectAccessIds());
+        permissionList.addAll(roleAccess.getPermissionList());
     }
 }

@@ -145,7 +145,7 @@ public class EventController {
                 }
             }).flatMap(ekp -> {
                 log.info("ekp saved " + ekp.toString());
-                return Mono.just(Rendering.redirectTo("/event/all?page=0&size=10").build());
+                return Mono.just(Rendering.redirectTo("/event/all?page=0&size=10&search=all").build());
             });
         });
     }
@@ -307,7 +307,7 @@ public class EventController {
             log.info("all images were deleted or there were none");
             return ekpService.delete(ekpOriginal).flatMap(ekp -> {
                 log.info("ekp id = {}, has been totally deleted", ekp.getId());
-                return Mono.just(Rendering.redirectTo("/event/all?page=0&size=10").build());
+                return Mono.just(Rendering.redirectTo("/event/all?page=0&size=10&search=all").build());
             });
         });
     }

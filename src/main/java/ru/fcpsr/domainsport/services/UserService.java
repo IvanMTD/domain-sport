@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.result.view.Rendering;
 import reactor.core.publisher.Mono;
 import ru.fcpsr.domainsport.models.AppUser;
 import ru.fcpsr.domainsport.repositories.AppUserRepository;
@@ -31,5 +32,21 @@ public class UserService implements ReactiveUserDetailsService{
 
     public Mono<AppUser> getUserById(long id) {
         return userRepository.findById(id);
+    }
+
+    public Mono<Boolean> checkEmail(String mail) {
+        return userRepository.findByEmail(mail).flatMap(user -> {
+            AppUser appUser = (AppUser) user;
+            log.info("mail {} found", appUser.getEmail());
+            return Mono.just(true);
+        }).switchIfEmpty(Mono.just(false));
+    }
+
+    public Mono<Boolean> checkUsername(String username) {
+        return userRepository.findByUsername(username).flatMap(userDetails -> Mono.just(true)).defaultIfEmpty(false);
+    }
+
+    public Mono<AppUser> saveUser(AppUser user) {
+        return userRepository.save(user);
     }
 }
