@@ -43,7 +43,7 @@ public class PrincipalController {
     private final SportService sportService;
     private final PasswordEncoder encoder;
 
-    private final List<Role> workRoles = new ArrayList<>(Arrays.asList(Role.ADMIN,Role.MANAGER,Role.WORKER));
+    private final List<Role> workRoles = new ArrayList<>(Arrays.asList(Role.MANAGER,Role.WORKER));
 
     @GetMapping("/profile")
     @PreAuthorize("@AccessService.isAuthenticate(#authentication)")
@@ -74,6 +74,7 @@ public class PrincipalController {
             if(errors.hasErrors()){
                 AppUser appUser = (AppUser) authentication.getPrincipal();
                 return userService.getUserById(appUser.getId()).flatMap(user -> {
+                    message.setSportId(0);
                     return Mono.just(
                             Rendering.view("template")
                                     .modelAttribute("title","Profile page")
@@ -105,6 +106,47 @@ public class PrincipalController {
                 return Mono.just(Rendering.redirectTo("/principal/profile").build());
             });
         });
+    }
+
+    @PostMapping("/update")
+    @PreAuthorize("@AccessService.isAuthenticate(#authentication)")
+    public Mono<Rendering> updatePrincipal(@AuthenticationPrincipal Authentication authentication, @ModelAttribute(name = "appUser") @Valid AppUserDTO userDTO, Errors errors){
+        System.out.println(userDTO);
+        AppUser currentUser = (AppUser) authentication.getPrincipal();
+        if(currentUser.getId() == userDTO.getId()) {
+            return userService.checkUsername(userDTO.getUsername()).flatMap(exist -> {
+                if (exist) {
+                    System.out.println("exist");
+                    errors.rejectValue("username", "", "Такое имя пользователя уже занято, придумайте другое");
+                }
+                if (errors.hasErrors()) {
+                    System.out.println("ERROR");
+                    Mono<AppUserDTO> userMono = userService.getUserById(userDTO.getId()).flatMap(accessService::getCompletedUser);
+                    return Mono.just(
+                            Rendering.view("template")
+                                    .modelAttribute("title", "Profile page")
+                                    .modelAttribute("index", "profile-page")
+                                    .modelAttribute("appUser", userMono.flatMap(u -> {
+                                        userDTO.setEmail(u.getEmail());
+                                        userDTO.setRole(u.getRole());
+                                        userDTO.setRoleAccess(u.getRoleAccess());
+                                        System.out.println(userDTO);
+                                        return Mono.just(userDTO);
+                                    }))
+                                    .modelAttribute("message", new MailMessage())
+                                    .modelAttribute("roleList", workRoles)
+                                    .build()
+                    );
+                }
+
+                return userService.baseUserUpdate(userDTO).flatMap(user -> {
+                    log.info("user {} updated", user.getFullName());
+                    return Mono.just(Rendering.redirectTo("/principal/profile").build());
+                });
+            });
+        }else{
+            return Mono.just(Rendering.redirectTo("/error").build());
+        }
     }
 
     @GetMapping("/registration/{link}")

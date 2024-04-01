@@ -8,11 +8,13 @@ import reactor.core.publisher.Mono;
 import ru.fcpsr.domainsport.dto.AppUserDTO;
 import ru.fcpsr.domainsport.dto.ObjectAccessDTO;
 import ru.fcpsr.domainsport.dto.RoleAccessDTO;
+import ru.fcpsr.domainsport.dto.SportDTO;
 import ru.fcpsr.domainsport.enums.Permission;
 import ru.fcpsr.domainsport.enums.Role;
 import ru.fcpsr.domainsport.models.AppUser;
 import ru.fcpsr.domainsport.models.AuthToken;
 import ru.fcpsr.domainsport.models.RoleAccess;
+import ru.fcpsr.domainsport.repositories.AppUserRepository;
 import ru.fcpsr.domainsport.repositories.ObjectAccessRepository;
 import ru.fcpsr.domainsport.repositories.RoleAccessRepository;
 import ru.fcpsr.domainsport.repositories.SportRepository;
@@ -24,7 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AccessService {
     private final SportRepository sportRepository;
-    private final UserService userService;
+    private final AppUserRepository userRepository;
     private final RoleAccessRepository roleAccessRepository;
     private final ObjectAccessRepository objectAccessRepository;
 
@@ -57,8 +59,12 @@ public class AccessService {
                 return Mono.just(objectAccessDTO);
             }).collectList().flatMap(oal -> {
                 roleAccessDTO.setObjectAccess(oal);
-                userDTO.setRoleAccess(roleAccessDTO);
-                return Mono.just(userDTO);
+                return sportRepository.findById(roleAccess.getGroupId()).flatMap(sport -> {
+                    SportDTO sportDTO = new SportDTO(sport);
+                    roleAccessDTO.setSport(sportDTO);
+                    userDTO.setRoleAccess(roleAccessDTO);
+                    return Mono.just(userDTO);
+                });
             });
         }).switchIfEmpty(Mono.just(userDTO)));
     }

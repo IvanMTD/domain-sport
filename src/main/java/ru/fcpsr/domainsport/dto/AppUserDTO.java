@@ -17,6 +17,13 @@ public class AppUserDTO {
     @Size(min = 4, max = 12, message = "Псевдоним пользователя должен быть от 4 до 12 символов")
     private String username;
     private String password;
+    /*@NotBlank(message = "Введите старый пароль")
+    private String oldPassword;
+    @NotBlank(message = "Нельзя указать пустой пароль")
+    @Size(min = 8, max = 14, message = "Длинна пароля ограничена от 8 до 14 символов")
+    private String password;
+    @NotBlank(message = "Нельзя указать пустое подтверждение пароля")
+    private String confirmPassword;*/
     @NotBlank(message = "Поле имени не может быть пустым")
     @Pattern(regexp = "^[А-Я][а-я]+", message = "Поле заполняется в формате - \"Иван\"")
     private String firstname;
@@ -52,6 +59,6 @@ public class AppUserDTO {
     }
 
     public String getFullName(){
-        return lastname + " " + firstname;
+        return firstname + " " + lastname;
     }
 }

@@ -4,9 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.result.view.Rendering;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import ru.fcpsr.domainsport.dto.AppUserDTO;
 import ru.fcpsr.domainsport.models.AppUser;
 import ru.fcpsr.domainsport.repositories.AppUserRepository;
 
@@ -16,6 +19,7 @@ import ru.fcpsr.domainsport.repositories.AppUserRepository;
 public class UserService implements ReactiveUserDetailsService{
 
     private final AppUserRepository userRepository;
+    private final PasswordEncoder encoder;
 
     public Mono<AppUser> getUserByUsername(String username){
         return userRepository.findAppUserByUsername(username);
@@ -49,4 +53,35 @@ public class UserService implements ReactiveUserDetailsService{
     public Mono<AppUser> saveUser(AppUser user) {
         return userRepository.save(user);
     }
+
+    public Mono<AppUser> baseUserUpdate(AppUserDTO userDTO) {
+        return userRepository.findById(userDTO.getId()).flatMap(user -> {
+            user.setUsername(userDTO.getUsername());
+            user.setFirstname(userDTO.getFirstname());
+            user.setLastname(userDTO.getLastname());
+            user.setBirthday(userDTO.getBirthday());
+            return userRepository.save(user);
+        });
+    }
+
+    /*public Mono<Boolean> checkPassword(AppUserDTO userDTO) {
+        return userRepository.findById(userDTO.getId()).flatMap(user -> {
+            if(encoder.matches(userDTO.getOldPassword(),user.getPassword())){
+                return Mono.just(true);
+            }else{
+                return Mono.just(false);
+            }
+        });
+    }*/
+
+    /*public Mono<AppUser> totalUserUpdate(AppUserDTO userDTO) {
+        return userRepository.findById(userDTO.getId()).flatMap(user -> {
+            user.setUsername(userDTO.getUsername());
+            user.setFirstname(userDTO.getFirstname());
+            user.setLastname(userDTO.getLastname());
+            user.setBirthday(userDTO.getBirthday());
+            user.setPassword(encoder.encode(userDTO.getPassword()));
+            return userRepository.save(user);
+        });
+    }*/
 }

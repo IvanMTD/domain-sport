@@ -1,15 +1,18 @@
 <div class="container">
-  <div class="row">
-    <div class="col d-flex align-items-center" style="height: 500px">
-      <div class="card mx-auto" style="width: 18rem;">
-        <img src="https://domensport.ru/img/logo.png" class="card-img-top p-2" alt="...">
-        <div class="card-body">
-          <h5 class="card-title">Ошибка!</h5>
-          <!--<p class="card-text">Сообщение приглашения</p>
-          <hr>
-          <a href="#" class="btn btn-outline-secondary">Регистрация</a>-->
+    <div class="row">
+        <div class="col d-flex align-items-center" id="error-card">
+            <div class="card mx-auto" style="width: 18rem;">
+                <img src="/img/logo.png" class="card-img-top p-2" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">Ошибка!</h5>
+                    <!--<p class="card-text">Сообщение приглашения</p>
+                    <hr>
+                    <a href="#" class="btn btn-outline-secondary">Регистрация</a>-->
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>
+<script>
+  document.getElementById('error-card').setAttribute('style','height:' + window.innerHeight / 1.5 + 'px')
+</script>

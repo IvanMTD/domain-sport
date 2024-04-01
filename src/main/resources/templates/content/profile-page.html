@@ -1,123 +1,379 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <div class="row py-2">
-                <div class="col text-center">
-                    <h2><small class="text-secondary">Профиль пользователя<span th:text="' ' + ${appUser.getFullName()}"></span></small></h2>
-                </div>
-            </div>
-            <div class="row border border-secondary border-2 rounded-3" th:object="${message}" th:if="${admin}">
-                <div class="row bg-secondary">
-                    <p class="text-center text-white fs-3"><small>Отправить пользователю приглашение на регистрацию</small></p>
-                </div>
-                <form class="container" th:method="POST" th:action="@{/principal/mail/send}">
+            <form class="row py-2" th:method="POST" th:action="@{/principal/update}" th:object="${appUser}">
+                <input type="number" th:field="*{id}" hidden>
+                <div class="col"></div>
+                <div class="col-6 text-center">
                     <div class="row">
-                        <div class="col p-2">
-                            <div class="mb-3">
-                                <label for="mail" class="form-label">Электронная почта</label>
-                                <input type="email" class="form-control" id="mail" placeholder="name@example.com" th:field="*{mail}">
-                                <div th:if="${#fields.hasErrors('mail')}">
-                                    <div class="col fs-5 text-danger ms-1">
-                                        <p th:errors="*{mail}"></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col p-2">
-                            <div class="mb-3">
-                                <label for="role" class="form-label">Роль</label>
-                                <select class="form-select" id="role" th:field="*{role}">
-                                    <option th:each="role : ${roleList}" th:value="${role}" th:text="${role.getTitle()}"></option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col p-2">
-                            <div class="mb-3">
-                                <input id="hidden-input" type="number" th:field="*{sportId}" hidden>
-                                <label for="sport" class="form-label">Группа (Вид спорта)</label>
-                                <input type="text" class="form-control" list="sport-datalist" id="sport" onchange="setupSportId(this.value)">
-                                <datalist id="sport-datalist"></datalist>
-                                <div th:if="${#fields.hasErrors('sportId')}">
-                                    <div class="col fs-5 text-danger ms-1">
-                                        <p th:errors="*{sportId}"></p>
-                                    </div>
-                                </div>
-                                <script th:inline="javascript">
-                                    $('#sport').on('input',function (){
-                                       let search = $('#sport').val();
-                                        $.ajax({
-                                            url: '/api/get/sports',
-                                            type: 'get',
-                                            data: {
-                                                query: search,
-                                            },
-                                            success: function (sports) {
-                                                $('#sport-datalist').empty();
-                                                sports.forEach(function (sport){
-                                                   $('#sport-datalist').append(
-                                                       '<option data-item="' + JSON.stringify(sport).replace(/"/g, '&quot;') + '" value="' + sport.title + '">' + sport.title + '</option>'
-                                                   );
-                                                });
-                                            }
-                                        });
-                                    });
-
-                                    function setupSportId(dataValue){
-                                        let data = getData(dataValue);
-                                        document.getElementById('hidden-input').value = data.id;
-                                    }
-
-                                    function getData(dataValue){
-                                        let options = document.getElementById('sport-datalist').options;
-                                        let data = null;
-                                        for (let i = 0; i < options.length; i++) {
-                                            if (options[i].value === dataValue) {
-                                                data = JSON.parse(options[i].getAttribute('data-item').replace(/"/g, '"'));
-                                                break;
-                                            }
-                                        }
-                                        return data;
-                                    }
-                                </script>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="d-grid pb-2 px-2">
-                            <button class="btn btn-outline-secondary" type="submit">Отправить приглашение</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <!--<form class="container py-2 border border-2 rounded-3 border-secondary" th:method="POST" th:action="@{/principal/mail/send}" th:object="${message}" th:if="${admin}">
-                <div class="row">
-                    <div class="row py-2 bg-secondary">
                         <div class="col">
-                            <p class="text-center fs-3 text-white">Отправить приглашение на регистрацию пользователя</p>
+                            <h2><small class="text-secondary">Профиль пользователя<span th:text="' ' + ${appUser.getFullName()}"></span></small></h2>
                         </div>
                     </div>
-                    <div class="col">
-                        <input type="email" placeholder="user@email.ru" class="form-control" th:field="*{mail}">
+                    <div class="row pt-5">
+                        <div class="col">
+                            <p class="text-center text-secondary">Персональные данные</p>
+                        </div>
                     </div>
-                    <div class="col">
-                        <select class="form-select" th:field="*{role}">
-                            <option th:each="role : ${roleList}" th:value="${role}" th:text="${role.getTitle()}"></option>
-                        </select>
+                    <hr>
+                    <div class="row" th:if="${#fields.hasErrors('username')} != true">
+                        <div class="col">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="username" placeholder="Желаемый псевдоним пользователя (логин)" th:field="*{username}">
+                                <label for="username">Псевдоним пользователя (Логин)</label>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col">
-                        <input type="text" class="form-control">
-                        <input type="number" th:field="*{sportId}" hidden>
-                        <script th:inline="javascript">
-
-                        </script>
+                    <div class="row" th:if="${#fields.hasErrors('username')}">
+                        <div class="col">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control is-invalid" id="username-error" placeholder="Желаемый псевдоним пользователя (логин)" th:field="*{username}">
+                                <label for="username-error">Псевдоним пользователя (Логин)</label>
+                                <span class="text-danger" th:errors="*{username}"></span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col">
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-secondary" type="submit">Отправить приглашение</button>
+                    <div class="row" th:if="${#fields.hasErrors('firstname')} != true">
+                        <div class="col">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="name" placeholder="Укажите ваше имя" th:field="*{firstname}">
+                                <label for="name">Имя</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" th:if="${#fields.hasErrors('firstname')}">
+                        <div class="col">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control is-invalid" id="firstname-error" placeholder="Укажите ваше имя" th:field="*{firstname}">
+                                <label for="firstname-error">Имя</label>
+                                <span class="text-danger" th:errors="*{firstname}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" th:if="${#fields.hasErrors('lastname')} != true">
+                        <div class="col">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="lastname" placeholder="Укажите вашу фамилию" th:field="*{lastname}">
+                                <label for="lastname">Фамилия</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" th:if="${#fields.hasErrors('lastname')}">
+                        <div class="col">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control is-invalid" id="lastname-error" placeholder="Укажите вашу фамилию" th:field="*{lastname}">
+                                <label for="lastname-error">Фамилия</label>
+                                <span class="text-danger" th:errors="*{lastname}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" th:if="${#fields.hasErrors('birthday')} != true">
+                        <div class="col">
+                            <div class="form-floating mb-3">
+                                <input type="date" class="form-control" id="birthday" placeholder="Дата рождения" th:field="*{birthday}">
+                                <label for="birthday">Дата рождения</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" th:if="${#fields.hasErrors('birthday')}">
+                        <div class="col">
+                            <div class="form-floating mb-3">
+                                <input type="date" class="form-control is-invalid" id="birthday-error" placeholder="Дата рождения" th:field="*{birthday}">
+                                <label for="birthday-error">Дата рождения</label>
+                                <span class="text-danger" th:errors="*{birthday}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" th:if="${#fields.hasErrors('email')} != true">
+                        <div class="col">
+                            <div class="form-floating mb-3">
+                                <input type="email" class="form-control" id="email" placeholder="Подтвердите ваш email" th:field="*{email}" disabled>
+                                <label for="email">Подтвердите ваш email</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" th:if="${#fields.hasErrors('email')}">
+                        <div class="col">
+                            <div class="form-floating mb-3">
+                                <input type="email" class="form-control is-invalid" id="email-error" placeholder="Подтвердите ваш email" th:field="*{email}">
+                                <label for="email-error">Подтвердите ваш email</label>
+                                <span class="text-danger" th:errors="*{email}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <!--<div class="row pt-5">
+                        <div class="col">
+                            <p class="text-center text-secondary">Смена пароля</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row" th:if="${#fields.hasErrors('oldPassword')} != true">
+                        <div class="col">
+                            <div class="form-floating mb-3">
+                                <input type="password" class="form-control" id="old-password" placeholder="Укажите старый пароль" th:field="*{oldPassword}">
+                                <label for="old-password">Старый пароль</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" th:if="${#fields.hasErrors('oldPassword')}">
+                        <div class="col">
+                            <div class="form-floating mb-3">
+                                <input type="password" class="form-control is-invalid" id="old-password-error" placeholder="Укажите старый пароль" th:field="*{oldPassword}">
+                                <label for="old-password-error">Старый пароль</label>
+                                <span class="text-danger" th:errors="*{oldPassword}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" th:if="${#fields.hasErrors('password')} != true">
+                        <div class="col">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="password" placeholder="Укажите новый пароль" th:field="*{password}">
+                                <label for="password">Новый пароль</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" th:if="${#fields.hasErrors('password')}">
+                        <div class="col">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control is-invalid" id="password-error" placeholder="Укажите новый пароль" th:field="*{password}">
+                                <label for="password-error">Новый пароль</label>
+                                <span class="text-danger" th:errors="*{password}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" th:if="${#fields.hasErrors('confirmPassword')} != true">
+                        <div class="col">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="confirm-password" placeholder="Подтвердите пароль" th:field="*{confirmPassword}">
+                                <label for="confirm-password">Подтверждение пароля</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" th:if="${#fields.hasErrors('confirmPassword')}">
+                        <div class="col">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control is-invalid" id="confirm-password-error" placeholder="Подтвердите пароль" th:field="*{confirmPassword}">
+                                <label for="confirm-password-error">Подтверждение пароля</label>
+                                <span class="text-danger" th:errors="*{confirmPassword}"></span>
+                            </div>
+                        </div>
+                    </div>-->
+                    <div th:if="${appUser.getRoleAccess()} != null">
+                        <div class="row pt-5">
+                            <div class="col">
+                                <p class="text-center text-secondary">Назначенные полномочия</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="group" placeholder="Ваша группа" th:value="${appUser.getRoleAccess().getSport().getTitle()}" disabled>
+                                    <label for="group">Административная группа</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="role" placeholder="Ваша роль" th:value="${appUser.getRole().getTitle()}" disabled>
+                                    <label for="role">Ваша роль</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col" th:each="permmision, p_stat : ${appUser.getRoleAccess().getPermissionList()}">
+                                <div class="form-floating mb-3 pe-2" th:if="${p_stat.index} != ${appUser.getRoleAccess().getPermissionList().size() - 1}">
+                                    <input type="text" class="form-control" th:id="'permmision-' + ${p_stat.index}" placeholder="Ваше разрешение" th:value="${permmision.getTitle()}" disabled>
+                                    <label th:for="'permmision-' + ${p_stat.index}">Разрешение на</label>
+                                </div>
+                                <div class="form-floating mb-3" th:if="${p_stat.index} == ${appUser.getRoleAccess().getPermissionList().size() - 1}">
+                                    <input type="text" class="form-control" th:id="'permmision-' + ${p_stat.index}" placeholder="Ваше разрешение" th:value="${permmision.getTitle()}" disabled>
+                                    <label th:for="'permmision-' + ${p_stat.index}">Разрешение на</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col pe-1">
+                            <div class="d-grid gap-2">
+                                <a class="btn btn-outline-secondary btn-lg" th:href="@{/}">Назад</a>
+                            </div>
+                        </div>
+                        <div class="col ps-1">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-secondary btn-lg" type="submit">Обновить</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </form>-->
+                <div class="col"></div>
+            </form>
+            <div th:if="${admin}">
+                <div class="row">
+                    <div class="col"></div>
+                    <div class="col-6"><hr></div>
+                    <div class="col"></div>
+                </div>
+                <div class="row">
+                    <div class="col"></div>
+                    <div class="col-6 border border-secondary border-2 rounded-3">
+                        <div class="row bg-secondary">
+                            <p class="text-center text-white fs-3"><small>Отправить пользователю приглашение на регистрацию</small></p>
+                        </div>
+                        <form th:method="POST" th:action="@{/principal/mail/send}" th:object="${message}">
+                            <div class="row" th:if="${#fields.hasErrors('mail')} != true">
+                                <div class="col px-2">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" id="message-mail" placeholder="Укажите E-Mail" th:field="*{mail}">
+                                        <label for="message-mail">E-Mail</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" th:if="${#fields.hasErrors('mail')}">
+                                <div class="col px-2">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control is-invalid" id="message-mail-error" placeholder="Укажите E-Mail" th:field="*{mail}">
+                                        <label for="message-mail-error">E-Mail</label>
+                                        <span class="text-danger" th:errors="*{mail}"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col px-2">
+                                    <div class="form-floating mb-3">
+                                        <select class="form-select" id="message-role" th:field="*{role}">
+                                            <option th:each="role : ${roleList}" th:value="${role}" th:text="${role.getTitle()}"></option>
+                                        </select>
+                                        <label for="message-role">Роль</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" th:if="${#fields.hasErrors('sportId')} != true">
+                                <div class="col px-2">
+                                    <div class="form-floating mb-3">
+                                        <input id="sport-hidden-input" type="number" th:field="*{sportId}" hidden>
+                                        <input type="text" class="form-control" list="sport-datalist" id="message-sport" onchange="setupSportId(this.value)">
+                                        <datalist id="sport-datalist"></datalist>
+                                        <label for="message-sport">Группа (Вид спорта)</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" th:if="${#fields.hasErrors('sportId')}">
+                                <div class="col px-2">
+                                    <div class="form-floating mb-3">
+                                        <input id="sport-hidden-input" type="number" th:field="*{sportId}" hidden>
+                                        <input type="text" class="form-control is-invalid" list="sport-datalist" id="message-sport" onchange="setupSportId(this.value)">
+                                        <datalist id="sport-datalist"></datalist>
+                                        <label for="message-sport">Группа (Вид спорта)</label>
+                                        <span class="text-danger" th:errors="*{sportId}"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <script th:inline="javascript">
+                                $('#message-sport').on('input',function (){
+                                    let search = $('#message-sport').val();
+                                    $.ajax({
+                                        url: '/api/get/sports',
+                                        type: 'get',
+                                        data: {
+                                            query: search,
+                                        },
+                                        success: function (sports) {
+                                            $('#sport-datalist').empty();
+                                            sports.forEach(function (sport){
+                                                $('#sport-datalist').append(
+                                                    '<option data-item="' + JSON.stringify(sport).replace(/"/g, '&quot;') + '" value="' + sport.title + '">' + sport.title + '</option>'
+                                                );
+                                            });
+                                        }
+                                    });
+                                });
+
+                                function setupSportId(dataValue){
+                                    let data = getData(dataValue);
+                                    document.getElementById('sport-hidden-input').value = data.id;
+                                }
+
+                                function getData(dataValue){
+                                    let options = document.getElementById('sport-datalist').options;
+                                    let data = null;
+                                    for (let i = 0; i < options.length; i++) {
+                                        if (options[i].value === dataValue) {
+                                            data = JSON.parse(options[i].getAttribute('data-item').replace(/"/g, '"'));
+                                            break;
+                                        }
+                                    }
+                                    return data;
+                                }
+                            </script>
+
+
+                            <!--<div class="row">
+                                <div class="col px-2">
+                                    <div class="mb-3">
+                                        <input id="hidden-input" type="number" th:field="*{sportId}" hidden>
+                                        <label for="sport" class="form-label">Группа (Вид спорта)</label>
+                                        <input type="text" class="form-control" list="sport-datalist" id="sport" onchange="setupSportId(this.value)">
+                                        <datalist id="sport-datalist"></datalist>
+                                        <div th:if="${#fields.hasErrors('sportId')}">
+                                            <div class="col fs-5 text-danger ms-1">
+                                                <p th:errors="*{sportId}"></p>
+                                            </div>
+                                        </div>
+                                        <script th:inline="javascript">
+                                            $('#sport').on('input',function (){
+                                                let search = $('#sport').val();
+                                                $.ajax({
+                                                    url: '/api/get/sports',
+                                                    type: 'get',
+                                                    data: {
+                                                        query: search,
+                                                    },
+                                                    success: function (sports) {
+                                                        $('#sport-datalist').empty();
+                                                        sports.forEach(function (sport){
+                                                            $('#sport-datalist').append(
+                                                                '<option data-item="' + JSON.stringify(sport).replace(/"/g, '&quot;') + '" value="' + sport.title + '">' + sport.title + '</option>'
+                                                            );
+                                                        });
+                                                    }
+                                                });
+                                            });
+
+                                            function setupSportId(dataValue){
+                                                let data = getData(dataValue);
+                                                document.getElementById('hidden-input').value = data.id;
+                                            }
+
+                                            function getData(dataValue){
+                                                let options = document.getElementById('sport-datalist').options;
+                                                let data = null;
+                                                for (let i = 0; i < options.length; i++) {
+                                                    if (options[i].value === dataValue) {
+                                                        data = JSON.parse(options[i].getAttribute('data-item').replace(/"/g, '"'));
+                                                        break;
+                                                    }
+                                                }
+                                                return data;
+                                            }
+                                        </script>
+                                    </div>
+                                </div>
+                            </div>-->
+                            <div class="row">
+                                <div class="col">
+                                    <div class="d-grid pb-2 px-2">
+                                        <button class="btn btn-outline-secondary" type="submit">Отправить приглашение</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col"></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

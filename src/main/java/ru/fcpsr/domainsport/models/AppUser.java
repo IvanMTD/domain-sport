@@ -60,7 +60,7 @@ public class AppUser implements UserDetails {
     }
 
     public String getFullName(){
-        return lastname + " " + firstname;
+        return firstname + " " + lastname;
     }
 
     @Override
