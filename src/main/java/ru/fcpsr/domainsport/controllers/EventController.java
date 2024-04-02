@@ -4,6 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +14,6 @@ import org.springframework.web.reactive.result.view.Rendering;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.fcpsr.domainsport.dto.EkpDTO;
-import ru.fcpsr.domainsport.dto.MailMessage;
 import ru.fcpsr.domainsport.enums.Status;
 import ru.fcpsr.domainsport.services.*;
 
@@ -30,20 +32,28 @@ public class EventController {
     private final MinioFileService fileService;
 
     private final EventService eventService;
+    private final AccessService accessService;
 
     @GetMapping("/show")
-    public Mono<Rendering> showEventPage(@RequestParam(name = "eventId") long eventId){
-        return Mono.just(
+    public Mono<Rendering> showEventPage(@AuthenticationPrincipal Authentication authentication, @RequestParam(name = "eventId") long eventId){
+        return ekpService.getById(eventId).flatMap(e -> Mono.just(
                 Rendering.view("template")
-                        .modelAttribute("title","Event page")
+                        .modelAttribute("title",e.getTitle())
+                        .modelAttribute("description","Приглашаем посетить " + e.getTitle() + ". Домен Спорт - актуальная информация о предстоящих спортивных событиях в вашем городе.")
                         .modelAttribute("index","event-page")
-                        .modelAttribute("event", eventService.getEvent(eventId))
+                        .modelAttribute("event", eventService.getEvent(eventId).flatMap(event -> accessService.getEkpAccess(authentication,"UPDATE",event.getId()).flatMap(update -> {
+                            event.setUpdate(update);
+                            return accessService.getEkpAccess(authentication,"DELETE",event.getId()).flatMap(delete -> {
+                                event.setDelete(delete);
+                                return Mono.just(event);
+                            });
+                        })))
                         .build()
-        );
+        )).switchIfEmpty(Mono.just(Rendering.redirectTo("/error").build()));
     }
 
     @GetMapping("/all")
-    public Mono<Rendering> eventsPage(@RequestParam(name = "page") int page, @RequestParam(name = "size") int size, @RequestParam(name = "search") String search){
+    public Mono<Rendering> eventsPage(@AuthenticationPrincipal Authentication authentication, @RequestParam(name = "page") int page, @RequestParam(name = "size") int size, @RequestParam(name = "search") String search){
         return ekpService.getCount(search).flatMap(count -> {
             int pageControl = page;
             if(pageControl < 0){
@@ -55,7 +65,8 @@ public class EventController {
             }
             return Mono.just(
                     Rendering.view("template")
-                            .modelAttribute("title", "Events page")
+                            .modelAttribute("title", "Все спортивные мероприятия России")
+                            .modelAttribute("description","Актуальная информация о спортивных мероприятиях России")
                             .modelAttribute("index", "events-page")
                             .modelAttribute("events", ekpService
                                     .getAllByParam(PageRequest.of(pageControl,size), search)
@@ -63,7 +74,13 @@ public class EventController {
                                     .collectList().flatMapMany(eventList -> {
                                         eventList = eventList.stream().sorted(Comparator.comparing(EkpDTO::getId)).collect(Collectors.toList());
                                         return Flux.fromIterable(eventList);
-                                    }).flatMapSequential(Mono::just)
+                                    }).flatMapSequential(event -> accessService.getEkpAccess(authentication,"UPDATE",event.getId()).flatMap(update -> {
+                                        event.setUpdate(update);
+                                        return accessService.getEkpAccess(authentication,"DELETE",event.getId()).flatMap(delete -> {
+                                            event.setDelete(delete);
+                                            return Mono.just(event);
+                                        });
+                                    }))
                             )
                             .modelAttribute("lastPage", lastPage)
                             .modelAttribute("page", pageControl)
@@ -75,7 +92,8 @@ public class EventController {
     }
 
     @GetMapping("/add")
-    public Mono<Rendering> eventAddPage(){
+    @PreAuthorize("@AccessService.getAccess(#authentication, 'CREATE')")
+    public Mono<Rendering> eventAddPage(@AuthenticationPrincipal Authentication authentication){
         return Mono.just(
                 Rendering.view("template")
                         .modelAttribute("title","Event add")
@@ -87,7 +105,8 @@ public class EventController {
     }
 
     @PostMapping("/add")
-    public Mono<Rendering> eventAdd(@ModelAttribute(name = "event") @Valid EkpDTO ekpDTO, Errors errors){
+    @PreAuthorize("@AccessService.getAccess(#authentication, 'CREATE')")
+    public Mono<Rendering> eventAdd(@AuthenticationPrincipal Authentication authentication, @ModelAttribute(name = "event") @Valid EkpDTO ekpDTO, Errors errors){
         if(ekpDTO.getEkp() == null && ekpDTO.getNum() == null){
             errors.rejectValue("ekp","","Укажите оба или один из вариантов ЕКП или Иной номер");
         }
@@ -151,7 +170,8 @@ public class EventController {
     }
 
     @GetMapping("/edit")
-    public Mono<Rendering> editPage(@RequestParam(name = "eventId") long eventId){
+    @PreAuthorize("@AccessService.getEkpAccess(#authentication,'UPDATE',#eventId)")
+    public Mono<Rendering> editPage(@AuthenticationPrincipal Authentication authentication, @RequestParam(name = "eventId") long eventId){
         return Mono.just(
                 Rendering.view("template")
                         .modelAttribute("title","Event edit page")
@@ -163,7 +183,8 @@ public class EventController {
     }
 
     @PostMapping("/update")
-    public Mono<Rendering> updateEvent(@ModelAttribute(name = "event") @Valid EkpDTO ekpDTO, Errors errors){
+    @PreAuthorize("@AccessService.getEkpAccess(#authentication,'UPDATE',#ekpDTO.getId())")
+    public Mono<Rendering> updateEvent(@AuthenticationPrincipal Authentication authentication, @ModelAttribute(name = "event") @Valid EkpDTO ekpDTO, Errors errors){
         if(ekpDTO.getEkp() == null && ekpDTO.getNum() == null){
             errors.rejectValue("ekp","","Укажите оба или один из вариантов ЕКП или Иной номер");
         }
@@ -273,7 +294,8 @@ public class EventController {
     }
 
     @GetMapping("/delete")
-    public Mono<Rendering> deleteEvent(@RequestParam(name = "eventId") long eventId){
+    @PreAuthorize("@AccessService.getEkpAccess(#authentication,'DELETE',#eventId)")
+    public Mono<Rendering> deleteEvent(@AuthenticationPrincipal Authentication authentication, @RequestParam(name = "eventId") long eventId){
         return ekpService.getById(eventId).flatMap(ekoOriginal -> {
             log.info("found ekp with id = {}", ekoOriginal.getId());
             if(ekoOriginal.getLogo() != 0) {

@@ -25,10 +25,10 @@ public class AppUserDTO {
     @NotBlank(message = "Нельзя указать пустое подтверждение пароля")
     private String confirmPassword;*/
     @NotBlank(message = "Поле имени не может быть пустым")
-    @Pattern(regexp = "^[А-Я][а-я]+", message = "Поле заполняется в формате - \"Иван\"")
+    @Pattern(regexp = "^[А-ЯA-Z][а-яa-z]+", message = "Поле заполняется в формате - \"Иван\"")
     private String firstname;
     @NotBlank(message = "Поле фамилия не может быть пустым")
-    @Pattern(regexp = "^[А-Я][а-я]+", message = "Поле заполняется в формате - \"Иванов\"")
+    @Pattern(regexp = "^[А-ЯA-Z][а-яa-z]+", message = "Поле заполняется в формате - \"Иванов\"")
     private String lastname;
     @NotBlank(message = "Подтвердите свой адрес электронной почты")
     @Email(message = "Не валидный адрес электронной почты")
@@ -48,6 +48,7 @@ public class AppUserDTO {
 
     public AppUserDTO(AppUser user) {
         setId(user.getId());
+        setRoleAccessId(user.getRoleAccessId());
         setUsername(user.getUsername());
         setFirstname(user.getFirstname());
         setLastname(user.getLastname());

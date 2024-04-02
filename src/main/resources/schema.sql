@@ -46,7 +46,8 @@ create table if not exists app_user(
     avatar_id text,
     oauth_id text,
     role text,
-    role_access_id bigint
+    role_access_id bigint,
+    politic_accept bool
 );
 
 create table if not exists role_access(

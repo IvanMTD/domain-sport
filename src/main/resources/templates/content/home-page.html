@@ -108,8 +108,8 @@
             <div class="row row-cols-1 row-cols-lg-4 row-cols-md-2 g-4 mb-2 pt-2">
                 <div class="col" th:each="event, e_stat : ${eventList}">
                     <a th:href="@{/event/show(eventId=${event.getId()})}">
-                        <div class="card">
-                            <img th:id="'img-header-' + ${e_stat.index} + '-' + ${event.getSportId()}" alt="header" class="card-img-top" th:src="@{/api/download(image=${event.getImageId()})}" style="object-fit: cover; height: 150px" onerror="setHomeDefault(this.id,'image')">
+                        <div class="card rounded-3">
+                            <img th:id="'img-header-' + ${e_stat.index} + '-' + ${event.getSportId()}" alt="header" class="card-img-top" th:src="@{/api/download(image=${event.getImageId()})}" style="object-fit: cover; height: 150px; border-radius: 7px 7px 0 0;" onerror="setHomeDefault(this.id,'image')">
                             <script th:inline="javascript">
                                 function setHomeDefault(id, param){
                                     console.log(id);
@@ -122,26 +122,29 @@
                             </script>
                             <div class="card-body d-flex flex-column" style="height: 250px">
                                 <div class="row">
-                                    <div class="cik">
-                                        <h6 class="card-subtitle mb-2 text-muted" th:text="${event.getTitle()}"></h6>
+                                    <div class="col">
+                                        <p class="card-subtitle mb-2 fs-6" th:text="${event.getTitle()}" style="color: #335e94"></p>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col">
                                         <ul class="list-inline date-card">
-                                            <li class="list-inline-item"><i class="icon feather icon-calendar"></i></li>
+                                            <li class="list-inline-item"><i class="icon feather icon-calendar text-danger"></i></li>
                                             <li class="list-inline-item"><span th:text="${event.getBeginningDate()} + ' - ' + ${event.getEndingDate()}"></span></li>
                                         </ul>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col">
-                                        <p th:text="${event.getLocation()}"></p>
+                                        <p class="text-dark" th:text="${event.getLocation()}"></p>
                                     </div>
                                 </div>
                                 <div class="mt-auto">
                                     <hr>
-                                    <small th:text="'#' + ${event.getSport().getTitle()}"></small>
+                                    <small>
+                                        <span class="text-danger" th:text="'#'"></span>
+                                        <span class="text-dark" th:text="${event.getSport().getTitle()}"></span>
+                                    </small>
                                 </div>
                             </div>
                         </div>

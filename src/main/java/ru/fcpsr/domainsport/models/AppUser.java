@@ -49,6 +49,7 @@ public class AppUser implements UserDetails {
     private String oauthId;
     private Role role;
     private long roleAccessId;
+    private boolean politicAccept;
 
     public AppUser(AppUserDTO appUserDTO){
         setUsername(appUserDTO.getUsername());

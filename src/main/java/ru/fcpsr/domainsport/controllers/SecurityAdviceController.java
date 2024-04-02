@@ -77,7 +77,7 @@ public class SecurityAdviceController {
             String pattern = authentication.getPrincipal().toString().substring(0,7);
             if(pattern.equals("AppUser")){
                 AppUser appUser = (AppUser) authentication.getPrincipal();
-                return userService.getUserByUsername(appUser.getUsername());
+                return userService.getUserByUsername(appUser.getUsername()).switchIfEmpty(userService.getUserById(appUser.getId()));
             }else{
                 OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
                 return userService.getUserByOauthId(oAuth2User.getAttribute("psuid")).flatMap(user -> ReactiveSecurityContextHolder.getContext().flatMap(securityContext -> {

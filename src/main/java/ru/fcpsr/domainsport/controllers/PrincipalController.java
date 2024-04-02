@@ -4,7 +4,6 @@ import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,10 +13,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.result.view.Rendering;
 import reactor.core.publisher.Mono;
-import ru.fcpsr.domainsport.dto.AppUserDTO;
-import ru.fcpsr.domainsport.dto.MailMessage;
-import ru.fcpsr.domainsport.dto.RoleAccessDTO;
-import ru.fcpsr.domainsport.dto.SportDTO;
+import ru.fcpsr.domainsport.dto.*;
 import ru.fcpsr.domainsport.enums.Permission;
 import ru.fcpsr.domainsport.enums.Role;
 import ru.fcpsr.domainsport.models.AppUser;
@@ -56,6 +52,7 @@ public class PrincipalController {
                             .modelAttribute("title","Profile page")
                             .modelAttribute("index","profile-page")
                             .modelAttribute("appUser", accessService.getCompletedUser(user))
+                            .modelAttribute("passwordForm",new PasswordDTO())
                             .modelAttribute("message", new MailMessage())
                             .modelAttribute("roleList", workRoles)
                             .build()
@@ -80,6 +77,7 @@ public class PrincipalController {
                                     .modelAttribute("title","Profile page")
                                     .modelAttribute("index","profile-page")
                                     .modelAttribute("appUser", accessService.getCompletedUser(user))
+                                    .modelAttribute("passwordForm",new PasswordDTO())
                                     .modelAttribute("message", message)
                                     .modelAttribute("roleList", workRoles)
                                     .build()
@@ -108,35 +106,64 @@ public class PrincipalController {
         });
     }
 
-    @PostMapping("/update")
+    @PostMapping("/update/password")
+    @PreAuthorize("@AccessService.isAuthenticate(#authentication)")
+    public Mono<Rendering> updatePassword(@AuthenticationPrincipal Authentication authentication, @ModelAttribute(name = "passwordForm") @Valid PasswordDTO passwordDTO, Errors errors){
+        AppUser appUser = (AppUser) authentication.getPrincipal();
+        return userService.checkPassword(appUser.getId(), passwordDTO.getOldPassword()).flatMap(good -> {
+            if(!good){
+                errors.rejectValue("oldPassword","","Пароль не совпадает, попробуйте еще раз");
+            }
+            if(!passwordDTO.getPassword().equals(passwordDTO.getConfirmPassword())){
+                errors.rejectValue("confirmPassword","","Подтверждение пароля не совпадает с новым паролем");
+            }
+            if(errors.hasErrors()){
+                return userService.getUserById(appUser.getId()).flatMap(user -> Mono.just(
+                        Rendering.view("template")
+                                .modelAttribute("title","Profile page")
+                                .modelAttribute("index","profile-page")
+                                .modelAttribute("appUser", accessService.getCompletedUser(user))
+                                .modelAttribute("passwordForm",passwordDTO)
+                                .modelAttribute("message", new MailMessage())
+                                .modelAttribute("roleList", workRoles)
+                                .build()
+                ));
+            }
+
+            return userService.updatePassword(appUser.getId(),passwordDTO).flatMap(user -> {
+                log.info("user password updated. user: {}", user.getFullName());
+                return Mono.just(Rendering.redirectTo("/principal/profile").build());
+            });
+        });
+    }
+
+    @PostMapping("/update/profile")
     @PreAuthorize("@AccessService.isAuthenticate(#authentication)")
     public Mono<Rendering> updatePrincipal(@AuthenticationPrincipal Authentication authentication, @ModelAttribute(name = "appUser") @Valid AppUserDTO userDTO, Errors errors){
-        System.out.println(userDTO);
+        log.info("{}",userDTO);
         AppUser currentUser = (AppUser) authentication.getPrincipal();
         if(currentUser.getId() == userDTO.getId()) {
-            return userService.checkUsername(userDTO.getUsername()).flatMap(exist -> {
+            return userService.checkUsername(userDTO.getUsername(), userDTO.getId()).flatMap(exist -> {
                 if (exist) {
-                    System.out.println("exist");
+                    log.info("exist: {}", true);
                     errors.rejectValue("username", "", "Такое имя пользователя уже занято, придумайте другое");
                 }
-                if (errors.hasErrors()) {
-                    System.out.println("ERROR");
-                    Mono<AppUserDTO> userMono = userService.getUserById(userDTO.getId()).flatMap(accessService::getCompletedUser);
-                    return Mono.just(
-                            Rendering.view("template")
-                                    .modelAttribute("title", "Profile page")
-                                    .modelAttribute("index", "profile-page")
-                                    .modelAttribute("appUser", userMono.flatMap(u -> {
-                                        userDTO.setEmail(u.getEmail());
-                                        userDTO.setRole(u.getRole());
-                                        userDTO.setRoleAccess(u.getRoleAccess());
-                                        System.out.println(userDTO);
-                                        return Mono.just(userDTO);
-                                    }))
-                                    .modelAttribute("message", new MailMessage())
-                                    .modelAttribute("roleList", workRoles)
-                                    .build()
-                    );
+                if (errors.hasFieldErrors("username") || errors.hasFieldErrors("firstname") || errors.hasFieldErrors("lastname") || errors.hasFieldErrors("birthday")) {
+                    return accessService.getRoleAccessDTO(userDTO.getRoleAccessId()).flatMap(roleAccessDTO -> {
+                        if(roleAccessDTO.getId() != 0){
+                            userDTO.setRoleAccess(roleAccessDTO);
+                        }
+                        return Mono.just(
+                                Rendering.view("template")
+                                        .modelAttribute("title", "Profile page")
+                                        .modelAttribute("index", "profile-page")
+                                        .modelAttribute("appUser", userDTO)
+                                        .modelAttribute("passwordForm",new PasswordDTO())
+                                        .modelAttribute("message", new MailMessage())
+                                        .modelAttribute("roleList", workRoles)
+                                        .build()
+                        );
+                    });
                 }
 
                 return userService.baseUserUpdate(userDTO).flatMap(user -> {
@@ -216,6 +243,7 @@ public class PrincipalController {
 
                     String randomPassword = StringGenerator.generatePassword(14);
                     return Mono.just(new AppUser(userDTO)).flatMap(user -> {
+                        user.setPoliticAccept(true);
                         user.setRole(token.getRole());
                         user.setPassword(encoder.encode(randomPassword));
                         return userService.saveUser(user);

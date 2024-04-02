@@ -73,9 +73,9 @@
                             <div class="col-3 p-1 d-flex align-items-center" style="height: 100%">
                                 <div class="btn-group" role="group" aria-label="Basic outlined example">
                                     <a th:href="@{/event/show(eventId=${event.getId()})}" class="btn btn-outline-secondary">Подробнее</a>
-                                    <a th:href="@{/event/edit(eventId=${event.getId()})}" class="btn btn-outline-secondary" th:if="${manager} or ${admin}">Редактор</a>
+                                    <a th:href="@{/event/edit(eventId=${event.getId()})}" class="btn btn-outline-secondary" th:if="${event.isUpdate()}">Редактор</a>
                                     <!-- Button trigger modal -->
-                                    <button th:id="'btn-delete-' + ${stat.index}" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#delete-modal" th:if="${manager} or ${admin}">
+                                    <button th:id="'btn-delete-' + ${stat.index}" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#delete-modal" th:if="${event.isDelete()}">
                                         Удалить
                                     </button>
                                     <!-- Modal -->
@@ -127,9 +127,9 @@
                             <div class="col-3 p-1 d-flex align-items-center" style="height: 100%">
                                 <div class="btn-group" role="group" aria-label="Basic outlined example">
                                     <a th:href="@{/event/show(eventId=${event.getId()})}" class="btn btn-outline-secondary">Подробнее</a>
-                                    <a th:href="@{/event/edit(eventId=${event.getId()})}" class="btn btn-outline-secondary" th:if="${manager} or ${admin}">Редактор</a>
+                                    <a th:href="@{/event/edit(eventId=${event.getId()})}" class="btn btn-outline-secondary" th:if="${event.isUpdate()}">Редактор</a>
                                     <!-- Button trigger modal -->
-                                    <button th:id="'btn-delete-' + ${stat.index}" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#delete-modal" th:if="${manager} or ${admin}">
+                                    <button th:id="'btn-delete-' + ${stat.index}" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#delete-modal" th:if="${event.isDelete()}">
                                         Удалить
                                     </button>
                                     <!-- Modal -->

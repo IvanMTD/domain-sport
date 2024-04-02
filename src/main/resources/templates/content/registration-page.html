@@ -1,4 +1,25 @@
 <div class="container">
+    <div class="modal fade" id="politic" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Внимание политика</h1>
+                    <!--<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+                </div>
+                <div class="modal-body">
+                    <p>Мы хотим обрабатывать Ваши персональные данные.</p>
+                    <p>Для аутентификации нам необходимы:</p>
+                    <p>1. Ваше ФИО</p>
+                    <p>2. Электронный почтовый адрес</p>
+                    <hr>
+                    <small class="fs-5">Нажимая кнопку «Подтвердить» и продолжая использовать данный сайт, Вы соглашаетесь с Политикой приватности.</small>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Подтвердить</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <form class="row" th:method="POST" th:action="@{/principal/registration/{uuid}(uuid=${uuid})}" th:object="${principalDTO}">
         <div class="col"></div>
         <div class="col-6">
@@ -138,3 +159,9 @@
         <div class="col"></div>
     </form>
 </div>
+<script>
+    window.onload = function() {
+        let myModal = new bootstrap.Modal(document.getElementById('politic'), {});
+        myModal.show();
+    };
+</script>

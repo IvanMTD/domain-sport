@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.result.view.Rendering;
 import reactor.core.publisher.Mono;
 import ru.fcpsr.domainsport.dto.AppUserDTO;
 import ru.fcpsr.domainsport.dto.ObjectAccessDTO;
@@ -14,10 +15,7 @@ import ru.fcpsr.domainsport.enums.Role;
 import ru.fcpsr.domainsport.models.AppUser;
 import ru.fcpsr.domainsport.models.AuthToken;
 import ru.fcpsr.domainsport.models.RoleAccess;
-import ru.fcpsr.domainsport.repositories.AppUserRepository;
-import ru.fcpsr.domainsport.repositories.ObjectAccessRepository;
-import ru.fcpsr.domainsport.repositories.RoleAccessRepository;
-import ru.fcpsr.domainsport.repositories.SportRepository;
+import ru.fcpsr.domainsport.repositories.*;
 
 import java.util.List;
 
@@ -29,9 +27,56 @@ public class AccessService {
     private final AppUserRepository userRepository;
     private final RoleAccessRepository roleAccessRepository;
     private final ObjectAccessRepository objectAccessRepository;
+    private final EkpRepository ekpRepository;
 
-    public Mono<Boolean> getAccess(){
-        return Mono.empty();
+    public Mono<Boolean> getAccess(Authentication authentication, String permissionString){
+        if(authentication != null) {
+            Permission permission = Permission.valueOf(permissionString);
+            AppUser appUser = (AppUser) authentication.getPrincipal();
+            return userRepository.findById(appUser.getId()).flatMap(user -> {
+                if (user.getRole().equals(Role.ADMIN)) {
+                    return Mono.just(true);
+                } else {
+                    return roleAccessRepository.findById(user.getRoleAccessId()).flatMap(roleAccess -> {
+                        if (roleAccess.getPermissionList().stream().anyMatch(p -> p.equals(permission))) {
+                            return Mono.just(true);
+                        } else {
+                            return Mono.just(false);
+                        }
+                    }).switchIfEmpty(Mono.just(false));
+                }
+            });
+        }else{
+            return Mono.just(false);
+        }
+    }
+
+    public Mono<Boolean> getEkpAccess(Authentication authentication, String permissionString, long ekpId){
+        if(authentication != null) {
+            AppUser appUser = (AppUser) authentication.getPrincipal();
+            Permission permission = Permission.valueOf(permissionString);
+            return userRepository.findById(appUser.getId()).flatMap(user -> {
+                if(user.getRole().equals(Role.ADMIN)){
+                    return Mono.just(true);
+                }else{
+                    return roleAccessRepository.findById(user.getRoleAccessId()).flatMap(roleAccess -> {
+                        return ekpRepository.findById(ekpId).flatMap(ekp -> {
+                            if(ekp.getSportId() == roleAccess.getGroupId()){
+                                if(roleAccess.getPermissionList().stream().anyMatch(p -> p.equals(permission))){
+                                    return Mono.just(true);
+                                }else{
+                                    return Mono.just(false);
+                                }
+                            }else{
+                                return Mono.just(false);
+                            }
+                        });
+                    }).switchIfEmpty(Mono.just(false));
+                }
+            });
+        }else{
+            return Mono.just(false);
+        }
     }
 
     public Mono<Boolean> isAuthenticate(Authentication authentication){
@@ -76,5 +121,22 @@ public class AccessService {
             roleAccess.setPermissions(permissions);
             return roleAccessRepository.save(roleAccess);
         });
+    }
+
+    public Mono<RoleAccessDTO> getRoleAccessDTO(long roleAccessId) {
+        return roleAccessRepository.findById(roleAccessId).flatMap(roleAccess -> {
+            RoleAccessDTO roleAccessDTO = new RoleAccessDTO(roleAccess);
+            return objectAccessRepository.findAllByIdIn(roleAccess.getObjectAccessIds()).flatMap(objectAccess -> {
+                ObjectAccessDTO objectAccessDTO = new ObjectAccessDTO(objectAccess);
+                return Mono.just(objectAccessDTO);
+            }).collectList().flatMap(oal -> {
+                roleAccessDTO.setObjectAccess(oal);
+                return sportRepository.findById(roleAccess.getGroupId()).flatMap(sport -> {
+                    SportDTO sportDTO = new SportDTO(sport);
+                    roleAccessDTO.setSport(sportDTO);
+                    return Mono.just(roleAccessDTO);
+                });
+            }).defaultIfEmpty(roleAccessDTO);
+        }).defaultIfEmpty(new RoleAccessDTO());
     }
 }

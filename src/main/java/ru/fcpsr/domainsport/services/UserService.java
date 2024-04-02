@@ -10,6 +10,7 @@ import org.springframework.web.reactive.result.view.Rendering;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.fcpsr.domainsport.dto.AppUserDTO;
+import ru.fcpsr.domainsport.dto.PasswordDTO;
 import ru.fcpsr.domainsport.models.AppUser;
 import ru.fcpsr.domainsport.repositories.AppUserRepository;
 
@@ -50,6 +51,17 @@ public class UserService implements ReactiveUserDetailsService{
         return userRepository.findByUsername(username).flatMap(userDetails -> Mono.just(true)).defaultIfEmpty(false);
     }
 
+    public Mono<Boolean> checkUsername(String username, long userId) {
+        return userRepository.findByUsername(username).flatMap(userDetails -> {
+            AppUser user = (AppUser) userDetails;
+            if(user.getId() == userId){
+                return Mono.just(false);
+            }else{
+                return Mono.just(true);
+            }
+        }).defaultIfEmpty(false);
+    }
+
     public Mono<AppUser> saveUser(AppUser user) {
         return userRepository.save(user);
     }
@@ -60,6 +72,23 @@ public class UserService implements ReactiveUserDetailsService{
             user.setFirstname(userDTO.getFirstname());
             user.setLastname(userDTO.getLastname());
             user.setBirthday(userDTO.getBirthday());
+            return userRepository.save(user);
+        });
+    }
+
+    public Mono<Boolean> checkPassword(long id, String password) {
+        return userRepository.findById(id).flatMap(user -> {
+            if(encoder.matches(password,user.getPassword())){
+                return Mono.just(true);
+            }else{
+                return Mono.just(false);
+            }
+        });
+    }
+
+    public Mono<AppUser> updatePassword(long id, PasswordDTO passwordDTO) {
+        return userRepository.findById(id).flatMap(user -> {
+            user.setPassword(encoder.encode(passwordDTO.getPassword()));
             return userRepository.save(user);
         });
     }

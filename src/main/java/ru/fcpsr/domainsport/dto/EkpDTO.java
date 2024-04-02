@@ -51,6 +51,9 @@ public class EkpDTO {
     private float d;
     private String present;
 
+    private boolean update;
+    private boolean delete;
+
     public EkpDTO(Ekp ekp){
         setId(ekp.getId());
         setEkp(ekp.getEkp());

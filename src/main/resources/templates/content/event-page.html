@@ -25,12 +25,12 @@
                         </h2>
                     </div>
                     <div class="col">
-                        <div class="d-none d-md-block float-end" th:if="${manager} or ${admin}">
-                            <a th:href="@{/event/edit(eventId=${event.getId()})}" class="btn btn-secondary btn-icon-text">
+                        <div class="d-none d-md-block float-end">
+                            <a th:href="@{/event/edit(eventId=${event.getId()})}" class="btn btn-secondary btn-icon-text" th:if="${event.isUpdate()}">
                                 <i class="bi bi-box-arrow-in-down-left"></i> Редактировать информацию
                             </a>
                             <!-- Button trigger modal -->
-                            <button type="button" class="btn btn-secondary btn-icon-text" data-bs-toggle="modal" data-bs-target="#delete-modal">
+                            <button type="button" class="btn btn-secondary btn-icon-text" data-bs-toggle="modal" data-bs-target="#delete-modal" th:if="${event.isDelete()}">
                                 <i class="bi bi-trash"></i> Удалить
                             </button>
                             <!-- Modal -->

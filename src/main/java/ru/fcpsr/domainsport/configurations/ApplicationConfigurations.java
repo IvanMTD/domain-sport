@@ -1,5 +1,6 @@
 package ru.fcpsr.domainsport.configurations;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,23 +13,28 @@ import ru.fcpsr.domainsport.repositories.SportRepository;
 
 import java.time.LocalDate;
 
+@Slf4j
 @Configuration
 public class ApplicationConfigurations {
     @Bean
     public CommandLineRunner preSetup(AppUserRepository userRepository, SportRepository sportRepository, PasswordEncoder encoder){
         return args -> {
-            userRepository.findByUsername("admin")
-                    .switchIfEmpty(Mono.just(new AppUser()))
-                    .flatMap(user -> {
-                        AppUser appUser = (AppUser) user;
+            userRepository.findByUsername("admin").flatMap(user -> {
+                log.info("user {} exist", user.getUsername());
+                return Mono.just(user);
+            }).switchIfEmpty(
+                    Mono.just(new AppUser()).flatMap(appUser -> {
                         appUser.setUsername("admin");
                         appUser.setPassword(encoder.encode("Admin2020"));
                         appUser.setFirstname("Master");
                         appUser.setLastname("Admin");
+                        appUser.setBirthday(LocalDate.of(1985,10,30));
+                        appUser.setEmail("admin@fcpsr.ru");
                         appUser.setPlacedAt(LocalDate.now());
                         appUser.setRole(Role.ADMIN);
                         return userRepository.save(appUser);
-                    }).subscribe();
+                    })
+            ).subscribe();
         };
     }
 }
