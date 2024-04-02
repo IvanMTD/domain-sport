@@ -15,7 +15,7 @@ import ru.fcpsr.domainsport.dto.MailMessage;
 @Service
 @RequiredArgsConstructor
 public class EmailService {
-    private final String fromMail = "morgan-t-darck@yandex.ru";
+    private final String fromMail = "domensport@yandex.ru";
     private final JavaMailSender mailSender;
 
     public void sendEmail(MailMessage mailMessage) throws MessagingException {
