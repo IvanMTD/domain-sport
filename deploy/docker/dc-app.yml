@@ -9,7 +9,7 @@ services:
     ports:
       - '8085:8080'
     volumes:
-     - img_decode:/src/main/resources/static/img
+     - img_decode:/app/img-decode
     environment:
       APP_NAME: ${APP_NAME}
       APP_ENV: ${APP_ENV}
