@@ -19,9 +19,14 @@ public class ApplicationConfigurations {
     @Bean
     public CommandLineRunner preSetup(AppUserRepository userRepository, SportRepository sportRepository, PasswordEncoder encoder){
         return args -> {
+            log.info("****************environments start*******************");
             for(String key : System.getenv().keySet()){
-                System.out.println("key: " + key + " | Value: " + System.getenv().get(key));
+                String[] p = key.split("\\.");
+                if(p.length > 1) {
+                    log.info("{}={}", key, System.getenv().get(key));
+                }
             }
+            log.info("********************environments end******************");
             userRepository.findByUsername("admin").flatMap(user -> {
                 log.info("user {} exist", user.getUsername());
                 return Mono.just(user);
