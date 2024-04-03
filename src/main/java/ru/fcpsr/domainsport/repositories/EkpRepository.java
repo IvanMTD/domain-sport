@@ -13,12 +13,14 @@ import java.time.LocalDate;
 public interface EkpRepository extends ReactiveCrudRepository<Ekp,Long> {
 
     Flux<Ekp> findAllBy(Pageable pageable);
+    Flux<Ekp> findAllByOrderByBeginning(Pageable pageable);
 
     @Query("SELECT * FROM ekp WHERE :date BETWEEN ekp.beginning AND ekp.ending")
     Flux<Ekp> findAllWitchDate(@Param("date") LocalDate date);
 
     Flux<Ekp> findAllBySportId(long sportId);
     Flux<Ekp> findAllBySportId(Pageable pageable, long sportId);
+    Flux<Ekp> findAllBySportIdOrderByBeginning(Pageable pageable, long sportId);
 
     @Query("SELECT * FROM ekp WHERE :sportId = ekp.sport_id AND :date BETWEEN ekp.beginning AND ekp.ending")
     Flux<Ekp> findAllBySportIdAndDate(@Param("sportId") long sportId, @Param("date") LocalDate date);

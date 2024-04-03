@@ -34,10 +34,10 @@ public class EkpService {
 
     public Flux<Ekp> getAllByParam(Pageable pageable, String search){
         if(search.equals("all")) {
-            return ekpRepository.findAllBy(pageable);
+            return ekpRepository.findAllByOrderByBeginning(pageable);
         }else{
             long sportId = Long.parseLong(search);
-            return ekpRepository.findAllBySportId(pageable, sportId);
+            return ekpRepository.findAllBySportIdOrderByBeginning(pageable, sportId);
         }
     }
 
