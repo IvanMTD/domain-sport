@@ -23,7 +23,7 @@ services:
 	"minio.url" : "http://domensport-minio-1:9000",
 	"minio.username" : "$MINIO_USERNAME",
 	"minio.password" : "$MINIO_PASSWORD",
-        "yandex.map.api" : "$YA_APIKEY",
+        "yandex.map.apikey" : "$YA_APIKEY",
 	"spring.security.oauth2.client.registration.yandex.client-id" : "$YA_ID",
 	"spring.security.oauth2.client.registration.yandex.client-secret" : "$YA_SECRET",
 	"spring.security.oauth2.client.registration.yandex.redirect-uri" : "http://$APP_DOMAIN:8080/login/oauth2/code/{registrationId}",
