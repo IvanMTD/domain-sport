@@ -35,6 +35,7 @@ import java.util.Objects;
 public class MinioService {
     private final String bucket;
     private final MinioClient minioClient;
+    private final String directory = "./img-decode/";
 
     @SneakyThrows
     public MinioService(MinioClient minioClient, @Value("${minio.bucket}") String bucket) {
@@ -82,7 +83,6 @@ public class MinioService {
 
     public Mono<MinioResponse> uploadImage(FilePart image) {
         String tempName = StringGenerator.getGeneratedString(20);
-        String directory = "./src/main/resources/static/img/";
         return image.transferTo(Path.of(directory + tempName))
                 .then(Mono.just(new File(directory + tempName)))
                 .flatMap(file -> {
@@ -156,7 +156,6 @@ public class MinioService {
 
     @SneakyThrows
     private void cleanup(String tempName) {
-        String directory = "./src/main/resources/static/img/";
         File f1 = new File(directory + tempName);
         File f2 = new File(directory + tempName + ".webp");
         if (f1.exists()) {
