@@ -221,6 +221,10 @@ color: #222;
   color: red;
 }
 
+/*
+Ivan - my css variable
+*/
+
 .select2-selection__choice {
     color: black !important;
 }
@@ -234,3 +238,6 @@ color: #222;
     line-height: 40px !important; /* Это значение должно быть таким же, как высота, чтобы текст был вертикально выровнен */
 }
 
+.img-ratio-control {
+
+}
