@@ -240,4 +240,5 @@ Ivan - my css variable
 
 .img-ratio-control {
 
+    object-fit: cover;
 }
