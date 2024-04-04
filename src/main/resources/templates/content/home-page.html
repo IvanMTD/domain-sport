@@ -103,12 +103,14 @@
         </div>
     </div>
     <div class="row">
-        <main class="pt-3">
+        <div class="col pt-5">
+            <hr>
             <h1 class="main-title">Главные спортивные события</h1>
-            <div class="row row-cols-1 row-cols-lg-4 row-cols-md-2 g-4 mb-2 pt-2">
+            <div class="row row-cols-auto g-5 g-lg-5 justify-content-center">
+
                 <div class="col" th:each="event, e_stat : ${eventList}">
                     <a th:href="@{/event/show(eventId=${event.getId()})}">
-                        <div class="card rounded-3">
+                        <div class="card rounded-4 shadow" style="width: 18rem; height: 25rem">
                             <img th:id="'img-header-' + ${e_stat.index} + '-' + ${event.getSportId()}" alt="header" class="card-img-top" th:src="@{/api/download(image=${event.getImageId()})}" style="object-fit: cover; height: 150px; border-radius: 7px 7px 0 0;" onerror="setHomeDefault(this.id,'image')">
                             <script th:inline="javascript">
                                 function setHomeDefault(id, param){
@@ -126,13 +128,14 @@
                                         <p class="card-subtitle mb-2 fs-6" th:text="${event.getTitle()}" style="color: #335e94"></p>
                                     </div>
                                 </div>
-                                <div class="row">
+                                <div class="row" style="position: relative; max-height: 100px; overflow: hidden;">
                                     <div class="col">
                                         <ul class="list-inline date-card">
                                             <li class="list-inline-item"><i class="icon feather icon-calendar text-danger"></i></li>
                                             <li class="list-inline-item"><span th:text="${event.getBeginningDate()} + ' - ' + ${event.getEndingDate()}"></span></li>
                                         </ul>
                                     </div>
+                                    <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 1.2em; background: linear-gradient(to top, white, transparent);"></div>
                                 </div>
                                 <div class="row">
                                     <div class="col">
@@ -150,8 +153,10 @@
                         </div>
                     </a>
                 </div>
+
             </div>
-        </main>
+
+        </div>
     </div>
 </div>
 <script th:inline="javascript">
@@ -384,7 +389,7 @@
                 '           <div class="col">' +
                 '               <div class="row">' +
                 '                   <div class="col">' +
-                '       <a href="/event/show?eventId=' + ekpList[i].id + '" class="btn btn-link">Карточка соревнования</a>\n' +
+                '                       <a href="/event/show?eventId=' + ekpList[i].id + '" class="btn btn-link">Карточка соревнования</a>\n' +
                 '                   </div>' +
                 '               </div>' +
                 '           </div>' +

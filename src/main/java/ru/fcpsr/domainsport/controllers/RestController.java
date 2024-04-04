@@ -3,6 +3,7 @@ package ru.fcpsr.domainsport.controllers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import reactor.core.publisher.Mono;
 import ru.fcpsr.domainsport.dto.DisciplineDTO;
 import ru.fcpsr.domainsport.dto.EkpDTO;
 import ru.fcpsr.domainsport.dto.SportDTO;
+import ru.fcpsr.domainsport.dto.SportObjectDTO;
 import ru.fcpsr.domainsport.models.Discipline;
 import ru.fcpsr.domainsport.services.*;
 
@@ -31,6 +33,7 @@ public class RestController {
     private final MinioFileService fileService;
     private final MinioService minioService;
     private final EventService eventService;
+    private final SportObjectService sportObjectService;
     @GetMapping("/get/ekp/by/date")
     public Flux<EkpDTO> findByDate(@RequestParam(name = "query") String query){
         return ekpService.getByDate(query);
@@ -91,6 +94,12 @@ public class RestController {
             l = l.stream().sorted(Comparator.comparing(SportDTO::getTitle)).collect(Collectors.toList());
             return Flux.fromIterable(l);
         }).flatMapSequential(Mono::just).take(10);
+    }
+
+    @GetMapping("/get/next/object")
+    public Flux<SportObjectDTO> getNext(@RequestParam(name = "stack") String stack){
+        int page = Integer.parseInt(stack);
+        return sportObjectService.getAllSortedById(PageRequest.of(page,8)).flatMapSequential(sportObject -> Mono.just(new SportObjectDTO(sportObject)));
     }
 
     @ResponseBody
