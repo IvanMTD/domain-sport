@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.result.view.Rendering;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import ru.fcpsr.domainsport.dto.DisciplineDTO;
 import ru.fcpsr.domainsport.dto.EkpDTO;
+import ru.fcpsr.domainsport.dto.SportDTO;
 import ru.fcpsr.domainsport.enums.Status;
+import ru.fcpsr.domainsport.models.AppUser;
 import ru.fcpsr.domainsport.services.*;
 
 import java.util.Comparator;
@@ -30,9 +33,10 @@ public class EventController {
     private final GeocodeService geocodeService;
     private final MinioService minioService;
     private final MinioFileService fileService;
-
     private final EventService eventService;
     private final AccessService accessService;
+    private final SportService sportService;
+    private final DisciplineService disciplineService;
 
     @GetMapping("/show")
     public Mono<Rendering> showEventPage(@AuthenticationPrincipal Authentication authentication, @RequestParam(name = "eventId") long eventId){
@@ -99,6 +103,7 @@ public class EventController {
                         .modelAttribute("title","Event add")
                         .modelAttribute("index","event-add-page")
                         .modelAttribute("event",new EkpDTO())
+                        .modelAttribute("currentSport", getCurrentSport(authentication))
                         .modelAttribute("statusList", Status.values())
                         .build()
         );
@@ -116,6 +121,7 @@ public class EventController {
                             .modelAttribute("title","Event add")
                             .modelAttribute("index","event-add-page")
                             .modelAttribute("event", ekpDTO)
+                            .modelAttribute("currentSport", getCurrentSport(authentication))
                             .modelAttribute("statusList", Status.values())
                             .build()
             );
@@ -169,6 +175,25 @@ public class EventController {
         });
     }
 
+    private Mono<SportDTO> getCurrentSport(Authentication authentication){
+        AppUser appUser = (AppUser) authentication.getPrincipal();
+        Mono<SportDTO> sportMono = accessService.getRoleAccess(appUser.getRoleAccessId()).flatMap(roleAccess -> {
+            log.info("found role access: {}", roleAccess.toString());
+            return sportService.getById(roleAccess.getGroupId()).flatMap(sport -> {
+                SportDTO sportDTO = new SportDTO(sport);
+                return disciplineService.getAllByIds(sport.getDisciplineIds()).flatMap(discipline -> {
+                    DisciplineDTO disciplineDTO = new DisciplineDTO(discipline);
+                    return Mono.just(disciplineDTO);
+                }).collectList().flatMap(dl -> {
+                    dl = dl.stream().sorted(Comparator.comparing(DisciplineDTO::getTitle)).collect(Collectors.toList());
+                    sportDTO.setDisciplines(dl);
+                    return Mono.just(sportDTO);
+                });
+            });
+        }).switchIfEmpty(Mono.empty());
+        return sportMono;
+    }
+
     @GetMapping("/edit")
     @PreAuthorize("@AccessService.getEkpAccess(#authentication,'UPDATE',#eventId)")
     public Mono<Rendering> editPage(@AuthenticationPrincipal Authentication authentication, @RequestParam(name = "eventId") long eventId){
@@ -176,8 +201,9 @@ public class EventController {
                 Rendering.view("template")
                         .modelAttribute("title","Event edit page")
                         .modelAttribute("index","event-edit-page")
-                        .modelAttribute("statusList", Status.values())
                         .modelAttribute("event", eventService.getEvent(eventId))
+                        .modelAttribute("currentSport", getCurrentSport(authentication))
+                        .modelAttribute("statusList", Status.values())
                         .build()
         );
     }
@@ -194,6 +220,7 @@ public class EventController {
                             .modelAttribute("title","Event add")
                             .modelAttribute("index","event-add-page")
                             .modelAttribute("event", ekpDTO)
+                            .modelAttribute("currentSport", getCurrentSport(authentication))
                             .modelAttribute("statusList", Status.values())
                             .build()
             );

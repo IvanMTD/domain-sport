@@ -45,7 +45,18 @@
                 $('#summernote').summernote({
                     height: 300,
                     placeholder:'Описание соревнования',
-                    lang: 'ru-RU'
+                    lang: 'ru-RU',
+                    toolbar: [
+                        ['style', ['style']],
+                        ['font', ['bold', 'italic', 'underline', 'clear']],
+                        ['fontsize', ['fontsize']],
+                        ['fontname', ['fontname']],
+                        ['color', ['color']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['table', ['table']],
+                        ['insert', ['link', 'picture', 'video']],
+                        ['view', ['codeview', 'help']],
+                    ]
                 });
             });
         </script>

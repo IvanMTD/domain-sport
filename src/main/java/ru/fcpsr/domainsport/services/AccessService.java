@@ -139,4 +139,8 @@ public class AccessService {
             }).defaultIfEmpty(roleAccessDTO);
         }).defaultIfEmpty(new RoleAccessDTO());
     }
+
+    public Mono<RoleAccess> getRoleAccess(long roleAccessId) {
+        return roleAccessRepository.findById(roleAccessId);
+    }
 }

@@ -101,52 +101,94 @@
                     </div>
                 </div>
             </div>
-            <div class="row py-1">
-                <div class="col">
-                    <div class="form-floating mb-1">
-                        <input type="text" class="form-control" id="search-form" list="datalist-form" placeholder="Поиск вида спорта ..." onchange="setupDiscipline()" th:field="*{sport.title}">
-                        <label for="search-form">Вид спорта</label>
-                        <input type="number" id="input-sport-id" th:field="*{sportId}" hidden>
-                        <datalist id="datalist-form"></datalist>
+            <!-- admin -->
+            <div th:if="${admin}">
+                <div class="row py-1">
+                    <div class="col">
+                        <div class="form-floating mb-1">
+                            <input type="text" class="form-control" id="search-form" list="datalist-form" placeholder="Поиск вида спорта ..." onchange="setupDiscipline()" th:field="*{sport.title}">
+                            <label for="search-form">Вид спорта</label>
+                            <input type="number" id="input-sport-id" th:field="*{sportId}" hidden>
+                            <datalist id="datalist-form"></datalist>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="row py-1" th:if="${#fields.hasErrors('sportId')}">
-                <div class="col fs-5 text-danger ms-1">
-                    <p th:errors="*{sportId}"></p>
-                </div>
-            </div>
-            <div class="row py-1" id="discipline-message" hidden>
-                <div class="col">
-                    <div class="form-floating mb-1">
-                        <input type="text" class="form-control" id="disciplines-terminator" placeholder="Сменить дисциплину можно при повторном выборе вида спорта" disabled>
-                        <label for="disciplines-terminator">Дисциплины</label>
+                <div class="row py-1" th:if="${#fields.hasErrors('sportId')}">
+                    <div class="col fs-5 text-danger ms-1">
+                        <p th:errors="*{sportId}"></p>
                     </div>
                 </div>
-            </div>
-            <div class="row py-1" id="discipline-div">
-                <div class="col">
-                    <div class="form-floating mb-1">
-                        <select type="text" class="form-control js-example-basic-multiple" multiple="multiple" id="discipline-select" th:field="*{disciplineIds}">
-                            <option th:each="discipline : ${event.getDisciplines()}" th:value="${discipline.getId()}" th:text="${discipline.getTitle()}"></option>
-                        </select>
-                        <label for="discipline-select"></label>
-                        <script th:inline="javascript">
-                            let options = []; // Массив для хранения элементов
-                            let select2JQobject = $('#discipline-select'); // JQuery объект вашего select2 элемента
-                            let disciplines = [[${event}]].sport.disciplines;
+                <div class="row py-1" id="discipline-message" hidden>
+                    <div class="col">
+                        <div class="form-floating mb-1">
+                            <input type="text" class="form-control" id="disciplines-terminator" placeholder="Сменить дисциплину можно при повторном выборе вида спорта" disabled>
+                            <label for="disciplines-terminator">Дисциплины</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row py-1" id="discipline-div">
+                    <div class="col">
+                        <div class="form-floating mb-1">
+                            <select type="text" class="form-control js-example-basic-multiple" multiple="multiple" id="discipline-select" th:field="*{disciplineIds}">
+                                <option th:each="discipline : ${event.getDisciplines()}" th:value="${discipline.getId()}" th:text="${discipline.getTitle()}"></option>
+                            </select>
+                            <label for="discipline-select"></label>
+                            <script th:inline="javascript">
+                                let options = []; // Массив для хранения элементов
+                                let select2JQobject = $('#discipline-select'); // JQuery объект вашего select2 элемента
+                                let disciplines = [[${event}]].sport.disciplines;
 
-                            disciplines.forEach(function (d){
-                                options.push(new Option(d.title, d.id, true, true));
-                            })
+                                disciplines.forEach(function (d){
+                                    options.push(new Option(d.title, d.id, true, true));
+                                })
 
-                            // Добавляем элементы из массива options в select2
-                            select2JQobject.append(options).trigger('change');
-                            select2JQobject.select2();
-                        </script>
+                                // Добавляем элементы из массива options в select2
+                                select2JQobject.append(options).trigger('change');
+                                select2JQobject.select2();
+                            </script>
+                        </div>
                     </div>
                 </div>
             </div>
+            <!--manager-->
+            <div th:if="${manager}">
+                <div class="row py-1">
+                    <div class="col">
+                        <div class="form-floating mb-1">
+                            <input type="number" id="manager-sport-id" th:field="*{sportId}" hidden>
+                            <script th:inline="javascript">
+                                document.getElementById('manager-sport-id').value = [[${currentSport}]].id;
+                            </script>
+                            <input type="text" class="form-control" th:value="${currentSport.getTitle()}" disabled>
+                            <label for="search-form">Вид спорта</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row py-1" id="discipline-list">
+                    <div class="col">
+                        <div class="form-floating mb-1">
+                            <select type="text" class="form-control js-example-basic-multiple" multiple="multiple" id="discipline-select" th:field="*{disciplineIds}">
+                                <option th:each="discipline : ${event.getDisciplines()}" th:value="${discipline.getId()}" th:text="${discipline.getTitle()}"></option>
+                            </select>
+                            <label for="discipline-select"></label>
+                            <script th:inline="javascript">
+                                let options = []; // Массив для хранения элементов
+                                let select2JQobject = $('#discipline-select'); // JQuery объект вашего select2 элемента
+                                let disciplines = [[${event}]].sport.disciplines;
+
+                                disciplines.forEach(function (d){
+                                    options.push(new Option(d.title, d.id, true, true));
+                                })
+
+                                // Добавляем элементы из массива options в select2
+                                select2JQobject.append(options).trigger('change');
+                                select2JQobject.select2();
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row py-1">
                 <div class="col">
                     <div class="form-floating mb-1">

@@ -67,6 +67,7 @@ public class Ekp {
         setSportId(ekpDTO.getSportId());
         setS(ekpDTO.getS());
         setD(ekpDTO.getD());
+        this.disciplineIds = new HashSet<>();
         this.disciplineIds.addAll(ekpDTO.getDisciplineIds());
     }
 }
