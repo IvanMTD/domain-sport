@@ -10,7 +10,7 @@
                             </figure>
                             <div class="d-flex justify-content-between align-items-center position-absolute top-90 w-100 px-2 px-md-4 mt-n4">
                                 <div>
-                                    <img alt="logo" class="wd-140 icon-circle" th:src="@{/api/download(image=${event.getLogoId()})}" style="object-fit: cover; width: 140px; height: 140px" onerror="setEventDefault(this,'logo')">
+                                    <img alt="logo" class="wd-140 card-animation icon-circle" th:src="@{/api/download(image=${event.getLogoId()})}" style="object-fit: cover; width: 140px; height: 140px" onerror="setEventDefault(this,'logo')">
                                 </div>
                             </div>
                         </div>
@@ -18,14 +18,14 @@
                 </div>
             </div>
             <div class="container pt-6">
-                <div class="row">
-                    <div class="col-8">
+                <div class="row row-cols-1 row-cols-lg-2">
+                    <div class="col col-lg-6 col-sm-12">
                         <h2>
                             <small class="text-secondary" th:text="${event.getTitle()}"></small>
                         </h2>
                     </div>
-                    <div class="col">
-                        <div class="d-none d-md-block float-end">
+                    <div class="col col-lg-6 col-sm-12">
+                        <div class="float-end">
                             <a th:href="@{/event/edit(eventId=${event.getId()})}" class="btn btn-secondary btn-icon-text" th:if="${event.isUpdate()}">
                                 <i class="bi bi-box-arrow-in-down-left"></i> Редактировать информацию
                             </a>

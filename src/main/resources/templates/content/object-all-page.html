@@ -15,7 +15,7 @@
     <div class="row row-cols-auto g-5 g-lg-5 justify-content-center" id="object-container">
 
         <div class="col" th:each="object : ${objects}">
-            <div class="card rounded-4 shadow" style="width: 18rem; height: 25rem">
+            <div class="card card-animation zoom-control rounded-4 shadow" style="width: 18rem; height: 25rem">
                 <div class="card-img-container" style="width: 100%; height: 150px; border-radius: 1rem 1rem 0 0">
                     <img th:src="@{/api/download(image=${object.getImageIds().get(0)})}" class="zoom-effect img-ratio-control" alt="...">
                 </div>
@@ -55,7 +55,7 @@
                                 objects.forEach(function (object) {
                                     $('#object-container').append(
                                         '<div class="col">\n' +
-                                        '   <div class="card rounded-4 shadow" style="width: 18rem; height: 25rem">\n' +
+                                        '   <div class="card card-animation zoom-control rounded-4 shadow" style="width: 18rem; height: 25rem">\n' +
                                         '       <div class="card-img-container" style="width: 100%; height: 150px; border-radius: 1rem 1rem 0 0">\n' +
                                         '           <img src="/api/download?image=' + object.imageIds[0] + '" class="zoom-effect" alt="...">\n' +
                                         '       </div>' +
