@@ -9,11 +9,8 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
                 <ul class="navbar-nav me-auto mt-2 mt-lg-0">
-                    <li class="nav-item active">
-                        <a class="nav-link" th:href="@{/}">Главная</span></a>
-                    </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/event/all(page=0,size=10,search='all')}">Спортмероприятия</a>
+                        <a class="nav-link" th:href="@{/event/all(page=0,size=12,search='all')}">Спортмероприятия</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Виды спорта</a>
@@ -28,78 +25,84 @@
                         <a class="nav-link" th:href="@{/object/all}">Спортивные объекты</a>
                     </li>
                 </ul>
-                <form class="d-flex">
-                    <input class="form-control me-sm-2" placeholder="Поиск" type="search">
-                </form>
-                <div th:if="${!auth}">
-                    <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#loginModal">
-                        Авторизация
-                    </button>
-                    <!-- Modal -->
-                    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModal" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-4 text-secondary"><small>Авторизация</small></h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form class="container" th:method="POST" th:action="@{/}">
-                                        <div class="row">
-                                            <div class="col">
-                                                <div class="input-group mb-3">
-                                                    <span class="input-group-text" style="width: 100px">Логин</span>
-                                                    <input type="text" class="form-control" placeholder="Имя пользователя" name="username">
-                                                </div>
-                                            </div>
+                <div class="row">
+                    <div class="col-8">
+                        <form class="d-flex">
+                            <input class="form-control me-sm-2" placeholder="Поиск" type="search">
+                        </form>
+                    </div>
+                    <div class="col-4">
+                        <div th:if="${!auth}">
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-outline-secondary ms-2" data-bs-toggle="modal" data-bs-target="#loginModal">
+                                Авторизация
+                            </button>
+                            <!-- Modal -->
+                            <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModal" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-4 text-secondary"><small>Авторизация</small></h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
-                                        <div class="row">
-                                            <div class="col">
-                                                <div class="input-group mb-3">
-                                                    <span class="input-group-text" style="width: 100px">Пароль</span>
-                                                    <input type="password" class="form-control" placeholder="Ваш пароль" name="password">
+                                        <div class="modal-body">
+                                            <form class="container" th:method="POST" th:action="@{/}">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <div class="input-group mb-3">
+                                                            <span class="input-group-text" style="width: 100px">Логин</span>
+                                                            <input type="text" class="form-control" placeholder="Имя пользователя" name="username">
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <div class="input-group mb-3">
+                                                            <span class="input-group-text" style="width: 100px">Пароль</span>
+                                                            <input type="password" class="form-control" placeholder="Ваш пароль" name="password">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <div class="d-grid gap-2">
+                                                            <button class="btn btn-primary" type="submit">Вход</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
                                         </div>
-                                        <div class="row">
-                                            <div class="col">
-                                                <div class="d-grid gap-2">
-                                                    <button class="btn btn-primary" type="submit">Вход</button>
+                                        <div class="modal-footer">
+                                            <div class="container">
+                                                <div class="row">
+                                                    <div class="col d-flex align-items-center">
+                                                        <div class="d-grid gap-2" style="width: 100%">
+                                                            <a th:href="@{/oauth2/authorization/yandex}" class="btn btn-outline-danger">Войти через Yandex</a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-2 ps-4">
+                                                        <img src="https://yastatic.net/s3/home/logos/doodle/mourning/mourning_ru_dark_2.svg">
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <div class="container">
-                                        <div class="row">
-                                            <div class="col d-flex align-items-center">
-                                                <div class="d-grid gap-2" style="width: 100%">
-                                                    <a th:href="@{/oauth2/authorization/yandex}" class="btn btn-outline-danger">Войти через Yandex</a>
-                                                </div>
-                                            </div>
-                                            <div class="col-2 ps-4">
-                                                <img src="https://yastatic.net/s3/home/logos/doodle/mourning/mourning_ru_dark_2.svg">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="dropdown" th:if="${auth}">
-                    <button class="btn btn-link dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="dropdownMenuButton4">
-                        <img class="rounded-5" th:src="'https://avatars.yandex.net/get-yapic/' + ${principal.getAvatarId()} + '/islands-34'">
-                        <span th:text="${principal.getFullName()}"></span>
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton4">
-                        <a class="dropdown-item" th:href="@{/principal/profile}">Профиль</a>
-                        <div class="dropdown-divider"></div>
-                        <form th:method="POST" th:action="@{/logout}">
-                            <input type="submit" class="btn bnt-link" value="Выход">
-                        </form>
+                        <div class="dropdown" th:if="${auth}">
+                            <button class="btn btn-link dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="dropdownMenuButton4">
+                                <img class="rounded-5" th:src="'https://avatars.yandex.net/get-yapic/' + ${principal.getAvatarId()} + '/islands-34'">
+                                <span th:text="${principal.getFullName()}"></span>
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton4">
+                                <a class="dropdown-item" th:href="@{/principal/profile}">Профиль</a>
+                                <div class="dropdown-divider"></div>
+                                <form th:method="POST" th:action="@{/logout}">
+                                    <input type="submit" class="btn bnt-link" value="Выход">
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -23,7 +23,7 @@ public class SportObjectController {
                         .modelAttribute("title","Поиск спортивных организаций по всей России для проведения соревнований")
                         .modelAttribute("description","Спортивные организации России")
                         .modelAttribute("index","object-all-page")
-                        .modelAttribute("objects",sportObjectService.getAllSortedById(PageRequest.of(0,8)).flatMapSequential(sportObject -> Mono.just(new SportObjectDTO(sportObject))))
+                        .modelAttribute("objects",sportObjectService.getAllSortedById(PageRequest.of(0,12)).flatMapSequential(sportObject -> Mono.just(new SportObjectDTO(sportObject))))
                         .build()
         );
     }

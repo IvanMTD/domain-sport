@@ -54,7 +54,7 @@ public class HomeController {
     }
 
     private Flux<EkpDTO> getEventList(){
-        return ekpService.getAllSortedByCurrentDate().take(8).flatMap(ekp -> {
+        return ekpService.getAllSortedByCurrentDate().take(12).flatMap(ekp -> {
             EkpDTO ekpDTO = new EkpDTO(ekp);
             return sportService.getById(ekp.getSportId()).flatMap(sport -> {
                 SportDTO sportDTO = new SportDTO(sport);

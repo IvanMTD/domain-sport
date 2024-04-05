@@ -19,141 +19,80 @@
             </div>
         </div>
     </div>
+    <hr>
     <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-body">
-                    <h6 class="card-title">Мероприятия</h6>
-                    <div class="row">
-                        <div class="col-1 p-1 text-center">
-                            <small>№</small>
-                        </div>
-                        <div class="col-1 p-1 text-center">
-                            <small>№ ЕКП</small>
-                        </div>
-                        <div class="col-1 p-1 text-center">
-                            <small>Даты проведения</small>
-                        </div>
-                        <div class="col-2 p-1 text-center">
-                            <small>Название соревнования</small>
-                        </div>
-                        <div class="col-2 p-1 text-center">
-                            <small>Вид спорта и категории</small>
-                        </div>
-                        <div class="col-2 p-1 text-center">
-                            <small>Место проведения</small>
-                        </div>
-                        <div class="col-3 p-1 text-center">
-                            <small>Детали</small>
-                        </div>
+        <div class="col">
+            <h2>
+                <small class="text-secondary">Спортивные мероприятия России</small>
+            </h2>
+        </div>
+    </div>
+    <hr>
+    <br>
+    <div class="row row-cols-auto g-5 g-lg-5 justify-content-center">
+
+        <div class="col" th:each="event, e_stat : ${events}">
+            <div class="card rounded-4 shadow" style="width: 18rem; height: 25rem">
+                <div class="card-img-container" style="width: 100%; height: 150px; border-radius: 1rem 1rem 0 0">
+                    <img th:id="'img-header-' + ${e_stat.index} + '-' + ${event.getSportId()}" th:src="@{/api/download(image=${event.getImageId()})}" class="card-img-top img-ratio-control zoom-effect" alt="header" onerror="setHomeDefault(this.id,'image')">
+                </div>
+                <script th:inline="javascript">
+                    function setHomeDefault(id, param){
+                        console.log(id);
+                        let parts = id.split('-'); // Разделяем строку по символу '-'
+                        let sportId = parts[parts.length - 1]; // Получаем последний элемент массива
+                        console.log(sportId);
+                        document.getElementById(id).onerror=null;
+                        document.getElementById(id).src='/img/default-' + param + '-' + sportId + '.webp'
+                    }
+                </script>
+                <div class="card-body d-flex flex-column">
+                    <div class="row" style="position:relative; overflow: hidden; max-height: 100px">
+                        <p class="fs-5"><i class="icon feather icon-calendar text-danger"></i><span th:text="${event.getBeginningDate()} + ' - ' + ${event.getEndingDate()}"></span></p>
+                        <p class="card-subtitle mb-2 fs-6 pt-2" th:text="${event.getTitle()}" style="color: #335e94"></p>
+                        <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 1.2em; background: linear-gradient(to top, white, transparent);"></div>
                     </div>
-                    <div class="row" th:each="event, stat : ${events}" style="min-height: 100px; max-height: 100%">
-                        <div class="row bg-light" th:if="${stat.index % 2 == 0}">
-                            <div class="col-1 p-1">
-                                <span th:text="${event.getNum()}"></span>
+                    <div class="row mt-auto">
+                        <p>
+                            <small>
+                                <span class="text-danger" th:text="'#'"></span>
+                                <span class="text-dark" th:text="${event.getSport().getTitle()}"></span>
+                            </small>
+                        </p>
+                        <hr>
+                        <div class="row">
+                            <div class="col d-flex">
+                                <a th:href="@{/event/show(eventId=${event.getId()})}" class="btn btn-link mx-auto"><i class="fs-4 text-secondary bi bi-chat-square-text"></i></i></a>
                             </div>
-                            <div class="col-1 p-1">
-                                <span th:text="${event.getEkp()}"></span>
+                            <div class="col d-flex">
+                                <a th:href="@{/event/edit(eventId=${event.getId()})}" class="btn btn-link mx-auto" th:if="${event.isUpdate()}"><i class="fs-4 text-secondary bi bi-list-check"></i></a>
                             </div>
-                            <div class="col-1 p-1">
-                                <span th:text="${event.getBeginningDate() + ' -'}"></span>
-                                <br>
-                                <span th:text="${event.getEndingDate()}"></span>
-                            </div>
-                            <div class="col-2 p-1">
-                                <span th:text="${event.getTitle()}"></span>
-                            </div>
-                            <div class="col-2 p-1">
-                                <b><p th:text="${event.getSport().getTitle()}"></p></b>
-                                <p th:text="${event.getCategory()}"></p>
-                            </div>
-                            <div class="col-2 p-1">
-                                <span th:text="${event.getLocation()}"></span>
-                            </div>
-                            <div class="col-3 p-1 d-flex align-items-center" style="height: 100%">
-                                <div class="btn-group" role="group" aria-label="Basic outlined example">
-                                    <a th:href="@{/event/show(eventId=${event.getId()})}" class="btn btn-outline-secondary">Подробнее</a>
-                                    <a th:href="@{/event/edit(eventId=${event.getId()})}" class="btn btn-outline-secondary" th:if="${event.isUpdate()}">Редактор</a>
-                                    <!-- Button trigger modal -->
-                                    <button th:id="'btn-delete-' + ${stat.index}" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#delete-modal" th:if="${event.isDelete()}">
-                                        Удалить
-                                    </button>
-                                    <!-- Modal -->
-                                    <div class="modal fade" th:id="'delete-modal-' + ${stat.index}" tabindex="-1">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h1 class="modal-title fs-5">Внимание!</h1>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    Вы собираетесь удалить мероприятие! Вы уверены?
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                                                    <a th:href="@{/event/delete(eventId=${event.getId()})}" class="btn btn-primary">Подтвердить</a>
-                                                </div>
+                            <div class="col d-flex">
+                                <!-- Button trigger modal -->
+                                <button th:id="'btn-delete-' + ${e_stat.index}" type="button" class="btn btn-link mx-auto" data-bs-toggle="modal" data-bs-target="#delete-modal" th:if="${event.isDelete()}">
+                                    <i class="fs-4 text-danger bi bi-trash3"></i>
+                                </button>
+                                <!-- Modal -->
+                                <div class="modal fade" th:id="'delete-modal-' + ${e_stat.index}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5">Внимание!</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Вы собираетесь удалить <span th:text="' ' + ${event.getTitle()}"></span>! Вы уверены?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                                <a th:href="@{/event/delete(eventId=${event.getId()})}" class="btn btn-primary">Подтвердить</a>
                                             </div>
                                         </div>
                                     </div>
-                                    <script th:inline="javascript">
-                                        document.getElementById('btn-delete-' + [[${stat.index}]]).setAttribute('data-bs-target','#delete-modal-' + [[${stat.index}]]);
-                                    </script>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="row" th:if="${stat.index % 2 != 0}" style="min-height: 100px; max-height: 100%">
-                            <div class="col-1 p-1">
-                                <span th:text="${event.getNum()}"></span>
-                            </div>
-                            <div class="col-1 p-1">
-                                <span th:text="${event.getEkp()}"></span>
-                            </div>
-                            <div class="col-1 p-1">
-                                <span th:text="${event.getBeginningDate() + ' -'}"></span>
-                                <br>
-                                <span th:text="${event.getEndingDate()}"></span>
-                            </div>
-                            <div class="col-2 p-1">
-                                <span th:text="${event.getTitle()}"></span>
-                            </div>
-                            <div class="col-2 p-1">
-                                <b><p th:text="${event.getSport().getTitle()}"></p></b>
-                                <p th:text="${event.getCategory()}"></p>
-                            </div>
-                            <div class="col-2 p-1">
-                                <span th:text="${event.getLocation()}"></span>
-                            </div>
-                            <div class="col-3 p-1 d-flex align-items-center" style="height: 100%">
-                                <div class="btn-group" role="group" aria-label="Basic outlined example">
-                                    <a th:href="@{/event/show(eventId=${event.getId()})}" class="btn btn-outline-secondary">Подробнее</a>
-                                    <a th:href="@{/event/edit(eventId=${event.getId()})}" class="btn btn-outline-secondary" th:if="${event.isUpdate()}">Редактор</a>
-                                    <!-- Button trigger modal -->
-                                    <button th:id="'btn-delete-' + ${stat.index}" type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#delete-modal" th:if="${event.isDelete()}">
-                                        Удалить
-                                    </button>
-                                    <!-- Modal -->
-                                    <div class="modal fade" th:id="'delete-modal-' + ${stat.index}" tabindex="-1">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h1 class="modal-title fs-5">Внимание!</h1>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    Вы собираетесь удалить мероприятие! Вы уверены?
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                                                    <a th:href="@{/event/delete(eventId=${event.getId()})}" class="btn btn-primary">Подтвердить</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <script th:inline="javascript">
-                                        document.getElementById('btn-delete-' + [[${stat.index}]]).setAttribute('data-bs-target','#delete-modal-' + [[${stat.index}]]);
-                                    </script>
-                                </div>
+                                <script th:inline="javascript">
+                                    document.getElementById('btn-delete-' + [[${e_stat.index}]]).setAttribute('data-bs-target','#delete-modal-' + [[${e_stat.index}]]);
+                                </script>
                             </div>
                         </div>
                     </div>
@@ -161,7 +100,9 @@
             </div>
         </div>
     </div>
-    <div class="row pt-1">
+    <br>
+    <hr>
+    <div class="row pt-3">
         <div class="col">
             <nav>
                 <ul class="pagination">

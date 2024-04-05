@@ -1,5 +1,6 @@
 <div class="container">
-    <div class="row">
+    <br>
+    <div class="row shadow rounded-4 p-2 pb-3">
         <div class="col-lg-3 col-sm-12 px-2">
             <div class="row py-2">
                 <div class="col">
@@ -102,16 +103,18 @@
             </div>
         </div>
     </div>
+
     <div class="row">
-        <div class="col pt-5">
-            <hr>
+        <div class="col pt-4">
             <h1 class="main-title">Главные спортивные события</h1>
             <div class="row row-cols-auto g-5 g-lg-5 justify-content-center">
 
                 <div class="col" th:each="event, e_stat : ${eventList}">
                     <a th:href="@{/event/show(eventId=${event.getId()})}">
                         <div class="card rounded-4 shadow" style="width: 18rem; height: 25rem">
-                            <img th:id="'img-header-' + ${e_stat.index} + '-' + ${event.getSportId()}" alt="header" class="card-img-top" th:src="@{/api/download(image=${event.getImageId()})}" style="object-fit: cover; height: 150px; border-radius: 7px 7px 0 0;" onerror="setHomeDefault(this.id,'image')">
+                            <div class="card-img-container" style="width: 100%; height: 150px; border-radius: 1rem 1rem 0 0">
+                                <img th:id="'img-header-' + ${e_stat.index} + '-' + ${event.getSportId()}" th:src="@{/api/download(image=${event.getImageId()})}" class="card-img-top img-ratio-control zoom-effect" alt="header" onerror="setHomeDefault(this.id,'image')">
+                            </div>
                             <script th:inline="javascript">
                                 function setHomeDefault(id, param){
                                     console.log(id);
@@ -128,14 +131,13 @@
                                         <p class="card-subtitle mb-2 fs-6" th:text="${event.getTitle()}" style="color: #335e94"></p>
                                     </div>
                                 </div>
-                                <div class="row" style="position: relative; max-height: 100px; overflow: hidden;">
+                                <div class="row">
                                     <div class="col">
                                         <ul class="list-inline date-card">
                                             <li class="list-inline-item"><i class="icon feather icon-calendar text-danger"></i></li>
                                             <li class="list-inline-item"><span th:text="${event.getBeginningDate()} + ' - ' + ${event.getEndingDate()}"></span></li>
                                         </ul>
                                     </div>
-                                    <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 1.2em; background: linear-gradient(to top, white, transparent);"></div>
                                 </div>
                                 <div class="row">
                                     <div class="col">
