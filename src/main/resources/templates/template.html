@@ -23,6 +23,13 @@
     </head>
 
     <body>
+
+        <div id="overlay">
+            <div class="spinner-border fs-1 text-light" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+
         <header th:insert="~{blocks/header}"></header>
         <nav th:insert="~{blocks/navbar}"></nav>
 
@@ -39,6 +46,47 @@
 
 
         <footer th:insert="~{blocks/footer}"></footer>
+        <script>
+            // JavaScript
+            window.addEventListener('DOMContentLoaded', function() {
+                // Показать спиннер при загрузке страницы
+                showSpinner();
+
+                // Скрыть спиннер через 0.5 секунды
+                //setTimeout(hideSpinner, 500);
+            });
+
+            window.addEventListener('load', function() {
+                // Скрыть спиннер, когда страница полностью загрузилась
+                hideSpinner();
+            });
+
+            // Показать спиннер перед переходом по ссылке
+            document.querySelectorAll('a').forEach(function(link) {
+                link.addEventListener('click', function(event) {
+                    // Предотвратить стандартное действие
+                    event.preventDefault();
+
+                    // Показать спиннер
+                    showSpinner();
+                    //Перейти по ссылке
+                    window.location.href = link.href;
+
+                    // Перейти по ссылке через 0.5 секунды
+                    /*setTimeout(function() {
+                        window.location.href = link.href;
+                    }, 500);*/
+                });
+            });
+
+            function showSpinner() {
+                document.getElementById('overlay').style.display = 'flex';
+            }
+
+            function hideSpinner() {
+                document.getElementById('overlay').style.display = 'none';
+            }
+        </script>
         <script crossorigin="anonymous" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <script>
             $(document).ready(function () {

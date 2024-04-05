@@ -257,3 +257,16 @@ Ivan - my css variable
     transform: scale(1.2); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
 }
 
+#overlay {
+    display: none; /* по умолчанию скрыт */
+    position: fixed; /* фиксированное позиционирование */
+    z-index: 1000; /* находится над всеми элементами */
+    top: 0; left: 0; right: 0; bottom: 0; /* занимает всю страницу */
+    background-color: rgba(0,0,0,0.5); /* полупрозрачный фон */
+
+    /* Центрирование спиннера */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+

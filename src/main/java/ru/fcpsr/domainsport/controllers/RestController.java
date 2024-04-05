@@ -99,7 +99,7 @@ public class RestController {
     @GetMapping("/get/next/object")
     public Flux<SportObjectDTO> getNext(@RequestParam(name = "stack") String stack){
         int page = Integer.parseInt(stack);
-        return sportObjectService.getAllSortedById(PageRequest.of(page,8)).flatMapSequential(sportObject -> Mono.just(new SportObjectDTO(sportObject)));
+        return sportObjectService.getAllSortedById(PageRequest.of(page,12)).flatMapSequential(sportObject -> Mono.just(new SportObjectDTO(sportObject)));
     }
 
     @ResponseBody
