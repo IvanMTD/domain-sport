@@ -1,0 +1,189 @@
+<main>
+    <div class="page-wrapper">
+        <div class="page-content">
+            <div class="row">
+                <div class="col-12 grid-margin">
+                    <div class="card">
+                        <div class="position-relative">
+                            <figure class="overflow-hidden mb-0 d-flex justify-content-center">
+                                <img alt="header" th:src="@{/api/download(image=${object.getImageIds().get(0)})}" class="rounded-top img-fluid" style="object-fit: cover; width: 100%; height: 272px">
+                            </figure>
+                            <div class="d-flex justify-content-between align-items-center position-absolute top-90 w-100 px-2 px-md-4 mt-n4">
+                                <div>
+                                    <img alt="logo" class="wd-140 card-animation icon-circle" th:src="@{/api/download(image=${object.getLogoId()})}" style="object-fit: cover; width: 140px; height: 140px">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container pt-6">
+                <div class="row row-cols-1 row-cols-lg-2">
+                    <div class="col col-lg-6 col-sm-12">
+                        <h2>
+                            <small class="text-secondary" th:text="${object.getTitle()}"></small>
+                        </h2>
+                    </div>
+                    <div class="col col-lg-6 col-sm-12">
+                        <!--<div class="float-end">
+                            <a th:href="@{/event/edit(eventId=${event.getId()})}" class="btn btn-secondary btn-icon-text" th:if="${event.isUpdate()}">
+                                <i class="bi bi-box-arrow-in-down-left"></i> Редактировать информацию
+                            </a>
+                            &lt;!&ndash; Button trigger modal &ndash;&gt;
+                            <button type="button" class="btn btn-secondary btn-icon-text" data-bs-toggle="modal" data-bs-target="#delete-modal" th:if="${event.isDelete()}">
+                                <i class="bi bi-trash"></i> Удалить
+                            </button>
+                            &lt;!&ndash; Modal &ndash;&gt;
+                            <div class="modal fade" id="delete-modal" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Внимание!</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Вы собираетесь удалить мероприятие! Вы уверены?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                            <a th:href="@{/event/delete(eventId=${event.getId()})}" class="btn btn-primary">Подтвердить</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>-->
+                    </div>
+                </div>
+            </div>
+
+            <div class="row profile-body pt-4">
+                <!-- left wrapper start -->
+                <div class="d-none d-md-block col-md-12 col-xl-3 left-wrapper pe-2">
+                    <div class="card rounded">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <h6 class="left-text-zag card-title mb-0">Информация об объекте</h6>
+                            </div>
+                            <div class="mt-3">
+                                <label class="left-text fw-bolder mb-0 text-uppercase">Зарегистрирован:</label>
+                                <p>
+                                    <i class="bi bi-calendar2-check"></i>
+                                    <span class="left-text text-muted" th:text="${object.getRegDate()}"></span>
+                                </p>
+                            </div>
+                            <div class="mt-3">
+                                <label class="left-text fw-bolder mb-0 text-uppercase">Город:</label>
+                                <p class="left-text text-muted" th:text="${object.getLocation()}"></p>
+                            </div>
+                            <div class="mt-3">
+                                <label class="left-text fw-bolder mb-0 text-uppercase">Адрес:</label>
+                                <p class="text-muted" th:text="${object.getAddress()}"></p>
+                            </div>
+                            <div class="mt-3">
+                                <a class="left-text fw-bolder mb-0 text-uppercase" th:href="${object.getUrl()}">Страница в интернете</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- left wrapper end -->
+                <!-- middle wrapper start -->
+                <div class="col-md-12 col-xl-9 middle-wrapper">
+                    <div class="row">
+                        <div class="col">
+                            <div id="map" style="width: 100%; height: 250px"></div>
+                        </div>
+                    </div>
+                    <div class="row pt-2">
+                        <div class="col-md-12 grid-margin">
+                            <div class="card rounded">
+                                <div class="card-body">
+                                    <div>Описание отсутствует</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script th:inline="javascript">
+    ymaps.ready(init);
+    let map;
+    let sportObject = [[${object}]];
+
+    function init() {
+        map = new ymaps.Map('map', {
+            center: [sportObject.s, sportObject.d],
+            zoom: 10,
+            controls: ['zoomControl']
+        },{
+            suppressMapOpenBlock: true // Убираем надпись "открыть в Яндекс.Картах"
+        });
+
+        let features = [];
+        let detail = '' +
+            '<div class="card" style="width: 18rem;">\n' +
+            '   <div class="card-body">\n' +
+            '       <div class="row">' +
+            '           <div class="col">' +
+            '               <div class="row">' +
+            '                   <div class="col">' +
+            '                       <h5 class="card-title">' + sportObject.title + '</h5>' +
+            '                   </div>' +
+            '               </div>' +
+            '           </div>' +
+            '       </div>' +
+            '       <div class="row">' +
+            '           <div class="col">' +
+            '               <div class="row">' +
+            '                   <div class="col">' +
+            '                       <p>Город: ' + sportObject.location + '</p>' +
+            '                   </div>' +
+            '               </div>' +
+            '           </div>' +
+            '       </div>' +
+            '       <div class="row">' +
+            '           <div class="col">' +
+            '               <div class="row">' +
+            '                   <div class="col">' +
+            '                       <small class="card-text">' + sportObject.address + '</p>\n' +
+            '                   </div>' +
+            '               </div>' +
+            '           </div>' +
+            '       </div>' +
+            '   </div>\n' +
+            '</div>'
+        features[0] = {
+            type: "Feature",
+            id: 0,
+            geometry: {
+                type: "Point",
+                coordinates: [sportObject.s, sportObject.d]
+            },
+            properties: {
+                balloonContent: detail,
+                balloonContentHeader: sportObject.title
+            },
+            options: {
+                preset: sportObject.present
+            }
+        }
+
+        let collection = {
+            type: "FeatureCollection",
+            features: features
+        };
+        // Object Manager
+        objectManager = new ymaps.ObjectManager({
+            clusterize: true,
+            /*clusterIconColor: 'red'*/
+        });
+        objectManager.add(collection);
+        map.geoObjects.add(objectManager);
+
+        /*let bounds = objectManager.getBounds();
+        map.setBounds(bounds, {checkZoomRange: true});*/
+    }
+</script>

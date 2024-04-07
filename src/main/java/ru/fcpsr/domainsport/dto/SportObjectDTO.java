@@ -2,9 +2,11 @@ package ru.fcpsr.domainsport.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import ru.fcpsr.domainsport.models.SportObject;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +18,7 @@ public class SportObjectDTO {
     private String title;
     protected String location;
     private String address;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate registerDate;
     private String url;
     private float s;
@@ -37,5 +40,9 @@ public class SportObjectDTO {
         setLogoId(sportObject.getLogoId());
         imageIds.addAll(sportObject.getImageIds());
         setPresent("islands#blueSportIcon");
+    }
+
+    public String getRegDate(){
+        return DateTimeFormatter.ofPattern("dd.MM.yyyy").format(registerDate);
     }
 }

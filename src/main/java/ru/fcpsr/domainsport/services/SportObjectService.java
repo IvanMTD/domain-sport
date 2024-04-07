@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.result.view.Rendering;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.fcpsr.domainsport.models.SportObject;
@@ -24,5 +25,9 @@ public class SportObjectService {
             sol = sol.stream().sorted(Comparator.comparing(SportObject::getId)).collect(Collectors.toList());
             return Flux.fromIterable(sol);
         }).flatMapSequential(Mono::just);
+    }
+
+    public Mono<SportObject> getObjectById(long objectId) {
+        return sportObjectRepository.findById(objectId);
     }
 }
