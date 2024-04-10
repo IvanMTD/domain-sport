@@ -2,6 +2,8 @@ package ru.fcpsr.domainsport.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -13,8 +15,10 @@ import ru.fcpsr.domainsport.repositories.MinioFileRepository;
 @Service
 @RequiredArgsConstructor
 public class MinioFileService {
-    private final MinioFileRepository repository;
+    private final MinioFileRepository fileRepository;
 
+    // CREATE
+    @CacheEvict(value = "files", allEntries = true)
     public Mono<MinioFile> save(MinioResponse response, long mid){
         if(response.getResponse() != null) {
             MinioFile minioFile = new MinioFile();
@@ -27,22 +31,27 @@ public class MinioFileService {
             minioFile.setMinioUrl(response.getResponse().region() != null ? response.getResponse().region() : "no url");
             minioFile.setFileSize(response.getFileSize());
             minioFile.setMid(mid);
-            return repository.save(minioFile);
+            return fileRepository.save(minioFile);
         }else{
             return Mono.just(new MinioFile());
         }
     }
-
-    public Mono<MinioFile> findById(long id){
-        return repository.findById(id);
-    }
-
+    // READ-ALL
+    @Cacheable("files")
     public Flux<MinioFile> findAll(){
-        return repository.findAll();
+        return fileRepository.findAll();
     }
-
+    // READ-ONE
+    @Cacheable("files")
+    public Mono<MinioFile> findById(long id){
+        return fileRepository.findById(id);
+    }
+    // UPDATE
+    // DELETE
+    @CacheEvict(value = "files", allEntries = true)
     public Mono<MinioFile> deleteById(long id){
-        return repository.findById(id)
-                .flatMap(minioFile -> repository.delete(minioFile).then(Mono.just(minioFile)));
+        return fileRepository.findById(id)
+                .flatMap(minioFile -> fileRepository.delete(minioFile).then(Mono.just(minioFile)));
     }
+    // COUNT
 }

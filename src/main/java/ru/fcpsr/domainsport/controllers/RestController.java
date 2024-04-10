@@ -34,6 +34,14 @@ public class RestController {
     private final MinioService minioService;
     private final EventService eventService;
     private final SportObjectService sportObjectService;
+    private final CacheService cacheService;
+
+    @GetMapping("/get/cache")
+    public Flux<Object> getCache(@RequestParam(name = "cacheName") String cacheName){
+        return cacheService.checkCacheContents(cacheName).flatMap(cache -> {
+            return Mono.just(cache);
+        });
+    }
     @GetMapping("/get/ekp/by/date")
     public Flux<EkpDTO> findByDate(@RequestParam(name = "query") String query){
         return ekpService.getByDate(query);

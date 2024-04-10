@@ -2,7 +2,6 @@ package ru.fcpsr.domainsport.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.result.view.Rendering;
 import reactor.core.publisher.Mono;
 import ru.fcpsr.domainsport.models.AuthToken;
 import ru.fcpsr.domainsport.repositories.AuthTokenRepository;

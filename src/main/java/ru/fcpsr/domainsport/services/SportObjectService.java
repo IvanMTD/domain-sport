@@ -2,10 +2,9 @@ package ru.fcpsr.domainsport.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.result.view.Rendering;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.fcpsr.domainsport.models.SportObject;
@@ -20,14 +19,21 @@ import java.util.stream.Collectors;
 public class SportObjectService {
     private final SportObjectRepository sportObjectRepository;
 
+    // CREATE
+    // READ-ALL
+    @Cacheable("sportObjects")
     public Flux<SportObject> getAllSortedById(Pageable pageable) {
         return sportObjectRepository.findAllBy(pageable).collectList().flatMapMany(sol -> {
             sol = sol.stream().sorted(Comparator.comparing(SportObject::getId)).collect(Collectors.toList());
             return Flux.fromIterable(sol);
         }).flatMapSequential(Mono::just);
     }
-
+    // READ-ONE
+    @Cacheable("sportObjects")
     public Mono<SportObject> getObjectById(long objectId) {
         return sportObjectRepository.findById(objectId);
     }
+    // UPDATE
+    // DELETE
+    // COUNT
 }
