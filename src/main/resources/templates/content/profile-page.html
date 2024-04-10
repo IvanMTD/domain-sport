@@ -234,112 +234,115 @@
             </form>
 
             <div th:if="${admin}">
-                <div class="row">
+                <div class="row py-4">
                     <div class="col"></div>
-                    <div class="col-6"><hr></div>
-                    <div class="col"></div>
-                </div>
-                <div class="row">
-                    <div class="col"></div>
-                    <div class="col-6 border border-secondary border-2 rounded-3">
-                        <div class="row bg-secondary">
-                            <p class="text-center text-white fs-3"><small>Отправить пользователю приглашение на регистрацию</small></p>
-                        </div>
-                        <form th:method="POST" th:action="@{/principal/mail/send}" th:object="${message}">
-                            <div class="row pt-2" th:if="${#fields.hasErrors('mail')} != true">
-                                <div class="col px-2">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="message-mail" placeholder="Укажите E-Mail" th:field="*{mail}">
-                                        <label for="message-mail">E-Mail</label>
-                                    </div>
-                                </div>
+                    <div class="col-6">
+                        <div class="row rounded-4 shadow" style="height: 350px">
+                            <!-- Картинка -->
+                            <div class="col-3 p-0" style="overflow: hidden; height: 100%">
+                                <img class="img-ratio-control img-special-settings" src="/img/auth-logo.webp">
                             </div>
-                            <div class="row" th:if="${#fields.hasErrors('mail')}">
-                                <div class="col px-2">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control is-invalid" id="message-mail-error" placeholder="Укажите E-Mail" th:field="*{mail}">
-                                        <label for="message-mail-error">E-Mail</label>
-                                        <span class="text-danger" th:errors="*{mail}"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col px-2">
-                                    <div class="form-floating mb-3">
-                                        <select class="form-select" id="message-role" th:field="*{role}">
-                                            <option th:each="role : ${roleList}" th:value="${role}" th:text="${role.getTitle()}"></option>
-                                        </select>
-                                        <label for="message-role">Роль</label>
-                                    </div>
-                                </div>
-                            </div>
+                            <!-- Форма -->
+                            <div class="col-9 p-4 d-flex flex-column">
+                                <form th:method="POST" th:action="@{/principal/mail/send}" th:object="${message}">
+                                    <div class="flex-grow-1">
+                                        <div class="row pt-2" th:if="${#fields.hasErrors('mail')} != true">
+                                            <div class="col px-2">
+                                                <div class="form-floating mb-3">
+                                                    <input type="text" class="form-control" id="message-mail" placeholder="Укажите E-Mail" th:field="*{mail}">
+                                                    <label for="message-mail">E-Mail</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" th:if="${#fields.hasErrors('mail')}">
+                                            <div class="col px-2">
+                                                <div class="form-floating mb-3">
+                                                    <input type="text" class="form-control is-invalid" id="message-mail-error" placeholder="Укажите E-Mail" th:field="*{mail}">
+                                                    <label for="message-mail-error">E-Mail</label>
+                                                    <span class="text-danger" th:errors="*{mail}"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col px-2">
+                                                <div class="form-floating mb-3">
+                                                    <select class="form-select" id="message-role" th:field="*{role}">
+                                                        <option th:each="role : ${roleList}" th:value="${role}" th:text="${role.getTitle()}"></option>
+                                                    </select>
+                                                    <label for="message-role">Роль</label>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                            <div class="row" th:if="${#fields.hasErrors('sportId')} != true">
-                                <div class="col px-2">
-                                    <div class="form-floating mb-3">
-                                        <input id="sport-hidden-input" type="number" th:field="*{sportId}" hidden>
-                                        <input type="text" class="form-control" list="sport-datalist" id="message-sport" onchange="setupSportId(this.value)">
-                                        <datalist id="sport-datalist"></datalist>
-                                        <label for="message-sport">Группа (Вид спорта)</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row" th:if="${#fields.hasErrors('sportId')}">
-                                <div class="col px-2">
-                                    <div class="form-floating mb-3">
-                                        <input id="sport-hidden-input" type="number" th:field="*{sportId}" hidden>
-                                        <input type="text" class="form-control is-invalid" list="sport-datalist" id="message-sport" onchange="setupSportId(this.value)">
-                                        <datalist id="sport-datalist"></datalist>
-                                        <label for="message-sport">Группа (Вид спорта)</label>
-                                        <span class="text-danger" th:errors="*{sportId}"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <script th:inline="javascript">
-                                $('#message-sport').on('input',function (){
-                                    let search = $('#message-sport').val();
-                                    $.ajax({
-                                        url: '/api/get/sports',
-                                        type: 'get',
-                                        data: {
-                                            query: search,
-                                        },
-                                        success: function (sports) {
-                                            $('#sport-datalist').empty();
-                                            sports.forEach(function (sport){
-                                                $('#sport-datalist').append(
-                                                    '<option data-item="' + JSON.stringify(sport).replace(/"/g, '&quot;') + '" value="' + sport.title + '">' + sport.title + '</option>'
-                                                );
+                                        <div class="row" th:if="${#fields.hasErrors('sportId')} != true">
+                                            <div class="col px-2">
+                                                <div class="form-floating mb-3">
+                                                    <input id="sport-hidden-input" type="number" th:field="*{sportId}" hidden>
+                                                    <input type="text" class="form-control" list="sport-datalist" id="message-sport" onchange="setupSportId(this.value)">
+                                                    <datalist id="sport-datalist"></datalist>
+                                                    <label for="message-sport">Группа (Вид спорта)</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" th:if="${#fields.hasErrors('sportId')}">
+                                            <div class="col px-2">
+                                                <div class="form-floating mb-3">
+                                                    <input id="sport-hidden-input" type="number" th:field="*{sportId}" hidden>
+                                                    <input type="text" class="form-control is-invalid" list="sport-datalist" id="message-sport" onchange="setupSportId(this.value)">
+                                                    <datalist id="sport-datalist"></datalist>
+                                                    <label for="message-sport">Группа (Вид спорта)</label>
+                                                    <span class="text-danger" th:errors="*{sportId}"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <script th:inline="javascript">
+                                            $('#message-sport').on('input',function (){
+                                                let search = $('#message-sport').val();
+                                                $.ajax({
+                                                    url: '/api/get/sports',
+                                                    type: 'get',
+                                                    data: {
+                                                        query: search,
+                                                    },
+                                                    success: function (sports) {
+                                                        $('#sport-datalist').empty();
+                                                        sports.forEach(function (sport){
+                                                            $('#sport-datalist').append(
+                                                                '<option data-item="' + JSON.stringify(sport).replace(/"/g, '&quot;') + '" value="' + sport.title + '">' + sport.title + '</option>'
+                                                            );
+                                                        });
+                                                    }
+                                                });
                                             });
-                                        }
-                                    });
-                                });
 
-                                function setupSportId(dataValue){
-                                    let data = getData(dataValue);
-                                    document.getElementById('sport-hidden-input').value = data.id;
-                                }
+                                            function setupSportId(dataValue){
+                                                let data = getData(dataValue);
+                                                document.getElementById('sport-hidden-input').value = data.id;
+                                            }
 
-                                function getData(dataValue){
-                                    let options = document.getElementById('sport-datalist').options;
-                                    let data = null;
-                                    for (let i = 0; i < options.length; i++) {
-                                        if (options[i].value === dataValue) {
-                                            data = JSON.parse(options[i].getAttribute('data-item').replace(/"/g, '"'));
-                                            break;
-                                        }
-                                    }
-                                    return data;
-                                }
-                            </script>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="d-grid pb-2 px-2">
-                                        <button class="btn btn-outline-secondary" type="submit">Отправить приглашение</button>
+                                            function getData(dataValue){
+                                                let options = document.getElementById('sport-datalist').options;
+                                                let data = null;
+                                                for (let i = 0; i < options.length; i++) {
+                                                    if (options[i].value === dataValue) {
+                                                        data = JSON.parse(options[i].getAttribute('data-item').replace(/"/g, '"'));
+                                                        break;
+                                                    }
+                                                }
+                                                return data;
+                                            }
+                                        </script>
                                     </div>
-                                </div>
+                                    <div class="row mt-4">
+                                        <div class="col">
+                                            <div class="d-grid pb-2 px-2">
+                                                <button class="btn btn-outline-secondary" type="submit">Отправить приглашение</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                        </form>
+                        </div>
                     </div>
                     <div class="col"></div>
                 </div>
