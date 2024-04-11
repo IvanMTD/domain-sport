@@ -30,7 +30,7 @@ public class SportService {
     public Mono<Sport> getById(long sportId) {
         return sportRepository.findById(sportId);
     }
-    @Cacheable("sports")
+    //@Cacheable(value = "cacheTitlesSports", key="#title")
     public Mono<Sport> getByTitle(String title) {
         return sportRepository.findByTitle(title).defaultIfEmpty(new Sport());
     }
