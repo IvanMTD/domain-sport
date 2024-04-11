@@ -1,8 +1,8 @@
-version: '3.8'
 
 services:
   minio:
     image: minio/minio
+    restart: unless-stopped
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -17,6 +17,8 @@ services:
     image: postgres:16.2-alpine3.19
     restart: unless-stopped
     environment:
+#      POSTGRES_INITDB_ARGS: --locale-provider=icu --icu-locale=ru-RU
+#      LANG: ru_RU.UTF-8
       POSTGRES_DB: ${DB_DATABASE}
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -25,6 +27,7 @@ services:
       - "5432:5432"
     volumes:
       - ../db:/docker-entrypoint-initdb.d
+      - ../backup:/backup
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d ${DB_DATABASE}"]
@@ -35,8 +38,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
-          memory: 4G
+          cpus: '4'
+          memory: 16G
 networks:
   default:
     name: ${DEPLOY_NETWORK_NAME}

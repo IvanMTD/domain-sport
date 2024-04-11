@@ -1,4 +1,3 @@
-version: "3.8"
 
 services:
   app:
@@ -15,6 +14,7 @@ services:
       APP_ENV: ${APP_ENV}
       APP_TIMEZONE: ${TIMEZONE}
       SPRING_APPLICATION_JSON: '{
+        "app.password": "${APP_ADMIN_PASSWORD}",
         "spring.r2dbc.url" : "r2dbc:postgresql://$DB_HOST:$DB_PORT/$DB_DATABASE",
 	"spring.r2dbc.username" : "${DB_USERNAME}",
 	"spring.r2dbc.password" : "${DB_PASSWORD}",
@@ -25,12 +25,11 @@ services:
         "yandex.map.apikey" : "$YA_APIKEY",
 	"spring.security.oauth2.client.registration.yandex.client-id" : "$YA_ID",
 	"spring.security.oauth2.client.registration.yandex.client-secret" : "$YA_SECRET",
-	"spring.security.oauth2.client.registration.yandex.redirect-uri" : "http://$APP_DOMAIN:8080/login/oauth2/code/{registrationId}",
+	"spring.security.oauth2.client.registration.yandex.redirect-uri" : "https://$APP_DOMAIN/login/oauth2/code/{registrationId}",
         "spring.mail.host" : "$MAIL_SERVER",
         "spring.mail.username" : "$MAIL_USERNAME",
         "spring.mail.password" : "$MAIL_PASSWORD"
       }'
-
 
 networks:
   default:
