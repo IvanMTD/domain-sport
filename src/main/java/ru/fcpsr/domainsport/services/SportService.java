@@ -10,6 +10,9 @@ import ru.fcpsr.domainsport.models.Discipline;
 import ru.fcpsr.domainsport.models.Sport;
 import ru.fcpsr.domainsport.repositories.SportRepository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class SportService {
@@ -23,7 +26,13 @@ public class SportService {
     // READ-ALL
     @Cacheable("sports")
     public Flux<Sport> getAllByTitleLike(String query) {
-        return sportRepository.findSportsWithPartOfTitle("%" + query + "%");
+        String[] parts = query.split(" ");
+        List<Flux<Sport>> list = new ArrayList<>();
+        for(String part : parts){
+            String sportNamePart = "%" + part + "%";
+            list.add(sportRepository.findAllByTitleLikeIgnoreCase(sportNamePart));
+        }
+        return Flux.merge(list).distinct();
     }
     // READ-ONE
     @Cacheable("sports")

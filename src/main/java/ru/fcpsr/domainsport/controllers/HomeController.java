@@ -13,6 +13,7 @@ import ru.fcpsr.domainsport.dto.EkpDTO;
 import ru.fcpsr.domainsport.dto.SportDTO;
 import ru.fcpsr.domainsport.services.DisciplineService;
 import ru.fcpsr.domainsport.services.EkpService;
+import ru.fcpsr.domainsport.services.NewsService;
 import ru.fcpsr.domainsport.services.SportService;
 
 import java.time.LocalDate;
@@ -28,6 +29,8 @@ public class HomeController {
     private final SportService sportService;
     private final DisciplineService disciplineService;
 
+    private final NewsService newsService;
+
     @GetMapping("/")
     public Mono<Rendering> homePage(){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -38,6 +41,7 @@ public class HomeController {
                         .modelAttribute("index","home-page")
                         .modelAttribute("ekpList", ekpService.getByDate(LocalDate.now()))
                         .modelAttribute("eventList", getEventList())
+                        .modelAttribute("newsList", newsService.getAllSortedById().take(7))
                         .modelAttribute("currentDate", LocalDate.now().format(formatter))
                         .build()
         );
@@ -54,7 +58,7 @@ public class HomeController {
     }
 
     private Flux<EkpDTO> getEventList(){
-        return ekpService.getAllSortedByCurrentDate().take(12).flatMap(ekp -> {
+        return ekpService.getAllSortedByCurrentDate().take(4).flatMap(ekp -> {
             EkpDTO ekpDTO = new EkpDTO(ekp);
             return sportService.getById(ekp.getSportId()).flatMap(sport -> {
                 SportDTO sportDTO = new SportDTO(sport);

@@ -1,6 +1,15 @@
 <div class="container">
-    <br>
-    <div class="row shadow rounded-4 p-2 pb-3">
+
+    <div class="row mt-5" th:if="${admin}">
+        <div class="col-10"></div>
+        <div class="col-2 d-flex align-items-center">
+            <div class="d-grid" style="width: 100%">
+                <a class="btn btn-outline-secondary" th:href="@{/news/add}">Добавить новость</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row shadow rounded-4 p-3 mt-5">
         <div class="col-lg-3 col-sm-12 px-2">
             <div class="row py-2">
                 <div class="col">
@@ -97,16 +106,16 @@
         <div class="col-lg-9 col-sm-12 px-2">
             <div class="row">
                 <div class="col">
-                    <h1 class="main-title">Спортивные события на карте страны</h1>
+                    <h1 class="main-title text-dark">Спортивные события на карте страны</h1>
                     <div id="map" style="width: 100%; height: 500px"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col pt-4">
-            <h1 class="main-title">Главные спортивные события</h1>
+    <div class="row row-cols-auto">
+        <div class="col-12 col-md-4 pt-4">
+            <h1 class="main-title text-dark text-center">Главные спортивные события</h1>
             <div class="row row-cols-auto g-5 g-lg-5 justify-content-center">
 
                 <div class="col" th:each="event, e_stat : ${eventList}">
@@ -156,6 +165,42 @@
                     </a>
                 </div>
 
+            </div>
+
+        </div>
+
+        <div class="col-12 col-md-8 px-4 px-md-0">
+            <div class="row pt-4">
+                <div class="col">
+                    <h1 class="main-title text-dark text-center">Новостная лента из мира спорта</h1>
+                </div>
+            </div>
+
+            <div class="row" th:each="news : ${newsList}">
+                <div class="col">
+                    <div class="container container-zoom-in card-animation m-0 p-0">
+                        <div class="row p-4">
+                            <div class="col d-flex flex-column justify-content-between border-end border-secondary" style="height: 200px">
+                                <div class="row bg-light border-start">
+                                    <div class="col p-2">
+                                        <p class="fs-4 text-dark" th:text="${news.title}"></p>
+                                    </div>
+                                </div>
+                                <div class="row me-2 text-end">
+                                    <div class="col pe-2">
+                                        <p class="fs-5 text-secondary" th:text="${news.annotation}"></p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col text-end border-top border-secondary pe-2">
+                                        <a th:href="@{/news/show(news=${news.id})}">Читать</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--<div class="col-3 img-container m-0 p-0" style="border-radius: 0 15px 15px 0"></div>-->
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </div>

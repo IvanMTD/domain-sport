@@ -274,27 +274,25 @@
                                             </div>
                                         </div>
 
-                                        <div class="row" th:if="${#fields.hasErrors('sportId')} != true">
-                                            <div class="col px-2">
+                                        <div class="row">
+                                            <input id="sport-hidden-input" type="number" th:field="*{sportId}" hidden>
+                                            <div class="col px-2" th:if="${#fields.hasErrors('sportId')} != true">
                                                 <div class="form-floating mb-3">
-                                                    <input id="sport-hidden-input" type="number" th:field="*{sportId}" hidden>
-                                                    <input type="text" class="form-control" list="sport-datalist" id="message-sport" onchange="setupSportId(this.value)">
+                                                    <input type="search" class="form-control" list="sport-datalist" id="message-sport" placeholder="search" onchange="setupSportId(this.value)">
                                                     <datalist id="sport-datalist"></datalist>
                                                     <label for="message-sport">Группа (Вид спорта)</label>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="row" th:if="${#fields.hasErrors('sportId')}">
-                                            <div class="col px-2">
+                                            <div class="col px-2" th:if="${#fields.hasErrors('sportId')}">
                                                 <div class="form-floating mb-3">
-                                                    <input id="sport-hidden-input" type="number" th:field="*{sportId}" hidden>
-                                                    <input type="text" class="form-control is-invalid" list="sport-datalist" id="message-sport" onchange="setupSportId(this.value)">
+                                                    <input type="search" class="form-control is-invalid" list="sport-datalist" id="message-sport-error" placeholder="search" onchange="setupSportId(this.value)">
                                                     <datalist id="sport-datalist"></datalist>
-                                                    <label for="message-sport">Группа (Вид спорта)</label>
+                                                    <label for="message-sport-error">Группа (Вид спорта)</label>
                                                     <span class="text-danger" th:errors="*{sportId}"></span>
                                                 </div>
                                             </div>
                                         </div>
+
                                         <script th:inline="javascript">
                                             $('#message-sport').on('input',function (){
                                                 let search = $('#message-sport').val();

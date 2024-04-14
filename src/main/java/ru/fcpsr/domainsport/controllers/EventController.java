@@ -127,7 +127,7 @@ public class EventController {
             );
         }
 
-        return geocodeService.getResponse(ekpDTO).flatMap(response -> {
+        return geocodeService.getResponse(ekpDTO.getLocation()).flatMap(response -> {
             String pos = response.getResponse().getGeoObjectCollection().getFeatureMember().get(0).getGeoObject().getPoint().getPos();
             String[] part = pos.split(" ");
             float s = Float.parseFloat(part[1]);
@@ -226,7 +226,7 @@ public class EventController {
             );
         }
 
-        return geocodeService.getResponse(ekpDTO).flatMap(response -> {
+        return geocodeService.getResponse(ekpDTO.getLocation()).flatMap(response -> {
             String pos = response.getResponse().getGeoObjectCollection().getFeatureMember().get(0).getGeoObject().getPoint().getPos();
             String[] part = pos.split(" ");
             float s = Float.parseFloat(part[1]);

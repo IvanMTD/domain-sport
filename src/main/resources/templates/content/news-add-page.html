@@ -1,0 +1,109 @@
+<div class="container">
+    <div class="row">
+        <div class="col border-bottom p-2">
+            <p class="fs-3 text-dark text-center">Хотите добавить новость?</p>
+            <p class="fs-6 text-secondary text-center">
+                Заполните поля ниже, соблюдая необходимые требования. <br>
+                Помните Вашу новость будут читать люди, думайте о том что собираетесь им рассказать.
+            </p>
+        </div>
+    </div>
+    <div class="row py-4">
+        <div class="col">
+            <form th:method="POST" th:action="@{/news/save}" th:object="${newsForm}">
+
+                <div class="row">
+                    <div class="col" th:if="${#fields.hasErrors('title')} != true">
+                        <div class="form-floating position-relative">
+                            <input id="input-title" class="form-control" type="text" placeholder="title" th:field="*{title}" oninput="updateTitleCounter()">
+                            <label for="input-title">Новостной заголовок</label>
+                            <small id="title-counter" class="form-text text-muted text-end" style="position: absolute; bottom: 5px; right: 5px">0 / 128</small>
+                            <script>
+                                function updateTitleCounter() {
+                                    let input = document.getElementById('input-title');
+                                    let counter = document.getElementById('title-counter');
+                                    counter.innerText = input.value.length + ' / 128';
+                                }
+                            </script>
+                        </div>
+                    </div>
+
+                    <div class="col" th:if="${#fields.hasErrors('title')}">
+                        <div class="form-floating position-relative">
+                            <input type="text" class="form-control is-invalid" id="title-error" placeholder="title-error" th:field="*{title}" oninput="updateTitleCounterError()">
+                            <label for="title-error">Новостной заголовок</label>
+                            <small id="counter-error" class="form-text text-muted text-end" style="position: absolute; bottom: 5px; right: 5px">0 / 128</small>
+                            <script>
+                                function updateTitleCounterError() {
+                                    let input = document.getElementById('title-error');
+                                    let counter = document.getElementById('counter-error');
+                                    counter.innerText = input.value.length + ' / 128';
+                                }
+                            </script>
+                            <small class="text-danger float-end" th:errors="*{title}"></small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row pt-4">
+                    <div class="col" th:if="${#fields.hasErrors('annotation')} != true">
+                        <div class="form-floating position-relative">
+                            <textarea id="input-annotation" class="form-control" type="text" placeholder="annotation" th:field="*{annotation}" style="height: 100%" oninput="updateAnnotationCounter()"></textarea>
+                            <label for="input-annotation">Короткая аннотация</label>
+                            <small id="annotation-counter" class="form-text text-muted text-end" style="position: absolute; bottom: 5px; right: 5px">0 / 256</small>
+                            <script>
+                                function updateAnnotationCounter() {
+                                    let input = document.getElementById('input-annotation');
+                                    let counter = document.getElementById('annotation-counter');
+                                    counter.innerText = input.value.length + ' / 256';
+                                }
+                            </script>
+                        </div>
+                    </div>
+
+                    <div class="col" th:if="${#fields.hasErrors('annotation')}">
+                        <div class="form-floating position-relative">
+                            <input type="text" class="form-control is-invalid" id="annotation-error" placeholder="annotation-error" th:field="*{annotation}" oninput="updateAnnotationCounterError()">
+                            <label for="annotation-error">Короткая аннотация</label>
+                            <small id="annotation-counter-error" class="form-text text-muted text-end" style="position: absolute; bottom: 5px; right: 5px">0 / 256</small>
+                            <script>
+                                function updateAnnotationCounterError() {
+                                    let input = document.getElementById('annotation-error');
+                                    let counter = document.getElementById('annotation-counter-error');
+                                    counter.innerText = input.value.length + ' / 256';
+                                }
+                            </script>
+                            <small class="text-danger float-end" th:errors="*{annotation}"></small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row pt-4">
+                    <div class="col" th:if="${#fields.hasErrors('content')} != true">
+                        <textarea placeholder="Описание" id="summernote" th:field="*{content}"></textarea>
+                    </div>
+
+                    <div class="col position-relative" th:if="${#fields.hasErrors('content')}">
+                        <div class="border border-danger rounded-3">
+                            <textarea placeholder="Описание" id="summernote" th:field="*{content}"></textarea>
+                            <span style="position: absolute; top: 50%; right: 10px;"><i class="text-danger fs-5 bi bi-exclamation-circle"></i></span>
+                        </div>
+                        <small class="text-danger float-end" th:errors="*{content}"></small>
+                    </div>
+
+                </div>
+
+                <div class="row pt-4">
+                    <div class="col"></div>
+                    <div class="col-6">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-secondary" type="submit">Сохранить</button>
+                        </div>
+                    </div>
+                    <div class="col"></div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>

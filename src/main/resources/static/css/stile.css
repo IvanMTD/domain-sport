@@ -333,3 +333,22 @@ Ivan - my css variable
     border-bottom-left-radius: 15px;
 }
 
+/*linear-gradient(to right, rgba(255,255,255,1) 70%, rgba(200,200,200,0.8) 85%, rgba(0,0,0,0) 100%), url('/img/auth-logo.webp')*/
+
+.img-container {
+    background: url('/img/auth-logo.webp');
+    background-size: cover;
+    background-position: right;
+    background-repeat: repeat;
+    background-clip: border-box;
+}
+
+.container-zoom-in {
+    transition: transform 0.5s;
+}
+
+.container-zoom-in:hover {
+    transform: scale(1.05);
+}
+
+

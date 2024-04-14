@@ -14,8 +14,8 @@ import ru.fcpsr.domainsport.dto.geocode.GeocodeResponse;
 @PropertySource("classpath:application.properties")
 public class GeocodeService {
     private final WebClient webClient;
-    private ObjectMapper objectMapper;
-    private String apiKey;
+    private final ObjectMapper objectMapper;
+    private final String apiKey;
 
     public GeocodeService(@Value("${yandex.map.apikey}") String apiKey){
         this.apiKey = apiKey;
@@ -24,11 +24,11 @@ public class GeocodeService {
         webClient = WebClient.builder().baseUrl("https://geocode-maps.yandex.ru/1.x").build();
     }
 
-    public Mono<GeocodeResponse> getResponse(EkpDTO ekpDTO){
+    public Mono<GeocodeResponse> getResponse(String address){
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .queryParam("apikey", apiKey)
-                        .queryParam("geocode", ekpDTO.getLocation())
+                        .queryParam("geocode", address)
                         .queryParam("format", "json")
                         .build())
                 .retrieve()

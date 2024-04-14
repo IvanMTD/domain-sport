@@ -12,5 +12,7 @@ public interface SportRepository extends ReactiveCrudRepository<Sport,Long> {
     @Query("SELECT * FROM sport WHERE lower(title) LIKE lower(:query)")
     Flux<Sport> findSportsWithPartOfTitle(@Param("query") String query);
 
+    Flux<Sport> findAllByTitleLikeIgnoreCase(String title);
+
     Mono<Sport> findByTitle(String title);
 }

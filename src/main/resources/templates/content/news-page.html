@@ -1,0 +1,31 @@
+<div class="container">
+    <div class="row">
+        <div class="col-3 bg-light" style="border-radius: 25px 0 0 25px">
+
+        </div>
+
+        <div class="col-9">
+
+            <div class="row p-4">
+                <div class="col">
+                    <p class="fs-3 text-dark text-center" th:text="${news.title}"></p>
+                </div>
+            </div>
+
+            <div class="row p-4">
+                <div class="col">
+                    <div th:utext="${news.content}"></div>
+                </div>
+            </div>
+
+            <div class="row bg-light p-4" th:if="${admin}">
+                <div class="col text-end">
+                    <a class="btn btn-outline-secondary" th:href="@{/news/edit(news=${news.id})}" style="width: 200px"><i class="bi bi-pencil-square"></i> Редактировать</a>
+                    <a class="btn btn-outline-secondary" th:href="@{/news/delete(news=${news.id})}" style="width: 200px"><i class="bi bi-trash"></i> Удалить</a>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>

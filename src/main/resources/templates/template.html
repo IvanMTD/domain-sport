@@ -45,6 +45,9 @@
         <div th:insert="~{content/object-all-page}" th:if="${index} == 'object-all-page'"></div>
         <div th:insert="~{content/object-show-page}" th:if="${index} == 'object-show-page'"></div>
         <div th:insert="~{content/policy-secure-page}" th:if="${index} == 'policy-secure-page'"></div>
+        <div th:insert="~{content/news-add-page}" th:if="${index} == 'news-add-page'"></div>
+        <div th:insert="~{content/news-page}" th:if="${index} == 'news-page'"></div>
+        <div th:insert="~{content/news-edit-page}" th:if="${index} == 'news-edit-page'"></div>
 
 
         <footer th:insert="~{blocks/footer}"></footer>
@@ -94,7 +97,7 @@
             $(document).ready(function () {
                 $('#summernote').summernote({
                     height: 300,
-                    placeholder:'Описание соревнования',
+                    placeholder:'Ваш контент',
                     lang: 'ru-RU',
                     toolbar: [
                         ['style', ['style']],
