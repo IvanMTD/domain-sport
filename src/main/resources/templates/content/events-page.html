@@ -38,10 +38,8 @@
                 </div>
                 <script th:inline="javascript">
                     function setHomeDefault(id, param){
-                        console.log(id);
                         let parts = id.split('-'); // Разделяем строку по символу '-'
                         let sportId = parts[parts.length - 1]; // Получаем последний элемент массива
-                        console.log(sportId);
                         document.getElementById(id).onerror=null;
                         document.getElementById(id).src='/img/default-' + param + '-' + sportId + '.webp'
                     }
@@ -162,15 +160,18 @@
 
     function showEkpBySport(){
         let inputVal = document.getElementById('sport-search').value;
+        console.log(inputVal);
         let dataList = document.getElementById('sport-data-list');
         let options = dataList.options;
         let dataItem = null;
         for (let i = 0; i < options.length; i++) {
+            console.log(options[i].value);
             if (options[i].value === inputVal) {
                 dataItem = JSON.parse(options[i].getAttribute('data-item').replace(/"/g, '"'));
                 break;
             }
         }
+        console.log(dataItem);
         if(dataItem != null){
             window.location.href = '/event/all?page=' + [[${page}]] + '&size=' + [[${size}]] + '&search=' + dataItem.id;
         }

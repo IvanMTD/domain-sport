@@ -32,7 +32,24 @@ public class SportService {
             String sportNamePart = "%" + part + "%";
             list.add(sportRepository.findAllByTitleLikeIgnoreCase(sportNamePart));
         }
-        return Flux.merge(list).distinct();
+
+        return Flux.merge(list).distinct().flatMap(sport -> {
+            String[] titleParts = sport.getTitle().split(" ");
+
+            int check = 0;
+            for(String titlePart : titleParts){
+                for(String part : parts){
+                    if(titlePart.toLowerCase().contains(part.toLowerCase())){
+                        check++;
+                    }
+                }
+            }
+            if(check >= parts.length){
+                return Mono.just(sport);
+            }else{
+                return Mono.empty();
+            }
+        });
     }
     // READ-ONE
     @Cacheable("sports")
