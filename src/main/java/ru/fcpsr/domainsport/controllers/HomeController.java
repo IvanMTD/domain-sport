@@ -3,9 +3,7 @@ package ru.fcpsr.domainsport.controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.reactive.result.view.Rendering;
-import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.fcpsr.domainsport.dto.DisciplineDTO;
@@ -41,7 +39,7 @@ public class HomeController {
                         .modelAttribute("index","home-page")
                         .modelAttribute("ekpList", ekpService.getByDate(LocalDate.now()))
                         .modelAttribute("eventList", getEventList())
-                        .modelAttribute("newsList", newsService.getAllSortedById().take(7))
+                        .modelAttribute("newsList", newsService.getAllSortedById().take(4))
                         .modelAttribute("currentDate", LocalDate.now().format(formatter))
                         .build()
         );

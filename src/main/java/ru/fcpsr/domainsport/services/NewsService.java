@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.result.view.Rendering;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.fcpsr.domainsport.dto.NewsDTO;
@@ -39,6 +39,11 @@ public class NewsService {
     }
 
     @Cacheable(cacheNames = "news")
+    public Flux<News> getAllSortedById(Pageable pageable) {
+        return newsRepository.findAllByOrderById(pageable);
+    }
+
+    @Cacheable(cacheNames = "news")
     public Mono<News> getById(long newsId) {
         return newsRepository.findById(newsId);
     }
@@ -56,5 +61,9 @@ public class NewsService {
             news.setContent(newsDTO.getContent());
             return newsRepository.save(news);
         });
+    }
+
+    public Mono<Long> getCount() {
+        return newsRepository.count();
     }
 }

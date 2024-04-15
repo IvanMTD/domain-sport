@@ -7,7 +7,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.fcpsr.domainsport.dto.DisciplineDTO;
@@ -15,6 +18,7 @@ import ru.fcpsr.domainsport.dto.EkpDTO;
 import ru.fcpsr.domainsport.dto.SportDTO;
 import ru.fcpsr.domainsport.dto.SportObjectDTO;
 import ru.fcpsr.domainsport.models.Discipline;
+import ru.fcpsr.domainsport.models.News;
 import ru.fcpsr.domainsport.services.*;
 
 import java.util.ArrayList;
@@ -35,6 +39,8 @@ public class RestController {
     private final EventService eventService;
     private final SportObjectService sportObjectService;
     private final CacheService cacheService;
+
+    private final NewsService newsService;
 
     @GetMapping("/get/cache")
     public Flux<Object> getCache(@RequestParam(name = "cacheName") String cacheName){
@@ -108,6 +114,11 @@ public class RestController {
     public Flux<SportObjectDTO> getNext(@RequestParam(name = "stack") String stack){
         int page = Integer.parseInt(stack);
         return sportObjectService.getAllSortedById(PageRequest.of(page,12)).flatMapSequential(sportObject -> Mono.just(new SportObjectDTO(sportObject)));
+    }
+
+    @GetMapping("/get/next/news")
+    public Flux<News> getNews(@RequestParam(name = "stack") String stack){
+        return newsService.getAllSortedById(PageRequest.of(Integer.parseInt(stack),4));
     }
 
     @ResponseBody

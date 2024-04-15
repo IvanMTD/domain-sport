@@ -114,7 +114,7 @@
     </div>
 
     <div class="row row-cols-auto">
-        <div class="col-12 col-md-4 pt-4">
+        <div class="col  pt-4">
             <h1 class="main-title text-dark text-center">Главные спортивные события</h1>
             <div class="row row-cols-auto g-5 g-lg-5 justify-content-center">
 
@@ -168,45 +168,99 @@
             </div>
 
         </div>
+    </div>
 
-        <div class="col-12 col-md-8 px-4 px-md-0">
-            <div class="row pt-4">
-                <div class="col">
-                    <h1 class="main-title text-dark text-center">Новостная лента из мира спорта</h1>
-                </div>
-            </div>
+    <div class="row pt-4">
+        <div class="col">
+            <h1 class="main-title text-dark text-center">Новости из мира спорта</h1>
+        </div>
+    </div>
 
-            <div class="row" th:each="news : ${newsList}">
-                <div class="col">
-                    <div class="container container-zoom-in card-animation m-0 p-0">
-                        <div class="row p-4">
-                            <div class="col d-flex flex-column justify-content-between border-end border-secondary" style="height: 200px">
-                                <div class="row bg-light border-start">
-                                    <div class="col p-2">
-                                        <p class="fs-4 text-dark" th:text="${news.title}"></p>
-                                    </div>
-                                </div>
-                                <div class="row me-2 text-end">
-                                    <div class="col pe-2">
-                                        <p class="fs-5 text-secondary" th:text="${news.annotation}"></p>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col text-end border-top border-secondary pe-2">
-                                        <a th:href="@{/news/show(news=${news.id})}">Читать</a>
-                                    </div>
-                                </div>
+    <div id="news-container" class="row row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2 justify-content-center">
+        <div th:each="news : ${newsList}" class="col p-4">
+            <div class="row container-zoom-in card-animation rounded-4 shadow justify-content-center my-4" style="height: 100%">
+                <div class="col d-flex flex-column">
+                    <div class="row px-4 pt-3">
+                        <div class="col">
+                            <p class="fs-4 text-dark" th:text="${news.title}"></p>
+                        </div>
+                    </div>
+                    <div class="row px-4 pt-3">
+                        <div class="col">
+                            <p class="fs-5 text-secondary" th:text="${news.annotation}"></p>
+                        </div>
+                    </div>
+                    <div class="row px-4 py-3 mt-auto">
+                        <div class="col text-end">
+                            <div class="row">
+                                <a th:href="@{/news/show(news=${news.id})}">Читать</a>
                             </div>
-                            <!--<div class="col-3 img-container m-0 p-0" style="border-radius: 0 15px 15px 0"></div>-->
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
+
+    <div class="row pt-4">
+        <div class="col d-lg-block d-md-block d-sm-none"></div>
+        <div class="col-12 col-md-6 col-lg-6">
+            <div class="d-grid gap-2">
+                <button id="btn-next-news" class="btn btn-outline-secondary" type="button" onclick="getNext()">Посмотреть еще</button>
+            </div>
+        </div>
+        <div class="col d-lg-block d-md-block d-sm-none"></div>
+    </div>
+
 </div>
+
 <script th:inline="javascript">
+
+    let pageCount = 0;
+    function getNext(){
+        pageCount++;
+        $.ajax({
+            url: '/api/get/next/news',
+            type: 'get',
+            data: {
+                stack:pageCount
+            },
+            success: function (newsList) {
+                newsList.forEach(function (news) {
+                    $('#news-container').append(
+                        '       <div class="col p-4">\n' +
+                        '            <div class="row container-zoom-in card-animation rounded-4 shadow justify-content-center my-4" style="height: 100%">\n' +
+                        '                <div class="col d-flex flex-column">\n' +
+                        '                    <div class="row px-4 pt-3">\n' +
+                        '                        <div class="col">\n' +
+                        '                            <p class="fs-4 text-dark">' + news.title + '</p>\n' +
+                        '                        </div>\n' +
+                        '                    </div>\n' +
+                        '                    <div class="row px-4 pt-3">\n' +
+                        '                        <div class="col">\n' +
+                        '                            <p class="fs-5 text-secondary">' + news.annotation + '</p>\n' +
+                        '                        </div>\n' +
+                        '                    </div>\n' +
+                        '                    <div class="row px-4 py-3 mt-auto">\n' +
+                        '                        <div class="col text-end">\n' +
+                        '                            <div class="row">\n' +
+                        '                                <a href="/news/show?news=' + news.id + '">Читать</a>\n' +
+                        '                            </div>\n' +
+                        '                        </div>\n' +
+                        '                    </div>\n' +
+                        '                </div>\n' +
+                        '            </div>\n' +
+                        '        </div>'
+                    );
+                })
+                if(newsList.length < 4){
+                    document.getElementById('btn-next-news').disabled = true;
+                }
+            }
+        });
+    }
+
+
     let coords_s = 55.76;
     let coords_d = 80.64;
     let zoom = 3;
