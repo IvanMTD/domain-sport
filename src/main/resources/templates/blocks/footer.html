@@ -2,10 +2,10 @@
 <hr>
 <footer class="container my-4">
     <div class="row row-cols-auto">
-        <div class="col-3">
+        <div class="col-12 col-md-3 col-lg-3">
             <img class="top-logo" src="/img/logo-f.png">
         </div>
-        <div class="col-3">
+        <div class="col-6 col-md-3 col-lg-3">
             <p class="px-2" style="color: #8eb3e5">Карта сайта</p>
             <p><a class="nav-link px-2 text-muted" href="/">Главная</a></p>
             <p><a class="nav-link px-2 text-muted" th:href="@{/event/all(page=0,size=12,search='all')}">Спортмероприятия</a></p>
@@ -14,12 +14,9 @@
             <p><a class="nav-link px-2 text-muted disabled" href="#">Статьи</a></p>
             <p><a class="nav-link px-2 text-muted" th:href="@{/object/all}">Спортивные объекты</a></p>
         </div>
-        <div class="col-3 text-end">
+        <div class="col-6 col-md-3 col-lg-3 text-end">
             <p class="px-2" style="color: #8eb3e5">Политика сайта</p>
             <p><a class="nav-link px-2 text-muted" th:href="@{/policy/secure}">Политика безопасности</a></p>
-        </div>
-        <div class="col-3 text-end">
-            <img class="top-logo" src="/img/icon.svg" width="64" height="64">
         </div>
     </div>
 </footer>
