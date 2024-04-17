@@ -6,6 +6,6 @@ import reactor.core.publisher.Flux;
 import ru.fcpsr.domainsport.models.News;
 
 public interface NewsRepository extends ReactiveCrudRepository<News,Long> {
-    Flux<News> findAllByOrderById();
-    Flux<News> findAllByOrderById(Pageable pageable);
+    Flux<News> findAllByOrderByIdDesc();
+    Flux<News> findAllByOrderByIdDesc(Pageable pageable);
 }

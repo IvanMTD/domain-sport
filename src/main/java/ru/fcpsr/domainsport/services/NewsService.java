@@ -35,12 +35,12 @@ public class NewsService {
 
     @Cacheable(cacheNames = "news")
     public Flux<News> getAllSortedById() {
-        return newsRepository.findAllByOrderById();
+        return newsRepository.findAllByOrderByIdDesc();
     }
 
     @Cacheable(cacheNames = "news")
     public Flux<News> getAllSortedById(Pageable pageable) {
-        return newsRepository.findAllByOrderById(pageable);
+        return newsRepository.findAllByOrderByIdDesc(pageable);
     }
 
     @Cacheable(cacheNames = "news")
