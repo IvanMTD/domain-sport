@@ -41,6 +41,7 @@ public class RestController {
     private final CacheService cacheService;
 
     private final NewsService newsService;
+    private final SchoolService schoolService;
 
     @GetMapping("/get/cache")
     public Flux<Object> getCache(@RequestParam(name = "cacheName") String cacheName){
@@ -108,6 +109,11 @@ public class RestController {
             l = l.stream().sorted(Comparator.comparing(SportDTO::getTitle)).collect(Collectors.toList());
             return Flux.fromIterable(l);
         }).flatMapSequential(Mono::just).take(10);
+    }
+
+    @GetMapping("/get/schools")
+    public Flux<String> findBySubject(@RequestParam(name = "query") String query){
+        return schoolService.getAllBySubject(query).take(10);
     }
 
     @GetMapping("/get/next/object")

@@ -7,15 +7,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.fcpsr.domainsport.enums.Role;
 import ru.fcpsr.domainsport.models.AppUser;
-import ru.fcpsr.domainsport.models.SportObject;
 import ru.fcpsr.domainsport.repositories.AppUserRepository;
-import ru.fcpsr.domainsport.repositories.SportObjectRepository;
-import ru.fcpsr.domainsport.repositories.SportRepository;
-import ru.fcpsr.domainsport.services.GeocodeService;
 
 import java.time.LocalDate;
 
