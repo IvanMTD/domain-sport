@@ -39,7 +39,7 @@ public class PrincipalController {
     private final SportService sportService;
     private final PasswordEncoder encoder;
 
-    private final List<Role> workRoles = new ArrayList<>(Arrays.asList(Role.MANAGER,Role.WORKER));
+    private final List<Role> workRoles = new ArrayList<>(Arrays.asList(Role.MANAGER,Role.MODERATOR,Role.WORKER));
 
     @GetMapping("/profile")
     @PreAuthorize("@AccessService.isAuthenticate(#authentication)")
