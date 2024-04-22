@@ -3,11 +3,13 @@ package ru.fcpsr.domainsport.models;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 import ru.fcpsr.domainsport.dto.NewsDTO;
 
 import java.time.LocalDate;
 
 @Data
+@Table(name = "news")
 @NoArgsConstructor
 public class News {
     @Id

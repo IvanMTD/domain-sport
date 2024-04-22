@@ -14,6 +14,8 @@ import ru.fcpsr.domainsport.models.News;
 import ru.fcpsr.domainsport.repositories.NewsRepository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -65,5 +67,35 @@ public class NewsService {
 
     public Mono<Long> getCount() {
         return newsRepository.count();
+    }
+
+    public Flux<News> searchNews(String search) {
+        String[] searchParts = search.split(" ");
+        List<Flux<News>> newsFlux = new ArrayList<>();
+        for(String part : searchParts){
+            String currentPart = "%" + part + "%";
+            newsFlux.add(newsRepository.findAllByTitleLikeIgnoreCase(currentPart));
+            newsFlux.add(newsRepository.findAllByAnnotationLikeIgnoreCase(currentPart));
+        }
+
+        return Flux.merge(newsFlux).distinct().flatMap(news -> {
+            int check = 0;
+            for(String part : searchParts){
+                if(news.getTitle().toLowerCase().contains(part.toLowerCase())){
+                    check++;
+                }
+                if(news.getAnnotation().toLowerCase().contains(part.toLowerCase())){
+                    check++;
+                }
+                if(news.getContent().toLowerCase().contains(part.toLowerCase())){
+                    check++;
+                }
+            }
+            if(check >= searchParts.length){
+                return Mono.just(news);
+            }else{
+                return Mono.empty();
+            }
+        });
     }
 }

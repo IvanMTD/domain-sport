@@ -1,4 +1,12 @@
 <div class="container">
+    <div class="row pt-4">
+        <div class="col">
+            <h2>
+                <small class="text-dark">Спортивные мероприятия России</small>
+            </h2>
+        </div>
+    </div>
+    <br>
     <div class="row">
         <div class="col-2 px-2" th:if="${manager} or ${admin}">
             <div class="d-grid py-2">
@@ -19,15 +27,6 @@
             </div>
         </div>
     </div>
-
-    <div class="row pt-4">
-        <div class="col">
-            <h2>
-                <small class="text-dark">Спортивные мероприятия России</small>
-            </h2>
-        </div>
-    </div>
-
     <br>
     <div class="row row-cols-auto g-5 g-lg-5 justify-content-center">
 
@@ -58,16 +57,20 @@
                         </p>
                         <hr>
                         <div class="row">
-                            <div class="col d-flex">
-                                <a th:href="@{/event/show(eventId=${event.getId()})}" class="btn btn-link mx-auto"><i class="fs-3 text-secondary bi bi-card-text"></i></i></a>
+                            <div class="col-4">
+                                <a th:href="@{/event/show(eventId=${event.getId()})}" class="btn btn-link">
+                                    Просмотр
+                                </a>
                             </div>
-                            <div class="col d-flex">
-                                <a th:href="@{/event/edit(eventId=${event.getId()})}" class="btn btn-link mx-auto" th:if="${event.isUpdate()}"><i class="fs-3 text-secondary bi bi-list-check"></i></a>
+                            <div class="col-4">
+                                <a th:href="@{/event/edit(eventId=${event.getId()})}" class="btn btn-link" th:if="${event.isUpdate()}">
+                                    Редактор
+                                </a>
                             </div>
-                            <div class="col d-flex">
+                            <div class="col-4">
                                 <!-- Button trigger modal -->
-                                <button th:id="'btn-delete-' + ${e_stat.index}" type="button" class="btn btn-link mx-auto" data-bs-toggle="modal" data-bs-target="#delete-modal" th:if="${event.isDelete()}">
-                                    <i class="fs-3 text-danger bi bi-trash3"></i>
+                                <button th:id="'btn-delete-' + ${e_stat.index}" type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#delete-modal" th:if="${event.isDelete()}">
+                                    Удалить
                                 </button>
                                 <!-- Modal -->
                                 <div class="modal fade" th:id="'delete-modal-' + ${e_stat.index}" tabindex="-1">

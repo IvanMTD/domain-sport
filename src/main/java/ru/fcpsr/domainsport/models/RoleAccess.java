@@ -3,6 +3,7 @@ package ru.fcpsr.domainsport.models;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 import ru.fcpsr.domainsport.enums.Permission;
 
 import java.util.HashSet;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 @Data
+@Table(name = "role_access")
 @NoArgsConstructor
 public class RoleAccess {
     @Id

@@ -3,9 +3,11 @@ package ru.fcpsr.domainsport.models;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 import ru.fcpsr.domainsport.enums.Role;
 
 @Data
+@Table(name = "auth_token")
 @NoArgsConstructor
 public class AuthToken {
     @Id

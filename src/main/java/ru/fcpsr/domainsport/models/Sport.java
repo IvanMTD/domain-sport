@@ -3,6 +3,7 @@ package ru.fcpsr.domainsport.models;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 import ru.fcpsr.domainsport.enums.Season;
 import ru.fcpsr.domainsport.enums.SportStatus;
 
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 @Data
+@Table(name = "sport")
 @NoArgsConstructor
 public class Sport {
     @Id

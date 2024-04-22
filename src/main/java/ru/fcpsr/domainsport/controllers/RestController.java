@@ -127,6 +127,11 @@ public class RestController {
         return newsService.getAllSortedById(PageRequest.of(Integer.parseInt(stack),4));
     }
 
+    @GetMapping("/search/news")
+    public Flux<News> searchNews(@RequestParam(name = "search") String search){
+        return newsService.searchNews(search).take(12);
+    }
+
     @ResponseBody
     @GetMapping("/download")
     public Mono<ResponseEntity<Mono<InputStreamResource>>> download(@RequestParam(name = "image") long id){

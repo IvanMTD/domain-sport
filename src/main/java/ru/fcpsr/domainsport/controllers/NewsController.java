@@ -23,6 +23,18 @@ public class NewsController {
 
     private final NewsService newsService;
 
+    @GetMapping("/list")
+    public Mono<Rendering> getNewsList(){
+        return Mono.just(
+                Rendering.view("template")
+                        .modelAttribute("title","Новости спорта")
+                        .modelAttribute("description", "Новости спортивной индустрии")
+                        .modelAttribute("index","news-list-page")
+                        .modelAttribute("newsList",newsService.getAllSortedById().take(4))
+                        .build()
+        );
+    }
+
     @GetMapping("/add")
     @PreAuthorize("@AccessService.isAdmin(#authentication)")
     public Mono<Rendering> addNewsPage(@AuthenticationPrincipal Authentication authentication){
