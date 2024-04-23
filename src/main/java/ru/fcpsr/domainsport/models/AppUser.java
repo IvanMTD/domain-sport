@@ -13,7 +13,9 @@ import ru.fcpsr.domainsport.enums.Role;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Table(name = "app_user")
@@ -47,7 +49,7 @@ public class AppUser implements UserDetails {
     private String avatarId;
     private String oauthId;
     private Role role;
-    private long roleAccessId;
+    private Set<Long> roleAccessIds = new HashSet<>();
     private boolean politicAccept;
 
     public AppUser(AppUserDTO appUserDTO){

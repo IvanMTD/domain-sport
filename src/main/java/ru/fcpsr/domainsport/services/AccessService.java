@@ -4,12 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.result.view.Rendering;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.fcpsr.domainsport.dto.AppUserDTO;
 import ru.fcpsr.domainsport.dto.ObjectAccessDTO;
 import ru.fcpsr.domainsport.dto.RoleAccessDTO;
 import ru.fcpsr.domainsport.dto.SportDTO;
+import ru.fcpsr.domainsport.enums.Access;
 import ru.fcpsr.domainsport.enums.Permission;
 import ru.fcpsr.domainsport.enums.Role;
 import ru.fcpsr.domainsport.models.AppUser;
@@ -18,6 +19,7 @@ import ru.fcpsr.domainsport.models.RoleAccess;
 import ru.fcpsr.domainsport.repositories.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service("AccessService")
@@ -29,21 +31,36 @@ public class AccessService {
     private final ObjectAccessRepository objectAccessRepository;
     private final EkpRepository ekpRepository;
 
-    public Mono<Boolean> getAccess(Authentication authentication, String permissionString){
+    public Mono<Boolean> getAccess(Authentication authentication, String accessString, String permissionString){
         if(authentication != null) {
             Permission permission = Permission.valueOf(permissionString);
+            Access access = Access.valueOf(accessString);
             AppUser appUser = (AppUser) authentication.getPrincipal();
             return userRepository.findById(appUser.getId()).flatMap(user -> {
                 if (user.getRole().equals(Role.ADMIN)) {
                     return Mono.just(true);
                 } else {
-                    return roleAccessRepository.findById(user.getRoleAccessId()).flatMap(roleAccess -> {
-                        if (roleAccess.getPermissionList().stream().anyMatch(p -> p.equals(permission))) {
-                            return Mono.just(true);
-                        } else {
-                            return Mono.just(false);
-                        }
-                    }).switchIfEmpty(Mono.just(false));
+                    if(user.getRole().equals(Role.MODERATOR)){
+                        return roleAccessRepository.findAllByIdIn(user.getRoleAccessIds()).collectList().flatMap(list -> {
+                            if(list.stream().anyMatch(roleAccess -> roleAccess.getAccess().equals(access))){
+                                return Mono.just(true);
+                            }else{
+                                return Mono.just(false);
+                            }
+                        }).switchIfEmpty(Mono.just(false));
+                    }else{
+                        return roleAccessRepository.findAllByIdIn(user.getRoleAccessIds()).collectList().flatMap(list -> {
+                            if(list.stream().anyMatch(roleAccess -> roleAccess.getAccess().equals(access))){
+                                if(list.stream().anyMatch(roleAccess -> roleAccess.getPermissionList().stream().anyMatch(userPermission -> userPermission.equals(permission)))){
+                                    return Mono.just(true);
+                                }else{
+                                    return Mono.just(false);
+                                }
+                            }else{
+                                return Mono.just(false);
+                            }
+                        }).switchIfEmpty(Mono.just(false));
+                    }
                 }
             });
         }else{
@@ -55,23 +72,34 @@ public class AccessService {
         if(authentication != null) {
             AppUser appUser = (AppUser) authentication.getPrincipal();
             Permission permission = Permission.valueOf(permissionString);
+
             return userRepository.findById(appUser.getId()).flatMap(user -> {
                 if(user.getRole().equals(Role.ADMIN)){
                     return Mono.just(true);
                 }else{
-                    return roleAccessRepository.findById(user.getRoleAccessId()).flatMap(roleAccess -> {
-                        return ekpRepository.findById(ekpId).flatMap(ekp -> {
-                            if(ekp.getSportId() == roleAccess.getGroupId()){
-                                if(roleAccess.getPermissionList().stream().anyMatch(p -> p.equals(permission))){
-                                    return Mono.just(true);
-                                }else{
-                                    return Mono.just(false);
-                                }
+                    if(user.getRole().equals(Role.MODERATOR)){
+                        return roleAccessRepository.findAllByIdIn(user.getRoleAccessIds()).collectList().flatMap(list -> {
+                            if(list.stream().anyMatch(roleAccess -> roleAccess.getAccess().equals(Access.EVENT))){
+                                return Mono.just(true);
                             }else{
                                 return Mono.just(false);
                             }
-                        });
-                    }).switchIfEmpty(Mono.just(false));
+                        }).switchIfEmpty(Mono.just(false));
+                    }else{
+                        return roleAccessRepository.findAllByIdIn(user.getRoleAccessIds()).collectList().flatMap(list -> {
+                            return ekpRepository.findById(ekpId).flatMap(ekp -> {
+                                if(list.stream().anyMatch(roleAccess -> roleAccess.getGroupId() == ekp.getSportId())){
+                                    if(list.stream().anyMatch(roleAccess -> roleAccess.getPermissionList().stream().anyMatch(p -> p.equals(permission)))){
+                                        return Mono.just(true);
+                                    }else{
+                                        return Mono.just(false);
+                                    }
+                                }else{
+                                    return Mono.just(false);
+                                }
+                            });
+                        }).switchIfEmpty(Mono.just(false));
+                    }
                 }
             });
         }else{
@@ -97,21 +125,19 @@ public class AccessService {
     }
 
     public Mono<AppUserDTO> getCompletedUser(AppUser user) {
-        return Mono.just(new AppUserDTO(user)).flatMap(userDTO -> roleAccessRepository.findById(user.getRoleAccessId()).flatMap(roleAccess -> {
+        return Mono.just(new AppUserDTO(user)).flatMap(userDTO -> roleAccessRepository.findAllByIdIn(user.getRoleAccessIds()).flatMap(roleAccess -> {
             RoleAccessDTO roleAccessDTO = new RoleAccessDTO(roleAccess);
             return objectAccessRepository.findAllByIdIn(roleAccess.getObjectAccessIds()).flatMap(objectAccess -> {
                 ObjectAccessDTO objectAccessDTO = new ObjectAccessDTO(objectAccess);
                 return Mono.just(objectAccessDTO);
             }).collectList().flatMap(oal -> {
                 roleAccessDTO.setObjectAccess(oal);
-                return sportRepository.findById(roleAccess.getGroupId()).flatMap(sport -> {
-                    SportDTO sportDTO = new SportDTO(sport);
-                    roleAccessDTO.setSport(sportDTO);
-                    userDTO.setRoleAccess(roleAccessDTO);
-                    return Mono.just(userDTO);
-                });
+                return Mono.just(roleAccessDTO);
             });
-        }).switchIfEmpty(Mono.just(userDTO)));
+        }).collectList().flatMap(roleAccessDTOS -> {
+            userDTO.setRoleAccessList(roleAccessDTOS);
+            return Mono.just(userDTO);
+        })).switchIfEmpty(Mono.empty());
     }
 
     public Mono<RoleAccess> createAccess(AuthToken token, long userId, List<Permission> permissions) {
@@ -142,5 +168,9 @@ public class AccessService {
 
     public Mono<RoleAccess> getRoleAccess(long roleAccessId) {
         return roleAccessRepository.findById(roleAccessId);
+    }
+
+    public Flux<RoleAccess> getRoleAccessList(Set<Long> ids){
+        return roleAccessRepository.findAllByIdIn(ids);
     }
 }

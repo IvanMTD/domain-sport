@@ -2,6 +2,7 @@ package ru.fcpsr.domainsport.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.fcpsr.domainsport.enums.Access;
 import ru.fcpsr.domainsport.enums.Permission;
 import ru.fcpsr.domainsport.models.RoleAccess;
 
@@ -18,6 +19,8 @@ public class RoleAccessDTO {
     private long userId;
     private long groupId; // напрямую связан со sport_id
     private SportDTO sport;
+
+    private Access access;
     private List<Permission> permissionList = new ArrayList<>();
     private Set<Long> objectAccessIds = new HashSet<>();
     private List<ObjectAccessDTO> objectAccess = new ArrayList<>();

@@ -8,6 +8,9 @@ import ru.fcpsr.domainsport.enums.Role;
 import ru.fcpsr.domainsport.models.AppUser;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -43,12 +46,12 @@ public class AppUserDTO {
     private String oauthId;
     private Role role;
 
-    private long roleAccessId;
-    private RoleAccessDTO roleAccess;
+    private Set<Long> roleAccessIds = new HashSet<>();
+    private List<RoleAccessDTO> roleAccessList;
 
     public AppUserDTO(AppUser user) {
         setId(user.getId());
-        setRoleAccessId(user.getRoleAccessId());
+        setRoleAccessIds(user.getRoleAccessIds());
         setUsername(user.getUsername());
         setFirstname(user.getFirstname());
         setLastname(user.getLastname());

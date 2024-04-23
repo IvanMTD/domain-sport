@@ -139,7 +139,6 @@ public class PrincipalController {
     @PostMapping("/update/profile")
     @PreAuthorize("@AccessService.isAuthenticate(#authentication)")
     public Mono<Rendering> updatePrincipal(@AuthenticationPrincipal Authentication authentication, @ModelAttribute(name = "appUser") @Valid AppUserDTO userDTO, Errors errors){
-        log.info("{}",userDTO);
         AppUser currentUser = (AppUser) authentication.getPrincipal();
         if(currentUser.getId() == userDTO.getId()) {
             return userService.checkUsername(userDTO.getUsername(), userDTO.getId()).flatMap(exist -> {
