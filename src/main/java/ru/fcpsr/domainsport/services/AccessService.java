@@ -125,33 +125,45 @@ public class AccessService {
     }
 
     public Mono<AppUserDTO> getCompletedUser(AppUser user) {
-        return Mono.just(new AppUserDTO(user)).flatMap(userDTO -> roleAccessRepository.findAllByIdIn(user.getRoleAccessIds()).flatMap(roleAccess -> {
-            RoleAccessDTO roleAccessDTO = new RoleAccessDTO(roleAccess);
-            return objectAccessRepository.findAllByIdIn(roleAccess.getObjectAccessIds()).flatMap(objectAccess -> {
-                ObjectAccessDTO objectAccessDTO = new ObjectAccessDTO(objectAccess);
-                return Mono.just(objectAccessDTO);
-            }).collectList().flatMap(oal -> {
-                roleAccessDTO.setObjectAccess(oal);
+        return Mono.just(new AppUserDTO(user)).flatMap(userDTO -> {
+            log.info("A transfer object has been received: [{}]", userDTO);
+            return roleAccessRepository.findAllByIdIn(user.getRoleAccessIds()).flatMap(roleAccess -> {
+                RoleAccessDTO roleAccessDTO = new RoleAccessDTO(roleAccess);
+                return objectAccessRepository.findAllByIdIn(roleAccess.getObjectAccessIds()).flatMap(objectAccess -> {
+                    ObjectAccessDTO objectAccessDTO = new ObjectAccessDTO(objectAccess);
+                    return Mono.just(objectAccessDTO);
+                }).collectList().flatMap(list -> {
+                    roleAccessDTO.setObjectAccess(list);
+                    return Mono.just(roleAccessDTO);
+                }).switchIfEmpty(Mono.empty());
+            }).flatMap(roleAccessDTO -> sportRepository.findById(roleAccessDTO.getGroupId()).flatMap(sport -> {
+                SportDTO sportDTO = new SportDTO(sport);
+                roleAccessDTO.setSport(sportDTO);
                 return Mono.just(roleAccessDTO);
-            });
-        }).collectList().flatMap(roleAccessDTOS -> {
-            userDTO.setRoleAccessList(roleAccessDTOS);
-            return Mono.just(userDTO);
-        })).switchIfEmpty(Mono.empty());
+            }).switchIfEmpty(Mono.just(roleAccessDTO))).collectList().flatMap(list -> {
+                userDTO.setRoleAccessList(list);
+                return Mono.just(userDTO);
+            }).switchIfEmpty(Mono.empty());
+        });
     }
 
     public Mono<RoleAccess> createAccess(AuthToken token, long userId, List<Permission> permissions) {
         return Mono.just(new RoleAccess()).flatMap(roleAccess -> {
             roleAccess.setUserId(userId);
             roleAccess.setGroupId(token.getSportId());
+            roleAccess.setAccess(token.getAccess());
             roleAccess.setPermissions(permissions);
             return roleAccessRepository.save(roleAccess);
         });
     }
 
-    public Mono<RoleAccessDTO> getRoleAccessDTO(long roleAccessId) {
-        return roleAccessRepository.findById(roleAccessId).flatMap(roleAccess -> {
-            RoleAccessDTO roleAccessDTO = new RoleAccessDTO(roleAccess);
+    public Flux<RoleAccessDTO> getAllRoleAccessDTO(Set<Long> ids){
+        return roleAccessRepository.findAllByIdIn(ids).flatMap(this::getRoleAccessDTO).switchIfEmpty(Mono.empty());
+    }
+
+    private Mono<RoleAccessDTO> getRoleAccessDTO(RoleAccess roleAccess) {
+        return Mono.just(roleAccess).flatMap(ra -> {
+            RoleAccessDTO roleAccessDTO = new RoleAccessDTO(ra);
             return objectAccessRepository.findAllByIdIn(roleAccess.getObjectAccessIds()).flatMap(objectAccess -> {
                 ObjectAccessDTO objectAccessDTO = new ObjectAccessDTO(objectAccess);
                 return Mono.just(objectAccessDTO);
@@ -163,7 +175,7 @@ public class AccessService {
                     return Mono.just(roleAccessDTO);
                 });
             }).defaultIfEmpty(roleAccessDTO);
-        }).defaultIfEmpty(new RoleAccessDTO());
+        });
     }
 
     public Mono<RoleAccess> getRoleAccess(long roleAccessId) {

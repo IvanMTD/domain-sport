@@ -242,6 +242,12 @@ Ivan - my css variable
     object-fit: cover;
 }
 
+.bg-image-1 {
+    overflow: hidden;
+    background: url('/img/auth-logo.webp') no-repeat center center;
+    background-size: cover;
+}
+
 .card-img-container {
     overflow: hidden; /* Prevents the image from going outside the container */
     position: relative; /* Needed for the image to scale properly */

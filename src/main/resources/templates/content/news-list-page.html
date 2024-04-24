@@ -13,7 +13,7 @@
     <div class="row">
         <div class="col">
             <div class="row px-3">
-                <div class="col-2 d-flex align-items-center" th:if="${admin}">
+                <div class="col-2 d-flex align-items-center" th:if="${accessCreate}">
                     <div class="d-grid" style="width: 100%">
                         <a class="btn btn-outline-secondary" th:href="@{/news/add}">Добавить новость</a>
                     </div>
@@ -48,12 +48,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-1 d-flex align-items-center justify-content-center bg-light" th:if="${admin}">
+                <div class="col-1 d-flex align-items-center justify-content-center bg-light" th:if="${accessUpdate}">
                     <a th:href="@{/news/edit(news=${news.id})}">
                         <i class="fs-3 text-secondary bi bi-pencil-square"></i>
                     </a>
                 </div>
-                <div class="col-1 d-flex align-items-center justify-content-center" th:if="${admin}">
+                <div class="col-1 d-flex align-items-center justify-content-center" th:if="${accessDelete}">
                     <a th:href="@{/news/delete(news=${news.id})}">
                         <i class="fs-3 text-danger bi bi-trash"></i>
                     </a>
@@ -76,7 +76,8 @@
 
 <script th:inline="javascript">
     let nList = [[${newsList}]];
-    let admin = [[${admin}]];
+    let accessUpdate = [[${accessUpdate}]];
+    let accessDelete = [[${accessDelete}]];
 
     function searchNews(){
         let sValue = $('#news-search').val();
@@ -90,7 +91,7 @@
                 },
                 success: function(newsList) {
                     $('#news-container').empty();
-                    if(admin){
+                    if(accessUpdate && accessDelete){
                         newsList.forEach(function (news){
                             $('#news-container').append(
                                 '       <div class="col p-4">\n' +
@@ -118,6 +119,72 @@
                                 '                    <a href="/news/edit?news=' + news.id + '">\n' +
                                 '                        <i class="fs-3 text-secondary bi bi-pencil-square"></i>\n' +
                                 '                    </a>\n' +
+                                '                </div>\n' +
+                                '                <div class="col-1 d-flex align-items-center justify-content-center">\n' +
+                                '                    <a href="/news/delete?news=' + news.id + '">\n' +
+                                '                        <i class="fs-3 text-danger bi bi-trash"></i>\n' +
+                                '                    </a>\n' +
+                                '                </div>' +
+                                '            </div>\n' +
+                                '        </div>'
+                            );
+                        });
+                    }else if(accessUpdate && !accessDelete){
+                        newsList.forEach(function (news){
+                            $('#news-container').append(
+                                '       <div class="col p-4">\n' +
+                                '            <div class="row container-zoom-in card-animation rounded-4 shadow justify-content-center my-4" style="height: 100%">\n' +
+                                '                <div class="col d-flex flex-column">\n' +
+                                '                    <div class="row px-4 pt-3">\n' +
+                                '                        <div class="col">\n' +
+                                '                            <p class="fs-4 text-dark">' + news.title + '</p>\n' +
+                                '                        </div>\n' +
+                                '                    </div>\n' +
+                                '                    <div class="row px-4 pt-3">\n' +
+                                '                        <div class="col">\n' +
+                                '                            <p class="fs-5 text-secondary">' + news.annotation + '</p>\n' +
+                                '                        </div>\n' +
+                                '                    </div>\n' +
+                                '                    <div class="row px-4 py-3 mt-auto">\n' +
+                                '                        <div class="col text-end">\n' +
+                                '                            <div class="row">\n' +
+                                '                                <a href="/news/show?news=' + news.id + '">Читать</a>\n' +
+                                '                            </div>\n' +
+                                '                        </div>\n' +
+                                '                    </div>\n' +
+                                '                </div>\n' +
+                                '                <div class="col-1 d-flex align-items-center justify-content-center bg-light">\n' +
+                                '                    <a href="/news/edit?news=' + news.id + '">\n' +
+                                '                        <i class="fs-3 text-secondary bi bi-pencil-square"></i>\n' +
+                                '                    </a>\n' +
+                                '                </div>\n' +
+                                '            </div>\n' +
+                                '        </div>'
+                            );
+                        });
+                    }else if(!accessUpdate && accessDelete){
+                        newsList.forEach(function (news){
+                            $('#news-container').append(
+                                '       <div class="col p-4">\n' +
+                                '            <div class="row container-zoom-in card-animation rounded-4 shadow justify-content-center my-4" style="height: 100%">\n' +
+                                '                <div class="col d-flex flex-column">\n' +
+                                '                    <div class="row px-4 pt-3">\n' +
+                                '                        <div class="col">\n' +
+                                '                            <p class="fs-4 text-dark">' + news.title + '</p>\n' +
+                                '                        </div>\n' +
+                                '                    </div>\n' +
+                                '                    <div class="row px-4 pt-3">\n' +
+                                '                        <div class="col">\n' +
+                                '                            <p class="fs-5 text-secondary">' + news.annotation + '</p>\n' +
+                                '                        </div>\n' +
+                                '                    </div>\n' +
+                                '                    <div class="row px-4 py-3 mt-auto">\n' +
+                                '                        <div class="col text-end">\n' +
+                                '                            <div class="row">\n' +
+                                '                                <a href="/news/show?news=' + news.id + '">Читать</a>\n' +
+                                '                            </div>\n' +
+                                '                        </div>\n' +
+                                '                    </div>\n' +
                                 '                </div>\n' +
                                 '                <div class="col-1 d-flex align-items-center justify-content-center">\n' +
                                 '                    <a href="/news/delete?news=' + news.id + '">\n' +
@@ -161,8 +228,8 @@
             });
         }else{
             $('#news-container').empty();
-            if(admin){
-                nList.forEach(function (news){
+            if(accessUpdate && accessDelete){
+                newsList.forEach(function (news){
                     $('#news-container').append(
                         '       <div class="col p-4">\n' +
                         '            <div class="row container-zoom-in card-animation rounded-4 shadow justify-content-center my-4" style="height: 100%">\n' +
@@ -199,8 +266,74 @@
                         '        </div>'
                     );
                 });
+            }else if(accessUpdate && !accessDelete){
+                newsList.forEach(function (news){
+                    $('#news-container').append(
+                        '       <div class="col p-4">\n' +
+                        '            <div class="row container-zoom-in card-animation rounded-4 shadow justify-content-center my-4" style="height: 100%">\n' +
+                        '                <div class="col d-flex flex-column">\n' +
+                        '                    <div class="row px-4 pt-3">\n' +
+                        '                        <div class="col">\n' +
+                        '                            <p class="fs-4 text-dark">' + news.title + '</p>\n' +
+                        '                        </div>\n' +
+                        '                    </div>\n' +
+                        '                    <div class="row px-4 pt-3">\n' +
+                        '                        <div class="col">\n' +
+                        '                            <p class="fs-5 text-secondary">' + news.annotation + '</p>\n' +
+                        '                        </div>\n' +
+                        '                    </div>\n' +
+                        '                    <div class="row px-4 py-3 mt-auto">\n' +
+                        '                        <div class="col text-end">\n' +
+                        '                            <div class="row">\n' +
+                        '                                <a href="/news/show?news=' + news.id + '">Читать</a>\n' +
+                        '                            </div>\n' +
+                        '                        </div>\n' +
+                        '                    </div>\n' +
+                        '                </div>\n' +
+                        '                <div class="col-1 d-flex align-items-center justify-content-center bg-light">\n' +
+                        '                    <a href="/news/edit?news=' + news.id + '">\n' +
+                        '                        <i class="fs-3 text-secondary bi bi-pencil-square"></i>\n' +
+                        '                    </a>\n' +
+                        '                </div>\n' +
+                        '            </div>\n' +
+                        '        </div>'
+                    );
+                });
+            }else if(!accessUpdate && accessDelete){
+                newsList.forEach(function (news){
+                    $('#news-container').append(
+                        '       <div class="col p-4">\n' +
+                        '            <div class="row container-zoom-in card-animation rounded-4 shadow justify-content-center my-4" style="height: 100%">\n' +
+                        '                <div class="col d-flex flex-column">\n' +
+                        '                    <div class="row px-4 pt-3">\n' +
+                        '                        <div class="col">\n' +
+                        '                            <p class="fs-4 text-dark">' + news.title + '</p>\n' +
+                        '                        </div>\n' +
+                        '                    </div>\n' +
+                        '                    <div class="row px-4 pt-3">\n' +
+                        '                        <div class="col">\n' +
+                        '                            <p class="fs-5 text-secondary">' + news.annotation + '</p>\n' +
+                        '                        </div>\n' +
+                        '                    </div>\n' +
+                        '                    <div class="row px-4 py-3 mt-auto">\n' +
+                        '                        <div class="col text-end">\n' +
+                        '                            <div class="row">\n' +
+                        '                                <a href="/news/show?news=' + news.id + '">Читать</a>\n' +
+                        '                            </div>\n' +
+                        '                        </div>\n' +
+                        '                    </div>\n' +
+                        '                </div>\n' +
+                        '                <div class="col-1 d-flex align-items-center justify-content-center">\n' +
+                        '                    <a href="/news/delete?news=' + news.id + '">\n' +
+                        '                        <i class="fs-3 text-danger bi bi-trash"></i>\n' +
+                        '                    </a>\n' +
+                        '                </div>' +
+                        '            </div>\n' +
+                        '        </div>'
+                    );
+                });
             }else{
-                nList.forEach(function (news){
+                newsList.forEach(function (news){
                     $('#news-container').append(
                         '       <div class="col p-4">\n' +
                         '            <div class="row container-zoom-in card-animation rounded-4 shadow justify-content-center my-4" style="height: 100%">\n' +
@@ -241,7 +374,7 @@
                 stack:pageCount
             },
             success: function (newsList) {
-                if(admin){
+                if(accessUpdate && accessDelete){
                     newsList.forEach(function (news){
                         $('#news-container').append(
                             '       <div class="col p-4">\n' +
@@ -269,6 +402,72 @@
                             '                    <a href="/news/edit?news=' + news.id + '">\n' +
                             '                        <i class="fs-3 text-secondary bi bi-pencil-square"></i>\n' +
                             '                    </a>\n' +
+                            '                </div>\n' +
+                            '                <div class="col-1 d-flex align-items-center justify-content-center">\n' +
+                            '                    <a href="/news/delete?news=' + news.id + '">\n' +
+                            '                        <i class="fs-3 text-danger bi bi-trash"></i>\n' +
+                            '                    </a>\n' +
+                            '                </div>' +
+                            '            </div>\n' +
+                            '        </div>'
+                        );
+                    });
+                }else if(accessUpdate && !accessDelete){
+                    newsList.forEach(function (news){
+                        $('#news-container').append(
+                            '       <div class="col p-4">\n' +
+                            '            <div class="row container-zoom-in card-animation rounded-4 shadow justify-content-center my-4" style="height: 100%">\n' +
+                            '                <div class="col d-flex flex-column">\n' +
+                            '                    <div class="row px-4 pt-3">\n' +
+                            '                        <div class="col">\n' +
+                            '                            <p class="fs-4 text-dark">' + news.title + '</p>\n' +
+                            '                        </div>\n' +
+                            '                    </div>\n' +
+                            '                    <div class="row px-4 pt-3">\n' +
+                            '                        <div class="col">\n' +
+                            '                            <p class="fs-5 text-secondary">' + news.annotation + '</p>\n' +
+                            '                        </div>\n' +
+                            '                    </div>\n' +
+                            '                    <div class="row px-4 py-3 mt-auto">\n' +
+                            '                        <div class="col text-end">\n' +
+                            '                            <div class="row">\n' +
+                            '                                <a href="/news/show?news=' + news.id + '">Читать</a>\n' +
+                            '                            </div>\n' +
+                            '                        </div>\n' +
+                            '                    </div>\n' +
+                            '                </div>\n' +
+                            '                <div class="col-1 d-flex align-items-center justify-content-center bg-light">\n' +
+                            '                    <a href="/news/edit?news=' + news.id + '">\n' +
+                            '                        <i class="fs-3 text-secondary bi bi-pencil-square"></i>\n' +
+                            '                    </a>\n' +
+                            '                </div>\n' +
+                            '            </div>\n' +
+                            '        </div>'
+                        );
+                    });
+                }else if(!accessUpdate && accessDelete){
+                    newsList.forEach(function (news){
+                        $('#news-container').append(
+                            '       <div class="col p-4">\n' +
+                            '            <div class="row container-zoom-in card-animation rounded-4 shadow justify-content-center my-4" style="height: 100%">\n' +
+                            '                <div class="col d-flex flex-column">\n' +
+                            '                    <div class="row px-4 pt-3">\n' +
+                            '                        <div class="col">\n' +
+                            '                            <p class="fs-4 text-dark">' + news.title + '</p>\n' +
+                            '                        </div>\n' +
+                            '                    </div>\n' +
+                            '                    <div class="row px-4 pt-3">\n' +
+                            '                        <div class="col">\n' +
+                            '                            <p class="fs-5 text-secondary">' + news.annotation + '</p>\n' +
+                            '                        </div>\n' +
+                            '                    </div>\n' +
+                            '                    <div class="row px-4 py-3 mt-auto">\n' +
+                            '                        <div class="col text-end">\n' +
+                            '                            <div class="row">\n' +
+                            '                                <a href="/news/show?news=' + news.id + '">Читать</a>\n' +
+                            '                            </div>\n' +
+                            '                        </div>\n' +
+                            '                    </div>\n' +
                             '                </div>\n' +
                             '                <div class="col-1 d-flex align-items-center justify-content-center">\n' +
                             '                    <a href="/news/delete?news=' + news.id + '">\n' +

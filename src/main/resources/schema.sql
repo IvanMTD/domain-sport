@@ -126,6 +126,7 @@ create table if not exists school (
     d float,
 
     subject text,
+    description text,
 
     logo_id bigint,
     photo_id bigint

@@ -8,7 +8,7 @@
     </div>
     <br>
     <div class="row">
-        <div class="col-2 px-2" th:if="${manager} or ${admin}">
+        <div class="col-2 px-2" th:if="${accessCreate}">
             <div class="d-grid py-2">
                 <a class="btn btn-outline-secondary" th:href="@{/event/add}">Добавить событие</a>
             </div>
@@ -69,7 +69,7 @@
                             </div>
                             <div class="col-4">
                                 <!-- Button trigger modal -->
-                                <button th:id="'btn-delete-' + ${e_stat.index}" type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#delete-modal" th:if="${event.isDelete()}">
+                                <button th:id="'btn-delete-' + ${e_stat.index}" type="button" class="btn btn-link text-danger" data-bs-toggle="modal" data-bs-target="#delete-modal" th:if="${event.isDelete()}">
                                     Удалить
                                 </button>
                                 <!-- Modal -->

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.result.view.Rendering;
 import reactor.core.publisher.Mono;
 import ru.fcpsr.domainsport.dto.*;
+import ru.fcpsr.domainsport.enums.Access;
 import ru.fcpsr.domainsport.enums.Permission;
 import ru.fcpsr.domainsport.enums.Role;
 import ru.fcpsr.domainsport.models.AppUser;
@@ -21,10 +22,7 @@ import ru.fcpsr.domainsport.models.AuthToken;
 import ru.fcpsr.domainsport.services.*;
 import ru.fcpsr.domainsport.utils.StringGenerator;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Controller
@@ -39,7 +37,7 @@ public class PrincipalController {
     private final SportService sportService;
     private final PasswordEncoder encoder;
 
-    private final List<Role> workRoles = new ArrayList<>(Arrays.asList(Role.MANAGER,Role.MODERATOR,Role.WORKER));
+    private final List<Role> workRoles = new ArrayList<>(Arrays.asList(Role.MODERATOR,Role.MANAGER,Role.WORKER));
 
     @GetMapping("/profile")
     @PreAuthorize("@AccessService.isAuthenticate(#authentication)")
@@ -55,6 +53,7 @@ public class PrincipalController {
                             .modelAttribute("passwordForm",new PasswordDTO())
                             .modelAttribute("message", new MailMessage())
                             .modelAttribute("roleList", workRoles)
+                            .modelAttribute("accessList", Access.values())
                             .build()
             );
         });
@@ -80,6 +79,7 @@ public class PrincipalController {
                                     .modelAttribute("passwordForm",new PasswordDTO())
                                     .modelAttribute("message", message)
                                     .modelAttribute("roleList", workRoles)
+                                    .modelAttribute("accessList", Access.values())
                                     .build()
                     );
                 });
@@ -96,6 +96,7 @@ public class PrincipalController {
                 authToken.setEmail(message.getMail());
                 authToken.setLink(link.toString());
                 authToken.setRole(message.getRole());
+                authToken.setAccess(message.getAccess());
                 authToken.setSportId(message.getSportId());
                 return authTokenService.save(authToken);
             }).flatMap(authToken -> {
@@ -147,9 +148,9 @@ public class PrincipalController {
                     errors.rejectValue("username", "", "Такое имя пользователя уже занято, придумайте другое");
                 }
                 if (errors.hasFieldErrors("username") || errors.hasFieldErrors("firstname") || errors.hasFieldErrors("lastname") || errors.hasFieldErrors("birthday")) {
-                    return accessService.getRoleAccessDTO(userDTO.getRoleAccessId()).flatMap(roleAccessDTO -> {
-                        if(roleAccessDTO.getId() != 0){
-                            userDTO.setRoleAccess(roleAccessDTO);
+                    return accessService.getAllRoleAccessDTO(userDTO.getRoleAccessIds()).collectList().flatMap(list -> {
+                        if(list.size() != 0){
+                            userDTO.setRoleAccessList(list);
                         }
                         return Mono.just(
                                 Rendering.view("template")
@@ -181,11 +182,12 @@ public class PrincipalController {
                 AppUserDTO appUserDTO = new AppUserDTO();
                 appUserDTO.setRole(token.getRole());
                 RoleAccessDTO roleAccessDTO = new RoleAccessDTO();
+                roleAccessDTO.setAccess(token.getAccess());
                 roleAccessDTO.setPermissionList(getPermissions(token.getRole()));
                 return sportService.getById(token.getSportId()).flatMap(sport -> {
                     SportDTO sportDTO = new SportDTO(sport);
                     roleAccessDTO.setSport(sportDTO);
-                    appUserDTO.setRoleAccess(roleAccessDTO);
+                    appUserDTO.setRoleAccessList(new ArrayList<>(List.of(roleAccessDTO)));
                     return Mono.just(
                             Rendering.view("template")
                                     .modelAttribute("title","Registration page")
@@ -194,7 +196,17 @@ public class PrincipalController {
                                     .modelAttribute("uuid",link)
                                     .build()
                     );
-                });
+                }).switchIfEmpty(Mono.just(appUserDTO).flatMap(u -> {
+                    u.setRoleAccessList(new ArrayList<>(List.of(roleAccessDTO)));
+                    return Mono.just(
+                            Rendering.view("template")
+                                    .modelAttribute("title","Registration page")
+                                    .modelAttribute("index","registration-page")
+                                    .modelAttribute("principalDTO", u)
+                                    .modelAttribute("uuid",link)
+                                    .build()
+                    );
+                }));
             }else{
                 return Mono.just(Rendering.redirectTo("/error").build());
             }
@@ -219,7 +231,7 @@ public class PrincipalController {
                         return sportService.getById(token.getSportId()).flatMap(sport -> {
                             SportDTO sportDTO = new SportDTO(sport);
                             roleAccessDTO.setSport(sportDTO);
-                            userDTO.setRoleAccess(roleAccessDTO);
+                            userDTO.setRoleAccessList(new ArrayList<>(List.of(roleAccessDTO)));
                             return Mono.just(
                                     Rendering.view("template")
                                             .modelAttribute("title","Registration page")
@@ -228,7 +240,17 @@ public class PrincipalController {
                                             .modelAttribute("uuid",link)
                                             .build()
                             );
-                        });
+                        }).switchIfEmpty(Mono.just(userDTO).flatMap(u -> {
+                            u.setRoleAccessList(new ArrayList<>(List.of(roleAccessDTO)));
+                            return Mono.just(
+                                    Rendering.view("template")
+                                            .modelAttribute("title","Registration page")
+                                            .modelAttribute("index","registration-page")
+                                            .modelAttribute("principalDTO", u)
+                                            .modelAttribute("uuid",link)
+                                            .build()
+                            );
+                        }));
                     }
 
                     /*
@@ -248,7 +270,9 @@ public class PrincipalController {
                     }).flatMap(user -> {
                         log.info("pre-saved {}", user);
                         return accessService.createAccess(token,user.getId(),getPermissions(token.getRole())).flatMap(roleAccess -> {
-                            user.setRoleAccessId(roleAccess.getId());
+                            Set<Long> ids = new HashSet<>();
+                            ids.add(roleAccess.getId());
+                            user.setRoleAccessIds(ids);
                             return userService.saveUser(user);
                         });
                     }).flatMap(user -> {
@@ -277,6 +301,8 @@ public class PrincipalController {
 
     private List<Permission> getPermissions(Role role){
         if(role.equals(Role.ADMIN)){
+            return new ArrayList<>(List.of(Permission.values()));
+        }else if(role.equals(Role.MODERATOR)){
             return new ArrayList<>(List.of(Permission.values()));
         }else if(role.equals(Role.MANAGER)){
             return new ArrayList<>(List.of(Permission.values()));

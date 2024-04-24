@@ -92,6 +92,7 @@ public class EventController {
                             .modelAttribute("page", pageControl)
                             .modelAttribute("size", size)
                             .modelAttribute("search", search)
+                            .modelAttribute("accessCreate", accessService.getAccess(authentication,"EVENT", "CREATE"))
                             .build()
             );
         });

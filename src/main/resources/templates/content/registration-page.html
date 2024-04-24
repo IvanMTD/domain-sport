@@ -123,31 +123,46 @@
             <div class="row">
                 <div class="col">
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="group" placeholder="Ваша группа" th:value="${principalDTO.getRoleAccess().getSport().getTitle()}" disabled>
-                        <label for="group">Административная группа</label>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <div class="form-floating mb-3">
                         <input type="text" class="form-control" id="role" placeholder="Ваша роль" th:value="${principalDTO.getRole().getTitle()}" disabled>
                         <label for="role">Ваша роль</label>
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col" th:each="permmision, p_stat : ${principalDTO.getRoleAccess().getPermissionList()}">
-                    <div class="form-floating mb-3 pe-2" th:if="${p_stat.index} != ${principalDTO.getRoleAccess().getPermissionList().size() - 1}">
-                        <input type="text" class="form-control" th:id="'permmision-' + ${p_stat.index}" placeholder="Ваше разрешение" th:value="${permmision.getTitle()}" disabled>
-                        <label th:for="'permmision-' + ${p_stat.index}">Разрешение на</label>
+
+            <div th:each="ra , ra_stat : ${principalDTO.roleAccessList}">
+
+                <div class="row">
+                    <div class="col">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="access" placeholder="Доступ" th:value="${ra.getAccess().getTitle()}" disabled>
+                            <label for="role">Доступ</label>
+                        </div>
                     </div>
-                    <div class="form-floating mb-3" th:if="${p_stat.index} == ${principalDTO.getRoleAccess().getPermissionList().size() - 1}">
-                        <input type="text" class="form-control" th:id="'permmision-' + ${p_stat.index}" placeholder="Ваше разрешение" th:value="${permmision.getTitle()}" disabled>
-                        <label th:for="'permmision-' + ${p_stat.index}">Разрешение на</label>
+                </div>
+
+                <div class="row" th:if="${ra.sport} != null">
+                    <div class="col">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="group" placeholder="Ваша группа" th:value="${ra.getSport().getTitle()}" disabled>
+                            <label for="group">Административная группа</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col" th:each="permmision, p_stat : ${ra.getPermissionList()}">
+                        <div class="form-floating mb-3 pe-2" th:if="${p_stat.index} != ${ra.getPermissionList().size() - 1}">
+                            <input type="text" class="form-control" th:id="'permmision-' + ${p_stat.index}" placeholder="Ваше разрешение" th:value="${permmision.getTitle()}" disabled>
+                            <label th:for="'permmision-' + ${p_stat.index}">Разрешение на</label>
+                        </div>
+                        <div class="form-floating mb-3" th:if="${p_stat.index} == ${ra.getPermissionList().size() - 1}">
+                            <input type="text" class="form-control" th:id="'permmision-' + ${p_stat.index}" placeholder="Ваше разрешение" th:value="${permmision.getTitle()}" disabled>
+                            <label th:for="'permmision-' + ${p_stat.index}">Разрешение на</label>
+                        </div>
                     </div>
                 </div>
             </div>
+
             <div class="row">
                 <div class="col">
                     <div class="d-grid gap-2">

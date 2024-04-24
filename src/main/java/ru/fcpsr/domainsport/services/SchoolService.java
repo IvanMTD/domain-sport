@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import ru.fcpsr.domainsport.dto.SchoolDTO;
 import ru.fcpsr.domainsport.models.School;
 import ru.fcpsr.domainsport.repositories.SchoolRepository;
 
@@ -77,5 +78,13 @@ public class SchoolService {
 
     public Mono<School> getById(long schoolId) {
         return schoolRepository.findById(schoolId);
+    }
+
+    public Mono<School> createSchool(SchoolDTO schoolDTO) {
+        return schoolRepository.save(new School(schoolDTO));
+    }
+
+    public Mono<School> save(School lastStepSchool) {
+        return schoolRepository.save(lastStepSchool);
     }
 }

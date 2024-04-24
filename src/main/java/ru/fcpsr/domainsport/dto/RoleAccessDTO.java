@@ -27,6 +27,7 @@ public class RoleAccessDTO {
 
     public RoleAccessDTO(RoleAccess roleAccess) {
         setId(roleAccess.getId());
+        setAccess(roleAccess.getAccess());
         setGroupId(roleAccess.getGroupId());
         setObjectAccessIds(roleAccess.getObjectAccessIds());
         permissionList.addAll(roleAccess.getPermissionList());

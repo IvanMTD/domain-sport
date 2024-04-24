@@ -13,6 +13,7 @@ import org.springframework.web.reactive.result.view.Rendering;
 import reactor.core.publisher.Mono;
 import ru.fcpsr.domainsport.dto.NewsDTO;
 import ru.fcpsr.domainsport.models.AppUser;
+import ru.fcpsr.domainsport.services.AccessService;
 import ru.fcpsr.domainsport.services.NewsService;
 
 @Slf4j
@@ -22,21 +23,25 @@ import ru.fcpsr.domainsport.services.NewsService;
 public class NewsController {
 
     private final NewsService newsService;
+    private final AccessService accessService;
 
     @GetMapping("/list")
-    public Mono<Rendering> getNewsList(){
+    public Mono<Rendering> getNewsList(@AuthenticationPrincipal Authentication authentication){
         return Mono.just(
                 Rendering.view("template")
                         .modelAttribute("title","Новости спорта")
                         .modelAttribute("description", "Новости спортивной индустрии")
                         .modelAttribute("index","news-list-page")
                         .modelAttribute("newsList",newsService.getAllSortedById().take(4))
+                        .modelAttribute("accessCreate", accessService.getAccess(authentication,"NEWS","CREATE"))
+                        .modelAttribute("accessUpdate", accessService.getAccess(authentication,"NEWS","UPDATE"))
+                        .modelAttribute("accessDelete", accessService.getAccess(authentication,"NEWS","DELETE"))
                         .build()
         );
     }
 
     @GetMapping("/add")
-    @PreAuthorize("@AccessService.isAdmin(#authentication)")
+    @PreAuthorize("@AccessService.getAccess(#authentication,'NEWS','CREATE')")
     public Mono<Rendering> addNewsPage(@AuthenticationPrincipal Authentication authentication){
         return Mono.just(
                 Rendering.view("template")
@@ -48,7 +53,7 @@ public class NewsController {
     }
 
     @PostMapping("/save")
-    @PreAuthorize("@AccessService.isAdmin(#authentication)")
+    @PreAuthorize("@AccessService.getAccess(#authentication,'NEWS','CREATE')")
     public Mono<Rendering> saveNews(@AuthenticationPrincipal Authentication authentication, @ModelAttribute(name = "newsForm") @Valid NewsDTO newsDTO, Errors errors){
         if(errors.hasErrors()){
             return Mono.just(
@@ -67,7 +72,7 @@ public class NewsController {
     }
 
     @GetMapping("/show")
-    public Mono<Rendering> newsPage(@RequestParam(name = "news") long newsId){
+    public Mono<Rendering> newsPage(@AuthenticationPrincipal Authentication authentication, @RequestParam(name = "news") long newsId){
         return newsService.getById(newsId).flatMap(news -> {
             return Mono.just(
                     Rendering.view("template")
@@ -75,19 +80,22 @@ public class NewsController {
                             .modelAttribute("description", news.getAnnotation())
                             .modelAttribute("index","news-page")
                             .modelAttribute("news", news)
+                            .modelAttribute("accessCreate", accessService.getAccess(authentication,"NEWS","CREATE"))
+                            .modelAttribute("accessUpdate", accessService.getAccess(authentication,"NEWS","UPDATE"))
+                            .modelAttribute("accessDelete", accessService.getAccess(authentication,"NEWS","DELETE"))
                             .build()
             );
         }).defaultIfEmpty(Rendering.redirectTo("/error").build());
     }
 
     @GetMapping("/delete")
-    @PreAuthorize("@AccessService.isAdmin(#authentication)")
+    @PreAuthorize("@AccessService.getAccess(#authentication,'NEWS','DELETE')")
     public Mono<Rendering> deleteNews(@AuthenticationPrincipal Authentication authentication, @RequestParam(name = "news") long newsId){
         return newsService.deleteById(newsId).flatMap(news -> Mono.just(Rendering.redirectTo("/").build()));
     }
 
     @GetMapping("/edit")
-    @PreAuthorize("@AccessService.isAdmin(#authentication)")
+    @PreAuthorize("@AccessService.getAccess(#authentication,'NEWS','UPDATE')")
     public Mono<Rendering> editNewsPage(@AuthenticationPrincipal Authentication authentication, @RequestParam(name = "news") long newsId){
         return newsService.getById(newsId).flatMap(news -> {
             NewsDTO newsDTO = new NewsDTO(news);
@@ -102,7 +110,7 @@ public class NewsController {
     }
 
     @PostMapping("/update")
-    @PreAuthorize("@AccessService.isAdmin(#authentication)")
+    @PreAuthorize("@AccessService.getAccess(#authentication,'NEWS','UPDATE')")
     public Mono<Rendering> updateNews(@AuthenticationPrincipal Authentication authentication, @ModelAttribute(name = "newsForm") @Valid NewsDTO newsDTO, Errors errors){
         return newsService.getById(newsDTO.getId()).flatMap(news -> {
             if(errors.hasErrors()){
