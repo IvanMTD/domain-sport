@@ -42,7 +42,16 @@ public class SchoolController {
                     Rendering.view("template")
                             .modelAttribute("title","School list")
                             .modelAttribute("index", "school-list-page")
-                            .modelAttribute("schools",schoolService.getAllBySearch(PageRequest.of(pageControl,size),search))
+                            .modelAttribute("schools",schoolService.getAllBySearch(PageRequest.of(pageControl,size),search).flatMap(school -> {
+                                SchoolDTO schoolDTO = new SchoolDTO(school);
+                                return accessService.getAccess(authentication, "SCHOOL", "UPDATE").flatMap(update -> {
+                                    schoolDTO.setUpdate(update);
+                                    return accessService.getAccess(authentication, "SCHOOL", "DELETE").flatMap(delete -> {
+                                        schoolDTO.setDelete(delete);
+                                        return Mono.just(schoolDTO);
+                                    });
+                                });
+                            }))
                             .modelAttribute("search",search)
                             .modelAttribute("lastPage",lastPage)
                             .modelAttribute("page",pageControl)
@@ -155,6 +164,125 @@ public class SchoolController {
     @PostMapping("/edit")
     @PreAuthorize("@AccessService.getAccess(#authentication,'SCHOOL','UPDATE')")
     public Mono<Rendering> schoolEdit(@AuthenticationPrincipal Authentication authentication, @ModelAttribute(name = "school") @Valid SchoolDTO schoolDTO, Errors errors){
-        return Mono.just(Rendering.redirectTo("/").build());
+        log.info("incoming data [{}]", schoolDTO);
+        //return Mono.just(Rendering.redirectTo("/").build());
+
+        if(errors.hasErrors()){
+            return Mono.just(
+                    Rendering.view("template")
+                            .modelAttribute("title","Страница редактирования школы")
+                            .modelAttribute("index","school-edit-page")
+                            .modelAttribute("school", schoolDTO)
+                            .build()
+            );
+        }
+
+        return schoolService.getById(schoolDTO.getId()).flatMap(school -> {
+            log.info("first step - try update logo");
+            if(schoolDTO.getLogo() != null){
+                return fileService.deleteById(school.getLogoId()).flatMap(minioFile -> {
+                    log.info("found logo");
+                    return minioService.delete(minioFile).then(Mono.just(schoolDTO.getLogo()).flatMap(logo -> {
+                        log.info("init updated logo");
+                        return minioService.uploadImage(logo).flatMap(response -> {
+                            log.info("save logo data in db");
+                            return fileService.save(response, school.getId()).flatMap(mf -> {
+                                school.setLogoId(mf.getId());
+                                return Mono.just(school);
+                            });
+                        });
+                    }));
+                }).switchIfEmpty(Mono.just(schoolDTO.getLogo()).flatMap(logo -> {
+                    log.info("logo not found in db try upload new");
+                    return minioService.uploadImage(logo).flatMap(response -> {
+                        log.info("save logo data in db");
+                        return fileService.save(response, school.getId()).flatMap(mf -> {
+                            school.setLogoId(mf.getId());
+                            return Mono.just(school);
+                        });
+                    });
+                }));
+            }else{
+                return Mono.just(school);
+            }
+        }).flatMap(school -> {
+            log.info("second step - try update photo");
+            if(schoolDTO.getImage() != null){
+                return fileService.deleteById(school.getPhotoId()).flatMap(minioFile -> {
+                    log.info("found photo");
+                    return minioService.delete(minioFile).then(Mono.just(schoolDTO.getImage()).flatMap(image -> {
+                        log.info("init updated photo");
+                        return minioService.uploadImage(image).flatMap(response -> {
+                            log.info("save photo data in db");
+                            return fileService.save(response, school.getId()).flatMap(mf -> {
+                                school.setPhotoId(mf.getId());
+                                return Mono.just(school);
+                            });
+                        });
+                    }));
+                }).switchIfEmpty(Mono.just(schoolDTO.getImage()).flatMap(image -> {
+                    log.info("photo not found in db try upload new");
+                    return minioService.uploadImage(image).flatMap(response -> {
+                        log.info("save photo data in db");
+                        return fileService.save(response, school.getId()).flatMap(mf -> {
+                            school.setPhotoId(mf.getId());
+                            return Mono.just(school);
+                        });
+                    });
+                }));
+            }else{
+                return Mono.just(school);
+            }
+        }).flatMap(school -> {
+            log.info("next step - try update coords");
+            if(!school.getAddress().equals(schoolDTO.getAddress())){
+                return geocodeService.getResponse(schoolDTO.getAddress()).flatMap(response -> {
+                    String pos = response.getResponse().getGeoObjectCollection().getFeatureMember().get(0).getGeoObject().getPoint().getPos();
+                    String[] part = pos.split(" ");
+                    float s = Float.parseFloat(part[1]);
+                    float d = Float.parseFloat(part[0]);
+                    school.setAddress(schoolDTO.getAddress());
+                    school.setS(s);
+                    school.setD(d);
+                    return Mono.just(school);
+                }).switchIfEmpty(Mono.just(school));
+            }else{
+                return Mono.just(school);
+            }
+        }).flatMap(school -> {
+            school.setName(schoolDTO.getName());
+            school.setDescription(schoolDTO.getDescription());
+            school.setOgrn(schoolDTO.getOgrn());
+            school.setIndex(schoolDTO.getIndex());
+            school.setSubject(schoolDTO.getSubject());
+            school.setUrl(schoolDTO.getUrl());
+            return schoolService.save(school).flatMap(updated -> {
+                log.info("update completed [{}]",updated);
+                return Mono.just(Rendering.redirectTo("/school/show?school=" + school.getId()).build());
+            });
+        });
+    }
+
+    @GetMapping("/delete")
+    @PreAuthorize("@AccessService.getAccess(#authentication,'SCHOOL','DELETE')")
+    public Mono<Rendering> deleteSchool(@AuthenticationPrincipal Authentication authentication, @RequestParam(name = "school") long id){
+        return schoolService.deleteById(id).flatMap(school -> {
+            log.info("first step - delete logo");
+            return fileService.deleteById(school.getLogoId()).flatMap(minioFile -> {
+                log.info("found logo");
+                return minioService.delete(minioFile).then(Mono.just(school));
+            }).switchIfEmpty(Mono.just(school));
+        }).flatMap(school -> {
+            log.info("first step - delete photo");
+            return fileService.deleteById(school.getPhotoId()).flatMap(minioFile -> {
+                log.info("found photo");
+                return minioService.delete(minioFile).then(Mono.just(school));
+            }).switchIfEmpty(Mono.just(school));
+        }).flatMap(school -> {
+            log.info("school has been deleted [{}]",school);
+            return Mono.just(
+                    Rendering.redirectTo("/school/list?page=0&size=12&search=all").build()
+            );
+        });
     }
 }

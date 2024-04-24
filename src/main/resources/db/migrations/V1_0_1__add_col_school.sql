@@ -1,1 +1,0 @@
-alter table school add column description text;

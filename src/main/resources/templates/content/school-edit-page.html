@@ -1,5 +1,6 @@
 <div class="container">
     <form id="school-add-form" class="row" th:method="POST" th:action="@{/school/edit}" th:object="${school}" enctype="multipart/form-data">
+        <input type="number" th:field="*{id}" hidden>
         <div class="col">
             <div class="row py-1">
                 <div class="col">
@@ -106,7 +107,11 @@
                                     </div>
                                     <input type="file" id="file-logo" accept="image/*" class="d-none" th:field="*{logo}"/>
                                 </div>
-                                <div class="row text-center" id="logo-gallery"></div>
+                                <div class="row text-center" id="logo-gallery">
+                                    <div class="col pt-2" th:if="${school.getLogoId() != 0}">
+                                        <img th:src="@{/api/download(image=${school.getLogoId()})}" style="height: 100px">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <script>
@@ -187,7 +192,11 @@
                                 </div>
                                 <input type="file" id="file-image" accept="image/*" class="d-none" th:field="*{image}"/>
                             </div>
-                            <div class="row text-center" id="image-gallery"></div>
+                            <div class="row text-center" id="image-gallery">
+                                <div class="col pt-2" th:if="${school.getPhotoId() != 0}">
+                                    <img th:src="@{/api/download(image=${school.getPhotoId()})}" style="height: 100px">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <script>

@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.codec.multipart.FilePart;
+import reactor.core.publisher.Mono;
 import ru.fcpsr.domainsport.models.School;
 
 @Data
@@ -29,6 +30,9 @@ public class SchoolDTO {
     private long logoId;
     private FilePart image;
     private long PhotoId;
+
+    private boolean update;
+    private boolean delete;
 
     public SchoolDTO(School school) {
         setId(school.getId());
