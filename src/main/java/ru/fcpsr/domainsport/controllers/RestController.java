@@ -54,6 +54,11 @@ public class RestController {
         return ekpService.getByDate(query);
     }
 
+    @GetMapping("/get/ekp/all")
+    public Flux<EkpDTO> ekpGetAll(){
+        return ekpService.getAll().flatMap(ekp -> Mono.just(new EkpDTO(ekp)));
+    }
+
     @GetMapping("/get/ekp/by/sport/date")
     public Flux<EkpDTO> findBySportDate(@RequestParam(name = "sport") String sportTitle, @RequestParam(name = "date") String date){
         return sportService.getByTitle(sportTitle).flatMapMany(sport -> {

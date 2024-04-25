@@ -398,9 +398,16 @@
                 });
             }
         }else{
-            objectManager.removeAll();
-            map.setCenter([coords_s,coords_d]);
-            map.setZoom(5);
+            $.ajax({
+                url: '/api/get/ekp/all',
+                type: 'get',
+                data: {
+                    sport: 'all'
+                },
+                success: function (ekpList) {
+                    updateByEkpData(ekpList);
+                }
+            });
         }
     }
 
