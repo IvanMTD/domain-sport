@@ -50,8 +50,7 @@ public class MinioFileService {
     // DELETE
     @CacheEvict(value = "files", allEntries = true)
     public Mono<MinioFile> deleteById(long id){
-        return fileRepository.findById(id)
-                .flatMap(minioFile -> fileRepository.delete(minioFile).then(Mono.just(minioFile)));
+        return fileRepository.findById(id).flatMap(minioFile -> fileRepository.delete(minioFile).then(Mono.just(minioFile)));
     }
     // COUNT
 }

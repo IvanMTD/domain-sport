@@ -1,9 +1,9 @@
 package ru.fcpsr.domainsport.dto;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import ru.fcpsr.domainsport.enums.Access;
 import ru.fcpsr.domainsport.enums.Role;
 
 @Data
@@ -14,7 +14,7 @@ public class MailMessage {
     private String title;
     private String message;
 
-    @Min(value = 1, message = "Укажите вид спорта")
     private long sportId;
     private Role role;
+    private Access access;
 }

@@ -2,11 +2,14 @@ package ru.fcpsr.domainsport.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.result.view.Rendering;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import ru.fcpsr.domainsport.dto.SchoolDTO;
 import ru.fcpsr.domainsport.models.School;
 import ru.fcpsr.domainsport.repositories.SchoolRepository;
 
@@ -77,5 +80,20 @@ public class SchoolService {
 
     public Mono<School> getById(long schoolId) {
         return schoolRepository.findById(schoolId);
+    }
+
+    @CacheEvict(cacheNames = "schools", allEntries = true)
+    public Mono<School> createSchool(SchoolDTO schoolDTO) {
+        return schoolRepository.save(new School(schoolDTO));
+    }
+
+    @CacheEvict(cacheNames = "schools", allEntries = true)
+    public Mono<School> save(School school) {
+        return schoolRepository.save(school);
+    }
+
+    @CacheEvict(cacheNames = "schools", allEntries = true)
+    public Mono<School> deleteById(long id) {
+        return schoolRepository.findById(id).flatMap(school -> schoolRepository.deleteById(school.getId()).then(Mono.just(school)));
     }
 }

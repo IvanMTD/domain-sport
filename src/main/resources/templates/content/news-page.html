@@ -18,10 +18,10 @@
                 </div>
             </div>
 
-            <div class="row bg-light p-4" th:if="${admin}">
+            <div class="row bg-light p-4">
                 <div class="col text-end">
-                    <a class="btn btn-outline-secondary" th:href="@{/news/edit(news=${news.id})}" style="width: 200px"><i class="bi bi-pencil-square"></i> Редактировать</a>
-                    <a class="btn btn-outline-secondary" th:href="@{/news/delete(news=${news.id})}" style="width: 200px"><i class="bi bi-trash"></i> Удалить</a>
+                    <a th:if="${accessUpdate}" class="btn btn-outline-secondary" th:href="@{/news/edit(news=${news.id})}" style="width: 200px"><i class="bi bi-pencil-square"></i> Редактировать</a>
+                    <a th:if="${accessDelete}" class="btn btn-outline-secondary" th:href="@{/news/delete(news=${news.id})}" style="width: 200px"><i class="bi bi-trash"></i> Удалить</a>
                 </div>
             </div>
 

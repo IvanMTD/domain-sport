@@ -1,0 +1,274 @@
+<div class="container">
+    <form id="school-add-form" class="row" th:method="POST" th:action="@{/school/add}" th:object="${school}" enctype="multipart/form-data">
+        <div class="col">
+            <div class="row py-1">
+                <div class="col">
+                    <h2 class="text-center py-2"><small class="text-secondary">Добавить школу</small></h2>
+                </div>
+            </div>
+            <hr>
+
+            <div class="row py-1">
+                <div class="col">
+                    <div class="form-floating mb-1">
+                        <input type="text" class="form-control" id="school-name" placeholder="Укажите название школы" th:field="*{name}">
+                        <label for="school-name">Название школы</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row py-1" th:if="${#fields.hasErrors('name')}">
+                <div class="col fs-5 text-danger ms-1">
+                    <p th:errors="*{name}"></p>
+                </div>
+            </div>
+
+            <div class="row py-1">
+                <div class="col">
+                    <div class="form-floating mb-1">
+                        <input type="number" class="form-control" id="ogrn" placeholder="ОГРОН" th:field="*{ogrn}">
+                        <label for="ogrn">ОГРОН</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row py-1" th:if="${#fields.hasErrors('ogrn')}">
+                <div class="col fs-5 text-danger ms-1">
+                    <p th:errors="*{ogrn}"></p>
+                </div>
+            </div>
+
+            <div class="row py-1">
+                <div class="col">
+                    <div class="form-floating mb-1">
+                        <input type="number" class="form-control" id="index" placeholder="Индекс" th:field="*{index}">
+                        <label for="index">Почтовый индекс</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row py-1" th:if="${#fields.hasErrors('index')}">
+                <div class="col fs-5 text-danger ms-1">
+                    <p th:errors="*{index}"></p>
+                </div>
+            </div>
+
+            <div class="row py-1">
+                <div class="col">
+                    <div class="form-floating mb-1">
+                        <input type="text" class="form-control" id="address" placeholder="Адрес" th:field="*{address}">
+                        <label for="address">Адрес спортивной школы</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row py-1" th:if="${#fields.hasErrors('address')}">
+                <div class="col fs-5 text-danger ms-1">
+                    <p th:errors="*{address}"></p>
+                </div>
+            </div>
+
+            <div class="row py-1">
+                <div class="col">
+                    <div class="form-floating mb-1">
+                        <input type="text" class="form-control" id="url" placeholder="Ссылка" th:field="*{url}">
+                        <label for="url">Ссылка на сайт</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row py-1" th:if="${#fields.hasErrors('url')}">
+                <div class="col fs-5 text-danger ms-1">
+                    <p th:errors="*{url}"></p>
+                </div>
+            </div>
+
+            <div class="row py-1">
+                <div class="col">
+                    <div class="form-floating mb-1">
+                        <input type="text" class="form-control" id="subject" placeholder="Субъект" th:field="*{subject}">
+                        <label for="url">Субъект</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row py-1" th:if="${#fields.hasErrors('subject')}">
+                <div class="col fs-5 text-danger ms-1">
+                    <p th:errors="*{subject}"></p>
+                </div>
+            </div>
+
+            <div class="row py-1">
+                <div class="col pe-1">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div id="drop-logo-area" class="border rounded d-flex justify-content-center align-items-center" style="height: 100px; cursor: pointer">
+                                        <div class="text-center">
+                                            <i class="bi bi-cloud-arrow-up-fill text-secondary fs-1"></i>
+                                            <p>Перенесите, или выберите изображение для логотипа</p>
+                                        </div>
+                                    </div>
+                                    <input type="file" id="file-logo" accept="image/*" class="d-none" th:field="*{logo}"/>
+                                </div>
+                                <div class="row text-center" id="logo-gallery"></div>
+                            </div>
+                        </div>
+                        <script>
+                            let dropArea = document.getElementById('drop-logo-area');
+                            let fileElem = document.getElementById('file-logo');
+
+                            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                                dropArea.addEventListener(eventName, preventDefaults, false);
+                                document.body.addEventListener(eventName, preventDefaults, false);
+                            });
+
+                            ['dragenter', 'dragover'].forEach(eventName => {
+                                dropArea.addEventListener(eventName, highlight, false);
+                            });
+
+                            ['dragleave', 'drop'].forEach(eventName => {
+                                dropArea.addEventListener(eventName, unhighlight, false);
+                            });
+
+                            dropArea.addEventListener('drop', handleDrop, false);
+
+                            function preventDefaults(e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }
+
+                            function highlight(e) {
+                                dropArea.classList.add('highlight');
+                            }
+
+                            function unhighlight(e) {
+                                dropArea.classList.remove('highlight');
+                            }
+
+                            function handleDrop(e) {
+                                let dt = e.dataTransfer;
+                                let files = dt.files;
+                                handleFiles(files);
+                            }
+
+                            dropArea.addEventListener('click', () => {
+                                fileElem.click();
+                            });
+
+                            fileElem.addEventListener('change', function (e) {
+                                handleFiles(this.files);
+                            });
+
+                            function handleFiles(files) {
+                                files = [...files];
+                                files.forEach(previewFile);
+                            }
+
+                            function previewFile(file) {
+                                let reader = new FileReader();
+                                reader.readAsDataURL(file);
+                                reader.onloadend = function () {
+                                    $('#logo-gallery').empty();
+                                    $('#logo-gallery').append(
+                                        '<div class="col pt-2">' +
+                                        '   <img src="' + reader.result + '" style="height: 100px">' +
+                                        '</div>'
+                                    );
+                                }
+                            }
+                        </script>
+                    </div>
+                </div>
+                <div class="col ps-1">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div id="drop-image-area" class="border rounded d-flex justify-content-center align-items-center" style="height: 100px; cursor: pointer">
+                                    <div class="text-center">
+                                        <i class="bi bi-cloud-arrow-up-fill text-secondary fs-1"></i>
+                                        <p>Перенесите, или выберите изображение для шапки карточки</p>
+                                    </div>
+                                </div>
+                                <input type="file" id="file-image" accept="image/*" class="d-none" th:field="*{image}"/>
+                            </div>
+                            <div class="row text-center" id="image-gallery"></div>
+                        </div>
+                    </div>
+                    <script>
+                        let dropArea2 = document.getElementById('drop-image-area');
+                        let fileElem2 = document.getElementById('file-image');
+
+                        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                            dropArea2.addEventListener(eventName, preventDefaults2, false);
+                            document.body.addEventListener(eventName, preventDefaults2, false);
+                        });
+
+                        ['dragenter', 'dragover'].forEach(eventName => {
+                            dropArea2.addEventListener(eventName, highlight2, false);
+                        });
+
+                        ['dragleave', 'drop'].forEach(eventName => {
+                            dropArea2.addEventListener(eventName, unhighlight2, false);
+                        });
+
+                        dropArea2.addEventListener('drop', handleDrop2, false);
+
+                        function preventDefaults2(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }
+
+                        function highlight2(e) {
+                            dropArea2.classList.add('highlight');
+                        }
+
+                        function unhighlight2(e) {
+                            dropArea2.classList.remove('highlight');
+                        }
+
+                        function handleDrop2(e) {
+                            let dt = e.dataTransfer;
+                            let files = dt.files;
+                            handleFiles2(files);
+                        }
+
+                        dropArea2.addEventListener('click', () => {
+                            fileElem2.click();
+                        });
+
+                        fileElem2.addEventListener('change', function (e) {
+                            handleFiles2(this.files);
+                        });
+
+                        function handleFiles2(files) {
+                            files = [...files];
+                            files.forEach(previewFile2);
+                        }
+
+                        function previewFile2(file) {
+                            let reader = new FileReader();
+                            reader.readAsDataURL(file);
+                            reader.onloadend = function () {
+                                $('#image-gallery').empty();
+                                $('#image-gallery').append(
+                                    '<div class="col pt-2">' +
+                                    '   <img src="' + reader.result + '" style="height: 100px">' +
+                                    '</div>'
+                                );
+                            }
+                        }
+                    </script>
+                </div>
+            </div>
+
+            <div class="row py-1">
+                <div class="col">
+                    <textarea placeholder="Описание" id="summernote" th:field="*{description}"></textarea>
+                </div>
+            </div>
+            <div class="row py-1">
+                <div class="col">
+                    <div class="d-grid py-2">
+                        <button class="btn btn-outline-secondary" type="submit">Сохранить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

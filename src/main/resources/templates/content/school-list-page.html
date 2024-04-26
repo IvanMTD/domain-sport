@@ -13,6 +13,11 @@
     <div class="row">
         <div class="col">
             <div class="row">
+                <div class="col-2 px-2" th:if="${accessCreate}">
+                    <div class="d-grid py-2">
+                        <a class="btn btn-outline-secondary" th:href="@{/school/add}">Добавить школу</a>
+                    </div>
+                </div>
                 <div class="col py-2 px-2">
                     <input type="text" class="form-control" id="subject-search" list="school-data-list" placeholder="Поиск школ в регионе" oninput="searchBySubjectName()">
                     <datalist id="school-data-list"></datalist>
@@ -70,7 +75,7 @@
         <div class="col" th:each="school, s_stat : ${schools}">
             <div class="card card-animation zoom-control rounded-4 shadow" style="width: 18rem; height: 25rem">
                 <div class="card-img-container" style="width: 100%; height: 150px; border-radius: 1rem 1rem 0 0">
-                    <img th:src="@{/api/download(image=${school.photoId})}" class="card-img-top img-ratio-control zoom-effect" alt="header">
+                    <img th:src="@{/api/download(image=${school.photoId})}" class="card-img-top img-ratio-control zoom-effect" alt="header" onerror="this.src='/img/school-default-image.webp'">
                 </div>
 
                 <div class="card-body d-flex flex-column">
@@ -89,9 +94,35 @@
                             </small>
                         </p>
                         <hr>
-                        <div class="row">
-                            <div class="col d-flex">
-                                <a th:href="@{/school/show(school=${school.id})}" class="btn btn-link mx-auto">Карточка школы</a>
+                        <div class="row p-0 m-0">
+                            <div class="col-4 d-flex">
+                                <a th:href="@{/school/show(school=${school.id})}" class="btn btn-link mx-auto">Просмотр</a>
+                            </div>
+                            <div class="col-4 d-flex" th:if="${school.update}">
+                                <a th:href="@{/school/edit(school=${school.id})}" class="btn btn-link mx-auto">Редактор</a>
+                            </div>
+                            <div class="col-4 d-flex" th:if="${school.delete}">
+                                <!--<a th:href="@{/school/delete(school=${school.id})}" class="btn btn-link text-danger mx-auto">Удалить</a>-->
+
+                                <button class="btn btn-link text-danger" data-bs-toggle="modal" data-bs-target="#deleteSchool" type="button">Удалить</button>
+                                <!-- Modal -->
+                                <div class="modal fade" id="deleteSchool" tabindex="-1" aria-labelledby="del-modal" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="del-modal">Внимание! Удаление!</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Вы собираетесь удалить школу! Вы уверены?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                                                <a th:href="@{/school/delete(school=${school.id})}" class="btn btn-primary">Подтвердить</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

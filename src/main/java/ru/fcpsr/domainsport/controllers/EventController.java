@@ -16,8 +16,10 @@ import reactor.core.publisher.Mono;
 import ru.fcpsr.domainsport.dto.DisciplineDTO;
 import ru.fcpsr.domainsport.dto.EkpDTO;
 import ru.fcpsr.domainsport.dto.SportDTO;
+import ru.fcpsr.domainsport.enums.Access;
 import ru.fcpsr.domainsport.enums.Status;
 import ru.fcpsr.domainsport.models.AppUser;
+import ru.fcpsr.domainsport.models.RoleAccess;
 import ru.fcpsr.domainsport.services.*;
 
 import java.util.Comparator;
@@ -90,13 +92,14 @@ public class EventController {
                             .modelAttribute("page", pageControl)
                             .modelAttribute("size", size)
                             .modelAttribute("search", search)
+                            .modelAttribute("accessCreate", accessService.getAccess(authentication,"EVENT", "CREATE"))
                             .build()
             );
         });
     }
 
     @GetMapping("/add")
-    @PreAuthorize("@AccessService.getAccess(#authentication, 'CREATE')")
+    @PreAuthorize("@AccessService.getAccess(#authentication,'EVENT', 'CREATE')")
     public Mono<Rendering> eventAddPage(@AuthenticationPrincipal Authentication authentication){
         return Mono.just(
                 Rendering.view("template")
@@ -110,7 +113,7 @@ public class EventController {
     }
 
     @PostMapping("/add")
-    @PreAuthorize("@AccessService.getAccess(#authentication, 'CREATE')")
+    @PreAuthorize("@AccessService.getAccess(#authentication,'EVENT', 'CREATE')")
     public Mono<Rendering> eventAdd(@AuthenticationPrincipal Authentication authentication, @ModelAttribute(name = "event") @Valid EkpDTO ekpDTO, Errors errors){
         if(ekpDTO.getEkp() == null && ekpDTO.getNum() == null){
             errors.rejectValue("ekp","","Укажите оба или один из вариантов ЕКП или Иной номер");
@@ -177,21 +180,31 @@ public class EventController {
 
     private Mono<SportDTO> getCurrentSport(Authentication authentication){
         AppUser appUser = (AppUser) authentication.getPrincipal();
-        Mono<SportDTO> sportMono = accessService.getRoleAccess(appUser.getRoleAccessId()).flatMap(roleAccess -> {
-            log.info("found role access: {}", roleAccess.toString());
-            return sportService.getById(roleAccess.getGroupId()).flatMap(sport -> {
-                SportDTO sportDTO = new SportDTO(sport);
-                return disciplineService.getAllByIds(sport.getDisciplineIds()).flatMap(discipline -> {
-                    DisciplineDTO disciplineDTO = new DisciplineDTO(discipline);
-                    return Mono.just(disciplineDTO);
-                }).collectList().flatMap(dl -> {
-                    dl = dl.stream().sorted(Comparator.comparing(DisciplineDTO::getTitle)).collect(Collectors.toList());
-                    sportDTO.setDisciplines(dl);
-                    return Mono.just(sportDTO);
+
+        return accessService.getRoleAccessList(appUser.getRoleAccessIds()).collectList().flatMap(list -> {
+            RoleAccess roleAccess = null;
+            for(RoleAccess ra : list){
+                if(ra.getAccess().equals(Access.EVENT)){
+                    roleAccess = ra;
+                    break;
+                }
+            }
+            if(roleAccess != null){
+                return sportService.getById(roleAccess.getGroupId()).flatMap(sport -> {
+                    SportDTO sportDTO = new SportDTO(sport);
+                    return disciplineService.getAllByIds(sport.getDisciplineIds()).flatMap(discipline -> {
+                        DisciplineDTO disciplineDTO = new DisciplineDTO(discipline);
+                        return Mono.just(disciplineDTO);
+                    }).collectList().flatMap(dl -> {
+                        dl = dl.stream().sorted(Comparator.comparing(DisciplineDTO::getTitle)).collect(Collectors.toList());
+                        sportDTO.setDisciplines(dl);
+                        return Mono.just(sportDTO);
+                    });
                 });
-            });
+            }else{
+                return Mono.empty();
+            }
         }).switchIfEmpty(Mono.empty());
-        return sportMono;
     }
 
     @GetMapping("/edit")
