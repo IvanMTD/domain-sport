@@ -8,7 +8,7 @@ public enum Status {
     MSS("Межрегиональные спортивные соревнования"),
     PR("Первенство России");
 
-    private String title;
+    private final String title;
 
     Status(String title){
         this.title = title;

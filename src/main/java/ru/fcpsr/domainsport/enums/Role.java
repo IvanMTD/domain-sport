@@ -7,7 +7,7 @@ public enum Role {
     WORKER("Сотрудник"),
     USER("Пользователь");
 
-    private String title;
+    private final String title;
     Role(String title){
         this.title = title;
     }

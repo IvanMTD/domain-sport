@@ -62,6 +62,7 @@ public class PrincipalController {
     @PostMapping("/mail/send")
     @PreAuthorize("@AccessService.isAdmin(#authentication)")
     public Mono<Rendering> sendMail(@AuthenticationPrincipal Authentication authentication, @ModelAttribute(name = "message") @Valid MailMessage message, Errors errors){
+        log.info("Attention! Incoming message [{}].", message);
         return userService.checkEmail(message.getMail()).flatMap(exist -> {
             if(exist){
                 log.info("mail {} exist in data base!", message.getMail());

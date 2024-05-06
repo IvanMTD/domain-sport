@@ -254,12 +254,12 @@
 
     let coords_s = 55.76;
     let coords_d = 80.64;
-    let zoom = 3;
+    let zoom = 10;
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(function (position) {
             coords_s = position.coords.latitude;
             coords_d = position.coords.longitude;
-            zoom = 5;
+            zoom = 10;
         });
     } else {
         console.log("Геолокация не поддерживается вашим браузером");
@@ -360,8 +360,8 @@
         objectManager.add(collection);
         map.geoObjects.add(objectManager);
 
-        let bounds = objectManager.getBounds();
-        map.setBounds(bounds, {checkZoomRange: true});
+        //let bounds = objectManager.getBounds();
+        //map.setBounds(bounds, {checkZoomRange: true});
     }
 
     function showEkp(){

@@ -4,16 +4,12 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import ru.fcpsr.domainsport.dto.MailMessage;
-
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -27,6 +23,9 @@ public class EmailService {
     private final JavaMailSender mailSender;
 
     public void sendEmail(MailMessage mailMessage) throws MessagingException {
+
+        log.info("Prepare mail message from mail-address: [{}]", fromMail);
+
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, false,"utf-8");
 
@@ -56,7 +55,7 @@ public class EmailService {
     }
 
     private String getHtmlStringForPassword(String password){
-        String message = "" +
+        return "" +
                 "<!DOCTYPE html>\n" +
                 "<html>\n" +
                 "<head>\n" +
@@ -82,11 +81,10 @@ public class EmailService {
                 "   <script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js\" integrity=\"sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz\" crossorigin=\"anonymous\"></script>" +
                 "</body>\n" +
                 "</html>";
-        return message;
     }
 
     private String getHtmlStringForRegistration(String uuid){
-        String message = "" +
+        return "" +
                 "<!DOCTYPE html>\n" +
                 "<html>\n" +
                 "<head>\n" +
@@ -102,8 +100,8 @@ public class EmailService {
                 "         <div class=\"card mx-auto\" style=\"width: 18rem;\">\n" +
                 "           <img src=\"https://domensport.ru/img/logo.png\" class=\"card-img-top p-2\" alt=\"...\">\n" +
                 "           <div class=\"card-body\">\n" +
-                "             <h5 class=\"card-title\">Приглашаем Вас и вашу Федерацию</h5>\n" +
-                "             <p class=\"card-text\">Описание приглашения. Надо будет продумать.</p>\n" +
+                "             <h5 class=\"card-title\">Приглашаем Вас</h5>\n" +
+                "             <p class=\"card-text\">Зарегистрироваться в domensport</p>\n" +
                 "             <hr>\n" +
                 "             <a href=\"" + domain + "/principal/registration/" + uuid + "\" class=\"btn btn-outline-secondary\">Регистрация</a>\n" +
                 "           </div>\n" +
@@ -114,6 +112,5 @@ public class EmailService {
                 "   <script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js\" integrity=\"sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz\" crossorigin=\"anonymous\"></script>" +
                 "</body>\n" +
                 "</html>";
-        return message;
     }
 }
