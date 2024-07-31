@@ -357,4 +357,8 @@ Ivan - my css variable
     transform: scale(1.05);
 }
 
+.map {
+    height: 300px;
+}
+
 

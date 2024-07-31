@@ -6,7 +6,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.result.view.Rendering;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.fcpsr.domainsport.dto.SchoolDTO;
@@ -64,6 +63,20 @@ public class SchoolService {
             }else{
                 String pattern = "%" + search + "%";
                 return schoolRepository.findAllBySubjectLikeIgnoreCase(pageable,pattern).distinct();
+            }
+        }else{
+            return Flux.empty();
+        }
+    }
+
+    @Cacheable(cacheNames = "schools")
+    public Flux<School> getAllBySearch(String search) {
+        if(search != null){
+            if(search.equals("all")){
+                return schoolRepository.findAllByOrderByIdDesc();
+            }else{
+                String pattern = "%" + search + "%";
+                return schoolRepository.findAllBySubjectLikeIgnoreCase(pattern).distinct();
             }
         }else{
             return Flux.empty();

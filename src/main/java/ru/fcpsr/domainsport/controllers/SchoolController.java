@@ -52,6 +52,16 @@ public class SchoolController {
                                     });
                                 });
                             }))
+                            .modelAttribute("schoolsTotal",schoolService.getAllBySearch(search).flatMap(school -> {
+                                SchoolDTO schoolDTO = new SchoolDTO(school);
+                                return accessService.getAccess(authentication, "SCHOOL", "UPDATE").flatMap(update -> {
+                                    schoolDTO.setUpdate(update);
+                                    return accessService.getAccess(authentication, "SCHOOL", "DELETE").flatMap(delete -> {
+                                        schoolDTO.setDelete(delete);
+                                        return Mono.just(schoolDTO);
+                                    });
+                                });
+                            }))
                             .modelAttribute("search",search)
                             .modelAttribute("lastPage",lastPage)
                             .modelAttribute("page",pageControl)

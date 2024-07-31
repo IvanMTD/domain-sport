@@ -39,6 +39,12 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col">
+            <div class="img-thumbnail map shadow" id="yandex-map"></div>
+        </div>
+    </div>
+
     <script th:inline="javascript">
         function searchBySubjectName(){
             let search = document.getElementById('subject-search').value;
@@ -178,3 +184,78 @@
     </div>
 
 </div>
+
+<script th:inline="javascript">
+    let schools = [[${schoolsTotal}]];
+
+    let coords_s = 55.76;
+    let coords_d = 80.64;
+    let zoom = 10;
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+            coords_s = position.coords.latitude;
+            coords_d = position.coords.longitude;
+            zoom = 10;
+        });
+    } else {
+        console.log("Геолокация не поддерживается вашим браузером");
+    }
+
+    ymaps.ready(init);
+    let map;
+
+    function init() {
+        map = new ymaps.Map('yandex-map', {
+            center: [coords_s, coords_d],
+            zoom: zoom,
+            controls: ['zoomControl']
+        }, {
+            suppressMapOpenBlock: true // Убираем надпись "открыть в Яндекс.Картах"
+        });
+
+        let features = [];
+        let i = 0;
+        schools.forEach(function (school){
+            let detail = `
+                <div class="card" style="width: 10rem;">
+                    <img alt="${school.name}" class="card-img-top" src="/api/download?image=${school.photoId}" onerror="this.onerror=null; this.src=\'/img/school-default-image.webp\'">
+                    <div class="card-body">
+                        <a href="/school/show?school=${school.id}">
+                            <h5 class="card-title text-lowercase" style="font-size: 10px">${school.name}</h5>
+                        </a>
+                    </div>
+                </div>
+            `;
+            features[i] = {
+                type: "Feature",
+                id: i,
+                geometry: {
+                    type: "Point",
+                    coordinates: [school.s, school.d]
+                },
+                properties: {
+                    balloonContent: detail
+                },
+                options: {
+                    preset: 'islands#blueEducationIcon'
+                }
+            }
+            i++;
+        });
+
+        let collection = {
+            type: "FeatureCollection",
+            features: features
+        };
+        // Object Manager
+        objectManager = new ymaps.ObjectManager({
+            clusterize: true,
+            /*clusterIconColor: 'red'*/
+        });
+        objectManager.add(collection);
+        map.geoObjects.add(objectManager);
+
+        let bounds = objectManager.getBounds();
+        map.setBounds(bounds, {checkZoomRange: true});
+    }
+</script>
