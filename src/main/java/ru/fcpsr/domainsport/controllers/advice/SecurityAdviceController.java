@@ -1,4 +1,4 @@
-package ru.fcpsr.domainsport.controllers;
+package ru.fcpsr.domainsport.controllers.advice;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

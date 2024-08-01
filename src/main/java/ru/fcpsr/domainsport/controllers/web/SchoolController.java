@@ -1,4 +1,4 @@
-package ru.fcpsr.domainsport.controllers;
+package ru.fcpsr.domainsport.controllers.web;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -76,7 +76,11 @@ public class SchoolController {
     public Mono<Rendering> showSchoolPage(@AuthenticationPrincipal Authentication authentication, @RequestParam(name = "school") long schoolId){
         return Mono.just(
                 Rendering.view("template")
-                        .modelAttribute("title","School page")
+                        .modelAttribute("title",schoolService.getById(schoolId).flatMap(school -> {
+                            String title = school.getId() + " Спортивная школа " + school.getSubject();
+                            return Mono.just(title);
+                        }))
+                        .modelAttribute("description", schoolService.getById(schoolId).flatMap(school -> Mono.justOrEmpty(school.getName())))
                         .modelAttribute("index","school-page")
                         .modelAttribute("school", schoolService.getById(schoolId))
                         .modelAttribute("accessUpdate", accessService.getAccess(authentication,"SCHOOL","UPDATE"))

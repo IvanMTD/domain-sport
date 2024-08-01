@@ -1,4 +1,4 @@
-package ru.fcpsr.domainsport.controllers;
+package ru.fcpsr.domainsport.controllers.web;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;

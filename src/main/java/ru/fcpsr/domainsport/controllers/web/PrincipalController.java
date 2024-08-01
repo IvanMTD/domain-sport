@@ -1,4 +1,4 @@
-package ru.fcpsr.domainsport.controllers;
+package ru.fcpsr.domainsport.controllers.web;
 
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;

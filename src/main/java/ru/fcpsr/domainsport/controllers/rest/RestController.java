@@ -1,4 +1,4 @@
-package ru.fcpsr.domainsport.controllers;
+package ru.fcpsr.domainsport.controllers.rest;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
