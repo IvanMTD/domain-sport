@@ -14,6 +14,8 @@ import ru.fcpsr.domainsport.services.EkpService;
 import ru.fcpsr.domainsport.services.NewsService;
 import ru.fcpsr.domainsport.services.SportService;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
@@ -29,7 +31,7 @@ public class HomeController {
 
     @GetMapping("/")
     public Mono<Rendering> homePage(){
-        /*DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return Mono.just(
                 Rendering.view("template")
                         .modelAttribute("title","Домен Спорт: Предстоящие Спортивные События, ЕКП, спортивные школы и спортивные объекты")
@@ -40,8 +42,8 @@ public class HomeController {
                         .modelAttribute("newsList", newsService.getAllSortedById().take(4))
                         .modelAttribute("currentDate", LocalDate.now().format(formatter))
                         .build()
-        );*/
-        return Mono.just(Rendering.redirectTo("/school/list?page=0&size=12&search=all").build());
+        );
+        //return Mono.just(Rendering.redirectTo("/school/list?page=0&size=12&search=all").build());
     }
 
     @GetMapping("/error")
