@@ -34,8 +34,8 @@ public class HomeController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return Mono.just(
                 Rendering.view("template")
-                        .modelAttribute("title","Домен Спорт: Предстоящие Спортивные События, ЕКП, спортивные школы и спортивные объекты")
-                        .modelAttribute("description","Сервис Домен Спорт предоставляет информацию о предстоящих спортивных событиях, спортивных школах и спортобъектах. У нас вы найдете актуальные новости, расписание мероприятий и многое другое. Присоединяйтесь к нам для быстрого и легкого доступа к информации о мире спорта")
+                        .modelAttribute("title","Наша Смена: Предстоящие Спортивные События, ЕКП, спортивные школы и спортивные объекты")
+                        .modelAttribute("description","Сервис Наша Смена предоставляет информацию о предстоящих спортивных событиях, спортивных школах и спортобъектах. У нас вы найдете актуальные новости, расписание мероприятий и многое другое. Присоединяйтесь к нам для быстрого и легкого доступа к информации о мире спорта")
                         .modelAttribute("index","home-page")
                         .modelAttribute("ekpList", ekpService.getByDate(LocalDate.now()))
                         .modelAttribute("eventList", getEventList())

@@ -45,7 +45,7 @@ public class EventController {
         return ekpService.getById(eventId).flatMap(e -> Mono.just(
                 Rendering.view("template")
                         .modelAttribute("title",e.getTitle())
-                        .modelAttribute("description","Приглашаем посетить " + e.getTitle() + ". Домен Спорт - актуальная информация о предстоящих спортивных событиях в вашем городе.")
+                        .modelAttribute("description","Приглашаем посетить " + e.getTitle() + ". Наша Смена - актуальная информация о предстоящих спортивных событиях в вашем городе.")
                         .modelAttribute("index","event-page")
                         .modelAttribute("event", eventService.getEvent(eventId).flatMap(event -> accessService.getEkpAccess(authentication,"UPDATE",event.getId()).flatMap(update -> {
                             event.setUpdate(update);
